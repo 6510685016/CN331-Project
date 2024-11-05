@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .fixHigh {
+        height: 7vh;
+        display: contents;
+    }
+</style>
+
+<div class="fixHigh">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <a class="navbar-brand p-3 text-dark" href="#">CatchCash</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link text-dark" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="% url 'members' %}">Members View</a>
+                </li>
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="% url 'register' %}">Register</a>
+                    </li>
+                {% endif %}
+            </ul>
+            {% if user.is_authenticated %}
+                <ul class="navbar-nav mr-right">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark">Logged in as {{ user.username }}</a>
+                    </li>
+                    <form class="form-inline my-2 my-lg-0 text-dark" action="% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-success my-2 my-sm-0 text-dark" type="submit">Logout</button>
+                    </form>
+                </ul>
+            {% endif %}
+        </div>
+    </nav>
+</div>

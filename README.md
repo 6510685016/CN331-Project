@@ -1,4 +1,4 @@
-# CN331-Project (XXXXXX App)
+# CN331-Project (CatchCash App)
 
 Description
 
@@ -21,7 +21,7 @@ Features2
 ### Features3
 Features3
 
-## How to Start the XXXXXX App
+## How to Start the CatchCash App
 To get the XXXXXX app running locally, follow these steps:
 
 1. **Clone the Repository**:
@@ -42,7 +42,7 @@ To get the XXXXXX app running locally, follow these steps:
 
 4. **Install the requirements packages**:
      ```bash
-     pip install -r requiments.txt
+     pip install -r requirements.txt
      ```
 
 5. **Run Server**:

@@ -1,0 +1,10 @@
+body {
+  background: linear-gradient(160deg, #e0ebf5, #e3edf6, #e3edf6, #e8ebf0,#f8f9fb, #e5ecf1);
+  color: azure;
+  font-family: verdana;
+  font-size: medium;
+}
+
+.bg-pink {
+  background-color: pink;
+}

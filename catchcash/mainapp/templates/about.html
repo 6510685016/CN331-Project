@@ -1,14 +1,24 @@
+{% extends "base.html" %}
+
+{% block navBar %}
+{% include "NavBar.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% load static %}
+{% if 'light' == 'dark' %}
+    <link href="{% static 'dark.css' %}" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="{% static 'light.css' %}" rel="stylesheet" type="text/css" />
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<body>
+<body class = "text-dark">
     Hello, This is about page.
 </body>
 
 </html>
+{% endblock %}
