@@ -1,6 +1,37 @@
+.content {
+    display: flex;
+    height: 93vh;
+}
+  
+.navbar {
+    display: contents;
+    min-height: 7vh;
+}
+
+.fixHigh {
+    min-height: 7vh;
+    display: contents;
+}
+
+.fixW{
+    width: 100vw;
+    display: contents;
+}
+  
 body {
-    background-color: darkslategray;
-    color: azure;
+    background: linear-gradient(160deg, #191f25, #191f28, #191f25, #191f25,#191f28, #191f31);
     font-family: verdana;
     font-size: medium;
 }
+  
+.text-normal {
+    color: #eaedf2;
+}
+  
+.text-header {
+    color: #b8d1f3;
+}
+  
+.bg-bar {
+    background:#252728;
+  }

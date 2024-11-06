@@ -6,18 +6,57 @@
 
 {% block content %}
 
-{% load static %}
-{% if 'light' == 'dark' %}
-    <link href="{% static 'dark.css' %}" rel="stylesheet" type="text/css" />
+{% if 'dark1' == 'dark' %}
+    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
 {% else %}
-    <link href="{% static 'light.css' %}" rel="stylesheet" type="text/css" />
+    <link href="/static/light.css" rel="stylesheet" type="text/css" />
 {% endif %}
 
 <!DOCTYPE html>
 <html lang="en">
 
-<body class = "text-dark">
-    Hello, This is about page.
+<body>
+    <div class="h-50">
+        <div class="container-fluid row mt-4">
+        <div class="col-11 col-md-5 ms-5">
+            <h2 class="ms-4 mb-3 text-header">About CatchCASH</h2>
+            <p class="ms-5 text-normal">CatchCASH, แอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดัง</p>
+
+            <h5 class="ms-5 text-normal">รูปแอปสไล</h5>
+        </div>
+        <div class="col-11 col-md-5 ms-5">
+            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+        </div>
+    </div>
+
+    <div class="w-100 h-25 position-absolute bottom-0 start-50 translate-middle-x bg-bar row">
+        <div class="col-12 col-md-6 p-2 row">
+            <div class="col-1"></div>
+            <div class="col-1 ms-3">Members</div>
+            <div class="col-6">
+                <div class="ms-5 text-normal"> 1. ชยุตม์พงศ์ พลเยี่ยม  </div>
+                <div class="ms-5 text-normal"> 2. กวิน แสงศิวะฤทธิ์  </div>
+                <div class="ms-5 text-normal"> 3. พีรพล โพธิ์เจริญ  </div>
+                <div class="ms-5 text-normal"> 4. วันชาติ สุภวิรี  </div>
+                <div class="ms-5 text-normal"> 5. กษิดิศ กรสังข์  </div>
+            </div>
+            <div class="col-3">
+                <div class=" text-normal"> 6510525022 </div>
+                <div class=" text-normal"> 6510615021 </div>
+                <div class=" text-normal"> 6510615252 </div>
+                <div class=" text-normal"> 6510615294 </div>
+                <div class=" text-normal"> 6510685016 </div>
+            </div>
+        </div>    
+        <div class="col-12 col-md-6 p-2">
+            <div class="ms-5 text-normal">ไฟล์ข้อเสนอ, Links ไปที่ Tracker, GitHub repo, YouTube, etc.</div>
+        </div>
+    </div>
+    
 </body>
 
 </html>

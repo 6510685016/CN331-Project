@@ -1,10 +1,38 @@
+.content {
+  display: flex;
+  height: 93vh;
+}
+
+.navbar {
+  display: contents;
+  min-height: 7vh;
+}
+
+.fixHigh {
+  min-height: 7vh;
+  display: contents;
+}
+
+.fixW{
+  width: 100vw;
+  display: contents;
+}
+
 body {
-  background: linear-gradient(160deg, #e0ebf5, #e3edf6, #e3edf6, #e8ebf0,#f8f9fb, #e5ecf1);
-  color: azure;
+  background: linear-gradient(160deg, #dbe8f4, #dbe8f4, #e3edf6, #e8ebf0,#f8f9fb, #e3ebf1);
   font-family: verdana;
   font-size: medium;
 }
 
-.bg-pink {
-  background-color: pink;
+.text-normal {
+  color: #36404d;
+}
+
+.text-header {
+  color: #4a6c9b;
+}
+
+.bg-bar {
+  padding: 7px;
+  background-color: white;
 }

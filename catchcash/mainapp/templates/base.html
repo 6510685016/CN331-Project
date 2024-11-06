@@ -9,16 +9,11 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<style>
-  .content {
-    display: flex;
-    height: 93vh;
-  }
-
-  .navbar {
-    height: 7vh;
-  }
-</style>
+{% if 'dark1' == 'dark' %}
+    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+{% endif %}
 
 <body>
   <div class="navbar">
@@ -31,4 +26,4 @@
 
     {% endblock %}
   </div>
-</body>
+  <body>
