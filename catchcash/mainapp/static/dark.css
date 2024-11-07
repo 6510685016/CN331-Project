@@ -1,0 +1,38 @@
+body {
+    background: linear-gradient(160deg, #2f2e30, #2f2e31, #2f2e33, #2f2e34,#2f2e33, #2f2e31);
+    font-family: verdana;
+    font-size: medium;
+    overflow-y: scroll;
+}
+
+.content {
+    display: flex;
+    height: 93vh;
+}
+  
+.navbar {
+    display: contents;
+    min-height: 7vh;
+}
+  
+.fixHigh {
+    min-height: 7vh;
+    display: contents;
+}
+  
+.fixW{
+    width: 100vw;
+    display: contents;
+}
+  
+.text-normal {
+    color: #eff2f7;
+}
+  
+.text-header {
+    color: #a6b5d0;
+}
+  
+.bg-bar {
+    background-color:   #29282b;
+}

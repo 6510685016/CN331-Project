@@ -1,4 +1,4 @@
-# CN331-Project (CatchCash Web App)
+# CN331-Project (XXXXXX App)
 
 Description
 
@@ -42,6 +42,7 @@ To get the CacthCash web app running locally, follow these steps:
 
 4. **Install the requirements packages**:
      ```bash
+     pip install -r requirements.txt
      pip install -r requirements.txt
      ```
 

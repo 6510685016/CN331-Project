@@ -1,14 +1,91 @@
+{% extends "base.html" %}
+
+{% block navBar %}
+{% include "NavBar.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% if 'dark' == 'dark' %}
+    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
 <body>
-    Hello, This is about page.
+    <div class="h-50 ">
+        <div class="container-fluid row mt-4">
+            <div class="col-11 col-md-7 ms-5">
+                <h2 class="ms-2 mb-3 text-header">About CatchCASH</h2>
+                <p class="ms-2 text-normal" style="text-indent: 1.5em;"> CatchCASH, เว็บไซต์นี้เป็นเครื่องมือสำหรับช่วยให้ผู้ใช้งานสามารถบันทึกรายรับและรายจ่ายในชีวิตประจำวัน เพื่อติดตาม วิเคราะห์และควบคุมการใช้เงินของคุณ เว็บไซต์นี้ให้ความสำคัญความใช้งานง่าย รวดเร็วและเพิ่มแรงจูงใจในการเก็บเงินของผู้ใช้ </p>
+                
+                <h2 class="ms-2 mb-3 text-header">Feture</h2>
+                <div class="ms-3 mb-1 text-normal">บันทึกรายรับ-รายจ่าย</div>
+                <div class="ms-3 mb-1 text-normal">แบ่งหมวดหมู่ วิเคราะห์การใช้เงิน</div>
+                <div class="ms-3 mb-1 text-normal">เพิ่มรายการประจำอัตโนมัติ</div>
+                <div class="ms-3 mb-1 text-normal">ตั้งเป้าหมายการเก็บเงิน</div>
+                <div class="ms-3 mb-1 text-normal">จำกัดวงเงิน</div>
+                <div class="ms-3 mb-1 text-normal">รับรางวัลสำหรับความพยายาม!</div>
+            </div>
+
+            {% if not user.is_authenticated %}
+            <div class="col-11 col-md-4 ms-5">
+                <div class="container row login-container glass mb-2">
+                    <h2 class="pt-3 text-header">Hello! </h2>
+                    <h3 class="pb-2 text-normal">สมัคร/เข้าสู่ระบบ</h3>
+                    <hr noshade size=“10” width=“40/80%”>
+                    <button class="btn btn-light">
+                        <a class="nav-link" href="/">ย้ายไปหน้าเข้าสู่ระบบ</a>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <div class="col-11 col-md-4 ms-5">
+                <div class="container row login-container glass mb-2">
+                    <h2 class="pt-3 text-header">Hello! name</h2>
+                    <h3 class="pb-2 text-normal">คุณเข้าสู่ระบบสำเร็จแล้ว</h3>
+                    <hr noshade size=“10” width=“40/80%”>
+                    <button class="btn btn-light">
+                        <a class="nav-link" href="/">ย้ายไปหน้า HOME</a>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="w-100 h-30 position-absolute bottom-0 start-50 translate-middle-x row bg-bar">
+        <div class="col-12 col-md-6 p-2 row">
+            <div class="col-1"></div>
+            <div class="col-1 ms-3 text-normal">Members</div>
+            <div class="col-5">
+                <div class="ms-5 text-normal"> ชยุตม์พงศ์ พลเยี่ยม  </div>
+                <div class="ms-5 text-normal"> กวิน แสงศิวะฤทธิ์  </div>
+                <div class="ms-5 text-normal"> พีรพล โพธิ์เจริญ  </div>
+                <div class="ms-5 text-normal"> วันชาติ สุภวิรี  </div>
+                <div class="ms-5 text-normal"> กษิดิศ กรสังข์  </div>
+            </div>
+            <div class="col-3">
+                <div class=" text-normal"> 6510525022 </div>
+                <div class=" text-normal"> 6510615021 </div>
+                <div class=" text-normal"> 6510615252 </div>
+                <div class=" text-normal"> 6510615294 </div>
+                <div class=" text-normal"> 6510685016 </div>
+            </div>
+        </div>    
+        <div class="col-12 col-md-6 p-2">
+            <a href="" class="ms-3 text-normal">file</a>
+            <a href="" class="ms-3 text-normal">jira</a>
+            <a href="https://github.com/6510685016/CN331-Project.git" class="ms-3 text-normal">GitHub Repository</a>
+            <a href="" class="ms-3 text-normal">Tutorial Video</a>
+        </div>
+    </div>
+    
 </body>
 
 </html>
+{% endblock %}
