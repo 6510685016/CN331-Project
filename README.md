@@ -1,4 +1,4 @@
-# CN331-Project (XXXXXX App)
+# CN331-Project (CatchCash Web App)
 
 Description
 
