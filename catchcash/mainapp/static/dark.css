@@ -1,3 +1,10 @@
+body {
+    background: linear-gradient(160deg, #2f2e30, #2f2e31, #2f2e33, #2f2e34,#2f2e33, #2f2e31);
+    font-family: verdana;
+    font-size: medium;
+    overflow-y: scroll;
+}
+
 .content {
     display: flex;
     height: 93vh;
@@ -7,31 +14,25 @@
     display: contents;
     min-height: 7vh;
 }
-
+  
 .fixHigh {
     min-height: 7vh;
     display: contents;
 }
-
+  
 .fixW{
     width: 100vw;
     display: contents;
 }
   
-body {
-    background: linear-gradient(160deg, #191f25, #191f28, #191f25, #191f25,#191f28, #191f31);
-    font-family: verdana;
-    font-size: medium;
-}
-  
 .text-normal {
-    color: #eaedf2;
+    color: #eff2f7;
 }
   
 .text-header {
-    color: #b8d1f3;
+    color: #a6b5d0;
 }
   
 .bg-bar {
-    background:#252728;
-  }
+    background-color:   #29282b;
+}

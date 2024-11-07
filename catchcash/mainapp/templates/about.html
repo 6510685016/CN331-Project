@@ -6,7 +6,7 @@
 
 {% block content %}
 
-{% if 'dark1' == 'dark' %}
+{% if 'dark' == 'dark' %}
     <link href="/static/dark.css" rel="stylesheet" type="text/css" />
 {% else %}
     <link href="/static/light.css" rel="stylesheet" type="text/css" />
@@ -16,33 +16,58 @@
 <html lang="en">
 
 <body>
-    <div class="h-50">
+    <div class="h-50 ">
         <div class="container-fluid row mt-4">
-        <div class="col-11 col-md-5 ms-5">
-            <h2 class="ms-4 mb-3 text-header">About CatchCASH</h2>
-            <p class="ms-5 text-normal">CatchCASH, แอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดังแอปดีแอปดัง</p>
+            <div class="col-11 col-md-7 ms-5">
+                <h2 class="ms-2 mb-3 text-header">About CatchCASH</h2>
+                <p class="ms-2 text-normal" style="text-indent: 1.5em;"> CatchCASH, เว็บไซต์นี้เป็นเครื่องมือสำหรับช่วยให้ผู้ใช้งานสามารถบันทึกรายรับและรายจ่ายในชีวิตประจำวัน เพื่อติดตาม วิเคราะห์และควบคุมการใช้เงินของคุณ เว็บไซต์นี้ให้ความสำคัญความใช้งานง่าย รวดเร็วและเพิ่มแรงจูงใจในการเก็บเงินของผู้ใช้ </p>
+                
+                <h2 class="ms-2 mb-3 text-header">Feture</h2>
+                <div class="ms-3 mb-1 text-normal">บันทึกรายรับ-รายจ่าย</div>
+                <div class="ms-3 mb-1 text-normal">แบ่งหมวดหมู่ วิเคราะห์การใช้เงิน</div>
+                <div class="ms-3 mb-1 text-normal">เพิ่มรายการประจำอัตโนมัติ</div>
+                <div class="ms-3 mb-1 text-normal">ตั้งเป้าหมายการเก็บเงิน</div>
+                <div class="ms-3 mb-1 text-normal">จำกัดวงเงิน</div>
+                <div class="ms-3 mb-1 text-normal">รับรางวัลสำหรับความพยายาม!</div>
+            </div>
 
-            <h5 class="ms-5 text-normal">รูปแอปสไล</h5>
-        </div>
-        <div class="col-11 col-md-5 ms-5">
-            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
-            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
-            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
-            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
-            <h5 class="ms-5 text-normal">Feeeeeee1</h5>
+            {% if not user.is_authenticated %}
+            <div class="col-11 col-md-4 ms-5">
+                <div class="container row login-container glass mb-2">
+                    <h2 class="pt-3 text-header">Hello! </h2>
+                    <h3 class="pb-2 text-normal">สมัคร/เข้าสู่ระบบ</h3>
+                    <hr noshade size=“10” width=“40/80%”>
+                    <button class="btn btn-light">
+                        <a class="nav-link" href="/">ย้ายไปหน้าเข้าสู่ระบบ</a>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <div class="col-11 col-md-4 ms-5">
+                <div class="container row login-container glass mb-2">
+                    <h2 class="pt-3 text-header">Hello! name</h2>
+                    <h3 class="pb-2 text-normal">คุณเข้าสู่ระบบสำเร็จแล้ว</h3>
+                    <hr noshade size=“10” width=“40/80%”>
+                    <button class="btn btn-light">
+                        <a class="nav-link" href="/">ย้ายไปหน้า HOME</a>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <div class="w-100 h-25 position-absolute bottom-0 start-50 translate-middle-x bg-bar row">
+    <div class="w-100 h-30 position-absolute bottom-0 start-50 translate-middle-x row bg-bar">
         <div class="col-12 col-md-6 p-2 row">
             <div class="col-1"></div>
-            <div class="col-1 ms-3">Members</div>
-            <div class="col-6">
-                <div class="ms-5 text-normal"> 1. ชยุตม์พงศ์ พลเยี่ยม  </div>
-                <div class="ms-5 text-normal"> 2. กวิน แสงศิวะฤทธิ์  </div>
-                <div class="ms-5 text-normal"> 3. พีรพล โพธิ์เจริญ  </div>
-                <div class="ms-5 text-normal"> 4. วันชาติ สุภวิรี  </div>
-                <div class="ms-5 text-normal"> 5. กษิดิศ กรสังข์  </div>
+            <div class="col-1 ms-3 text-normal">Members</div>
+            <div class="col-5">
+                <div class="ms-5 text-normal"> ชยุตม์พงศ์ พลเยี่ยม  </div>
+                <div class="ms-5 text-normal"> กวิน แสงศิวะฤทธิ์  </div>
+                <div class="ms-5 text-normal"> พีรพล โพธิ์เจริญ  </div>
+                <div class="ms-5 text-normal"> วันชาติ สุภวิรี  </div>
+                <div class="ms-5 text-normal"> กษิดิศ กรสังข์  </div>
             </div>
             <div class="col-3">
                 <div class=" text-normal"> 6510525022 </div>
@@ -53,7 +78,10 @@
             </div>
         </div>    
         <div class="col-12 col-md-6 p-2">
-            <div class="ms-5 text-normal">ไฟล์ข้อเสนอ, Links ไปที่ Tracker, GitHub repo, YouTube, etc.</div>
+            <a href="" class="ms-3 text-normal">file</a>
+            <a href="" class="ms-3 text-normal">jira</a>
+            <a href="https://github.com/6510685016/CN331-Project.git" class="ms-3 text-normal">GitHub Repository</a>
+            <a href="" class="ms-3 text-normal">Tutorial Video</a>
         </div>
     </div>
     

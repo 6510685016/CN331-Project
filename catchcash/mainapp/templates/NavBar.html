@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% if 'dark1' == 'dark' %}
+{% if 'dark' == 'dark' %}
     <link href="/static/dark.css" rel="stylesheet" type="text/css" />
 {% else %}
     <link href="/static/light.css" rel="stylesheet" type="text/css" />
@@ -15,15 +15,18 @@
             <a class="navbar-brand px-3 text-header" href="#">CatchCash</a>
 
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link text-normal" href="/">Home <span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                    <a class="nav-link text-normal" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-normal" href="% url 'members' %}">Members View</a>
+                    <a class="nav-link text-normal" href="% url 'members' %}">Analysis</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link text-normal" href="% url 'members' %}">About <span class="sr-only">(current)</span> </a>
                 </li>
                 {% if not user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-normal" href="% url 'register' %}">Register</a>
+                        <a class="nav-link text-normal" href="% url 'login' %}">login</a>
                     </li>
                 {% endif %}
             </ul>

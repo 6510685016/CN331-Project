@@ -1,3 +1,10 @@
+body {
+  background: linear-gradient(160deg, #dbe8f4, #dbe8f4, #e3edf6, #e8ebf0, #f8f9fb, #e3ebf1);
+  font-family: verdana;
+  font-size: medium;
+  overflow-y: scroll;
+}
+
 .content {
   display: flex;
   height: 93vh;
@@ -18,12 +25,6 @@
   display: contents;
 }
 
-body {
-  background: linear-gradient(160deg, #dbe8f4, #dbe8f4, #e3edf6, #e8ebf0,#f8f9fb, #e3ebf1);
-  font-family: verdana;
-  font-size: medium;
-}
-
 .text-normal {
   color: #36404d;
 }
@@ -33,6 +34,5 @@ body {
 }
 
 .bg-bar {
-  padding: 7px;
-  background-color: white;
+  background-color:   #f4f6f9;
 }
