@@ -13,13 +13,16 @@ Description
 ## Features
 
 ### Features1
-Features1
+#### บันทึกรายรับ-รายจ่าย
+แบ่งหมวดหมู่ เพิ่มรายการประจำอัตโนมัติ
 
 ### Features2
-Features2
+#### วิเคราะห์การใช้เงิน
+ดูสรุปรายรับ-รายจ่าย วิเคราะห์ข้อมูลผ่านกราฟตามหมวดหมู่และช่วงเวลา
 
 ### Features3
-Features3
+#### เป้าหมายทางการเงิน
+ตั้งเป้าหมายเพื่อซื้อของขวัญชิ้นใหญ่ จำกัดวงเงิน ทำภารกิจและรับรางวัลสำหรับความพยายาม!
 
 ## How to Start the CacthCash Web App
 To get the CacthCash web app running locally, follow these steps:
@@ -42,7 +45,6 @@ To get the CacthCash web app running locally, follow these steps:
 
 4. **Install the requirements packages**:
      ```bash
-     pip install -r requirements.txt
      pip install -r requirements.txt
      ```
 
