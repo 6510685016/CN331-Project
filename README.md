@@ -50,7 +50,7 @@ To get the CacthCash web app running locally, follow these steps:
 
 5. **Run Server**:
      ```bash
-     cd myProject
+     cd CN331-Project
      python manage.py runserver
      ```
 
