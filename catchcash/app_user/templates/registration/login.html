@@ -1,0 +1,115 @@
+
+<style>
+  .cen-text {
+    color: white;
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .carousel-item {
+    text-align: center;
+    color: #fff;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0s ease-in-out;
+  }
+
+  .carousel-item p {
+    font-size: 1rem;
+    color: dimgray;
+  }
+
+  .carousel-item h5 {
+    font-size: 2.4rem;
+  }
+
+  .carousel-item.active {
+    opacity: 1;
+  }
+
+  .login-container {
+    width: 70vh;
+    background-color: #f7f7f7;
+    padding: 6vh;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass {
+    border: 1px solid transparent;
+    backdrop-filter: blur(1rem);
+    box-shadow: 1.3rem 1.3rem 1.3rem rgba(254, 223, 223, 0.05);
+    border-top-color: rgba(255, 255, 255, 0.5);
+    border-left-color: rgba(255, 255, 255, 0.5);
+    border-right-color: rgba(255, 255, 255, 0.1);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+
+    background-color: rgba(35, 17, 32, 0.1);
+  }
+
+  .pinkText {
+    color: rgb(254, 130, 130);
+  }
+
+  .bg-pink {
+    background-color: rgb(254, 130, 130);
+  }
+
+  .yellowText {
+    color: #fedfc1;
+  }
+
+  .form-control {
+    background-color: #111;
+    color: #ccc;
+    border: 1px solid #333;
+  }
+
+  .form-control::placeholder {
+    color: #ccc;
+  }
+
+  .form-control:focus {
+    background-color: #111;
+    color: #bbcccb;
+  }
+</style>
+
+<div class="container-fluid content row">
+  <div class="col-md-5 cen-text">
+  </div>
+
+
+  <div class="col-md-7 cen-text">
+    <div class="container row login-container glass mb-2">
+      <h2 class="text-center mb-4 ">APP</h2>
+
+      <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
+        </div>
+        <div class="mb-5">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Enter password" name="password"
+            required>
+        </div>
+        <div class="d-grid gap-4">
+          <button type="submit" class="btn btn-dark">Login</button>
+        </div>
+        <div class="text-center mt-3">
+          <p>Don't have an account? <a href="{%url 'register'%}" class="pinkText">Register</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

@@ -1,12 +1,4 @@
-{% extends "base.html" %}
-
-{% block navBar %}
-{% include "NavBar.html" %}
-{% endblock %}
-
-{% block content %}
-
-{% if 'dark' == 'dark' %}
+{% if 'light' == 'dark' %}
     <link href="/static/dark.css" rel="stylesheet" type="text/css" />
 {% else %}
     <link href="/static/light.css" rel="stylesheet" type="text/css" />
@@ -14,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 <body>
     <div class="abouttop">
@@ -38,7 +31,7 @@
                     <h3 class="pb-2 text-normal">สมัคร/เข้าสู่ระบบ</h3>
                     <hr noshade size=“10” width=“40/80%”>
                     <button class="btn btn-light">
-                        <a class="nav-link" href="/">ย้ายไปหน้าเข้าสู่ระบบ</a>
+                        <a class="nav-link" href="/users/login">ย้ายไปหน้าเข้าสู่ระบบ</a>
                     </button>
                 </div>
             </div>
@@ -50,7 +43,7 @@
                     <h3 class="pb-2 text-normal">คุณเข้าสู่ระบบสำเร็จแล้ว</h3>
                     <hr noshade size=“10” width=“40/80%”>
                     <button class="btn btn-light">
-                        <a class="nav-link" href="/">ย้ายไปหน้า HOME</a>
+                        <a class="nav-link" href="/main">ย้ายไปหน้า HOME</a>
                     </button>
                 </div>
             </div>
@@ -88,4 +81,3 @@
 </body>
 
 </html>
-{% endblock %}
