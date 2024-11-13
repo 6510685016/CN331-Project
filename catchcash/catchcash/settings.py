@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_COOKIE_HTTPONLY = False
+
 ROOT_URLCONF = 'catchcash.urls'
 
 TEMPLATES = [
