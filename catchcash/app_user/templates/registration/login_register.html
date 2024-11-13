@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatchCASH</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'authUI.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Login Form -->
+        <div class="form-box login">
+            <form method="post">
+                {% csrf_token %}
+                <h1>Login</h1>
+                <div class="input-box">
+                    {{ login_form.username }}
+
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    {{ login_form.password }}
+                </div>
+
+                {% if login_form.non_field_errors %}
+                <div class="error-message">
+                    <p class="text-danger">UserName or Password Is Incorrect.</p>
+                </div>
+                {% endif %}
+
+                <div class="forgot-link">
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" name="login" class="btn">Login</button>
+            </form>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="form-box register">
+            <form method="post">
+                {% csrf_token %}
+                <h1>Registration</h1>
+                <div class="form-content">
+                    <div class="input-box">
+                        {{ register_form.username }}
+                        <i class='bx bxs-user'></i>
+                    </div>
+                    {% if register_form.username.errors %}
+                    <div class="error-message">
+                        <div class="text-danger">
+                            {% for error in register_form.username.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="input-box">
+                        {{ register_form.password }}
+                    </div>
+                    {% if register_form.password.errors %}
+                    <div class="error-message">
+                        <div class="text-danger">
+                            {% for error in register_form.password.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="input-box">
+                        {{ register_form.confirm_password }}
+                    </div>
+                    {% if register_form.confirm_password.errors %}
+                    <div class="error-message">
+                        <div class="text-danger">
+                            {% for error in register_form.confirm_password.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="input-box">
+                        {{ account_form.name }}
+                    </div>
+                    <div class="input-box">
+                        {{ account_form.appTheme }}
+                    </div>
+
+                </div>
+                <button type="submit" name="register" class="btn">Register</button>
+            </form>
+        </div>
+
+
+        <div class="toggle-box">
+            <div class="toggle-panel toggle-left">
+                <h1>Hello, Welcome!</h1>
+                <p>Don't have an account?</p>
+                <button class="btn register-btn">Register</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+                <h1>Welcome Back!</h1>
+                <p>Already have an account?</p>
+                <button class="btn login-btn">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.querySelector('.container');
+        const registerBtn = document.querySelector('.register-btn');
+        const loginBtn = document.querySelector('.login-btn');
+        const showRegister = {% if show_register %}true{% else %} false{% endif %};
+        console.log(showRegister);
+        if (showRegister) {
+            container.classList.add('active');
+        }
+
+        registerBtn.addEventListener('click', () => {
+            container.classList.add('active');
+        });
+
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove('active');
+        });
+    </script>
+
+</body>
+
+</html>
