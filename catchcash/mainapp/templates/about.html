@@ -1,7 +1,7 @@
 {% if 'light' == 'dark' %}
-    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+<link href="/static/dark.css" rel="stylesheet" type="text/css" />
 {% else %}
-    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+<link href="/static/light.css" rel="stylesheet" type="text/css" />
 {% endif %}
 
 <!DOCTYPE html>
@@ -13,15 +13,21 @@
         <div class="container-fluid row mt-4">
             <div class="col-11 col-md-7 ms-5">
                 <h2 class="ms-2 mb-3 text-header">About CatchCASH</h2>
-                <p class="ms-2 mb-3 text-normal" style="text-indent: 1.5em;"> CatchCASH, เว็บไซต์นี้เป็นเครื่องมือสำหรับช่วยให้ผู้ใช้งานสามารถบันทึกรายรับและรายจ่ายในชีวิตประจำวัน เพื่อติดตาม วิเคราะห์และควบคุมการใช้เงินของคุณ เว็บไซต์นี้ให้ความสำคัญความใช้งานง่าย รวดเร็วและเพิ่มแรงจูงใจในการเก็บเงินของผู้ใช้ </p>
-                
+                <p class="ms-2 mb-3 text-normal" style="text-indent: 1.5em;"> CatchCASH,
+                    เว็บไซต์นี้เป็นเครื่องมือสำหรับช่วยให้ผู้ใช้งานสามารถบันทึกรายรับและรายจ่ายในชีวิตประจำวัน
+                    เพื่อติดตาม วิเคราะห์และควบคุมการใช้เงินของคุณ เว็บไซต์นี้ให้ความสำคัญความใช้งานง่าย
+                    รวดเร็วและเพิ่มแรงจูงใจในการเก็บเงินของผู้ใช้ </p>
+
                 <h2 class="ms-2 mb-2 text-header">Feture</h2>
                 <h5 class="ms-3 mb-0 text-normal">บันทึกรายรับ-รายจ่าย 💵</h5>
-                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">แบ่งหมวดหมู่ เพิ่มรายการประจำอัตโนมัติ</div>
+                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">แบ่งหมวดหมู่ เพิ่มรายการประจำอัตโนมัติ
+                </div>
                 <h5 class="ms-3 mb-0 text-normal">วิเคราะห์การใช้เงิน 💡</h5>
-                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">ดูสรุปรายรับ-รายจ่าย วิเคราะห์ข้อมูลผ่านกราฟตามหมวดหมู่และช่วงเวลา</div>
+                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">ดูสรุปรายรับ-รายจ่าย
+                    วิเคราะห์ข้อมูลผ่านกราฟตามหมวดหมู่และช่วงเวลา</div>
                 <h5 class="ms-3 mb-0 text-normal">เป้าหมายทางการเงิน ❗</h5>
-                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">ตั้งเป้าหมายเพื่อซื้อของขวัญชิ้นใหญ่ จำกัดวงเงิน ทำภารกิจและรับรางวัลสำหรับความพยายาม!</div>
+                <div class="ms-3 mb-2 text-normal" style="text-indent: 1.2em;">ตั้งเป้าหมายเพื่อซื้อของขวัญชิ้นใหญ่
+                    จำกัดวงเงิน ทำภารกิจและรับรางวัลสำหรับความพยายาม!</div>
             </div>
 
             {% if not user.is_authenticated %}
@@ -31,7 +37,7 @@
                     <h3 class="pb-2 text-normal">สมัคร/เข้าสู่ระบบ</h3>
                     <hr noshade size=“10” width=“40/80%”>
                     <button class="btn btn-light">
-                        <a class="nav-link" href="/users/login">ย้ายไปหน้าเข้าสู่ระบบ</a>
+                        <a class="nav-link" href="/users/auth">ย้ายไปหน้าเข้าสู่ระบบ</a>
                     </button>
                 </div>
             </div>
@@ -56,11 +62,11 @@
             <div class="col-1"></div>
             <div class="col-1 ms-3 text-normal">Members</div>
             <div class="col-5">
-                <div class="ms-5 text-normal"> ชยุตม์พงศ์ พลเยี่ยม  </div>
-                <div class="ms-5 text-normal"> กวิน แสงศิวะฤทธิ์  </div>
-                <div class="ms-5 text-normal"> พีรพล โพธิ์เจริญ  </div>
-                <div class="ms-5 text-normal"> วันชาติ สุภวิรี  </div>
-                <div class="ms-5 text-normal"> กษิดิศ กรสังข์  </div>
+                <div class="ms-5 text-normal"> ชยุตม์พงศ์ พลเยี่ยม </div>
+                <div class="ms-5 text-normal"> กวิน แสงศิวะฤทธิ์ </div>
+                <div class="ms-5 text-normal"> พีรพล โพธิ์เจริญ </div>
+                <div class="ms-5 text-normal"> วันชาติ สุภวิรี </div>
+                <div class="ms-5 text-normal"> กษิดิศ กรสังข์ </div>
             </div>
             <div class="col-3">
                 <div class=" text-normal"> 6510525022 </div>
@@ -69,15 +75,17 @@
                 <div class=" text-normal"> 6510615294 </div>
                 <div class=" text-normal"> 6510685016 </div>
             </div>
-        </div>    
+        </div>
         <div class="col-12 col-md-6 p-2">
-            <a href="https://tuipied-my.sharepoint.com/:w:/g/personal/kasidit_kor_dome_tu_ac_th/EdUwXf0yqTNGh_ZrzAzXlPwBu5oe0WkFoIcPFq1MuRQomw?e=7xZVOL" class="ms-3 text-normal">file</a>
-            <a href="https://id.atlassian.com/invite/p/jira-software?id=ByPOkCptSX6Iv5dAnCpuNw" class="ms-3 text-normal">jira</a>
+            <a href="https://tuipied-my.sharepoint.com/:w:/g/personal/kasidit_kor_dome_tu_ac_th/EdUwXf0yqTNGh_ZrzAzXlPwBu5oe0WkFoIcPFq1MuRQomw?e=7xZVOL"
+                class="ms-3 text-normal">file</a>
+            <a href="https://id.atlassian.com/invite/p/jira-software?id=ByPOkCptSX6Iv5dAnCpuNw"
+                class="ms-3 text-normal">jira</a>
             <a href="https://github.com/6510685016/CN331-Project.git" class="ms-3 text-normal">GitHub Repository</a>
             <a href="" class="ms-3 text-normal">Tutorial Video (not avirible)</a>
         </div>
     </div>
-    
+
 </body>
 
 </html>
