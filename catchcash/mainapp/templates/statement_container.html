@@ -1,0 +1,167 @@
+{% if user.is_authenticated %}
+
+{% if theme == 'dark' %}
+    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+{% endif %}
+
+<h2>Statements</h2>
+
+<form id="filter-form" method="GET" action="">
+    
+    <div>
+        <label for="id_start_date">{{ form.start_date.label }}</label>
+        {{ form.start_date }}
+        <label for="id_end_date">{{ form.end_date.label }}</label>
+        {{ form.end_date }}
+        <button type="submit">Filter</button>
+    </div>
+        
+    
+</form>
+
+
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Actions</th> <!-- เพิ่มคอลัมน์สำหรับ Edit และ Delete -->
+    </tr>
+    {% for statement in statements %}
+    <tr id="statement-{{statement.id}}">
+        <!-- ที่จะแสดง -->
+        <td class="view-mode">{{ statement.amount }}</td>
+        <td class="view-mode">{{ statement.get_type_display }}</td>
+        <td class="view-mode">{{ statement.category }}</td>
+        <td class="view-mode">{{ statement.addDate }}</td>
+        <td class="view-mode">
+            <!-- ปุ่ม Edit Delete -->
+            <a href="javascript:void(0)" onclick="toggleEdit({{ statement.id }})">Edit</a>
+            <a href="{% url 'delete_statement' statement.id %}">Delete</a>
+        </td>
+    </tr>    
+    <tr id="edit-statement-{{statement.id}}" style="display:none;">
+        <!-- สำหรับแก้ไข -->
+        <form method="POST" action="{% url 'edit_statement' statement.id %}" class="edit-mode">
+            {% csrf_token %}
+            <td><input type="number" step="1.00" name="amount" value="{{ statement.amount }}" required></td>
+            <td>
+                <select name="type" required>
+                    <option value="in" {% if statement.type == 'in' %}selected{% endif %}>In</option>
+                    <option value="out" {% if statement.type == 'out' %}selected{% endif %}>Out</option>
+                </select>
+            </td>
+            <td>
+                <select id="category-select-{{statement.id}}" name="category" required>
+                    <option value="None">ไม่ระบุประเภท</option>
+                    {% for choice in choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="custom_category-{{statement.id}}" name="custom_category" placeholder="Enter new category" style="display:none;">
+                <!-- <input type="text" id="custom-category" name="category" placeholder="Enter new category" style=""> -->
+            </td>
+            <td><input type="date" name="addDate" value="{{ statement.addDate|date:'Y-m-d' }}" required></td>
+            <td><button type="submit">Save</button></td>
+        </form>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No statements found.</td> <!-- เพิ่มช่องให้ตรงกับจำนวนคอลัมน์ทั้งหมด -->
+    </tr>
+    {% endfor %}
+
+    <!-- บรรทัดสำหรับการเพิ่ม statement ใหม่ -->
+    <tr>
+        <form method="POST" action="{% url 'add_statement' %}">
+            {% csrf_token %}
+            <td><input type="number"class ="mr-3" style="width: 150px;" step="1.00" name="amount" required></td>
+            <td>
+                <select name="type" class ="mr-3" required>
+                    <option value="in">In</option>
+                    <option value="out">Out</option>
+                </select>
+            </td>
+            <td>
+                <select id="category-select" class ="mr-3" name="category" required>
+                    <option value="None">ไม่ระบุประเภท</option>
+                    {% for choice in choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="custom_category" name="custom_category" class ="mr-3" placeholder="Enter new category" style="display:none;">
+                <!-- <input type="text" id="custom-category" name="category" placeholder="Enter new category" style=""> -->
+            </td>
+            <td><input type="date" class ="mr-3" name="addDate" required></td>
+            <td><button type="submit">Add Statement</button></td>
+            <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
+        </form>
+    </tr>
+
+</table>
+
+<script>
+    document.getElementById('id_wallet').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+
+    document.getElementById('id_start_date').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+
+    document.getElementById('id_end_date').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+
+    function toggleEdit(statementId) {
+        const row = document.getElementById(`statement-${statementId}`);
+        const editrow = document.getElementById(`edit-statement-${statementId}`);
+        const customCategory = document.getElementById(`custom_category-${statementId}`);
+        const cat= document.getElementById(`category-select-${statementId}`)
+
+        document.getElementById(`category-select-${statementId}`).addEventListener('change', function() {
+            var customCategory = document.getElementById(`custom_category-${statementId}`);
+            if (cat.value === 'other') {
+                customCategory.style.display = 'inline-block';
+            } else {
+                customCategory.style.display = 'none';
+            }
+        });
+
+        if (row.style.display === "none") {
+            row.style.display = "";
+            editrow.style.display = "none";
+        } else {
+            row.style.display = "none";
+            editrow.style.display = "";
+        }
+    }
+
+    document.getElementById('category-select').addEventListener('change', function() {
+        var customCategory = document.getElementById('custom_category');
+        if (this.value === 'other') {
+            customCategory.style.display = 'inline-block';
+        } else {
+            customCategory.style.display = 'none';
+        }
+    });
+</script>
+{% else %}
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Actions</th> <!-- เพิ่มคอลัมน์สำหรับ Edit และ Delete -->
+    </tr>
+    <td>User no Authenticated</td>
+</table>
+{% endif %}
