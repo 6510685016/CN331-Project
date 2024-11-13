@@ -12,6 +12,9 @@ def main(request):
     account = request.user.account # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
     
+
+    wallet_list = Wallet.objects.filter(account=account)
+    
     form = WalletFilterForm()
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
@@ -43,7 +46,7 @@ def main(request):
         else:
             statements = Statement.objects.none()  # ถ้าไม่มี wallet
 
-    return render(request, 'main.html', {'form': form, 'statements': statements, 'choices': choices, 'wallet': wallet, 'theme':theme})
+    return render(request, 'main.html', {'form': form, 'statements': statements, 'choices': choices, 'wallet': wallet, 'theme':theme ,'wallet_list': wallet_list})
 
 def about(request):
     return render(request, 'about.html')
@@ -127,4 +130,16 @@ def delete_statement(request, id):
     return redirect('main')  # กลับไปที่หน้า main
 
 def create_wallet(request):
+    if request.method == 'POST':
+        # รับข้อมูลจากฟอร์ม
+        wName = request.POST.get('wName')
+        currency = request.POST.get('currency')
+        listCategory = request.POST.getlist('listCategory[]')  # รับหมวดหมู่ในรูปแบบ JSON
+
+        # สร้าง Wallet ใหม่
+        account = request.user.account
+        wallet = Wallet(account=account, wName=wName, currency=currency, listCategory=listCategory)
+        wallet.save()
+
+        return redirect('main')  # กลับไปที่หน้า main หลังบันทึก
     return render(request, 'main.html')

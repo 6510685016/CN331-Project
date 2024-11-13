@@ -53,11 +53,10 @@
                                     <button class="btn btn-primary dropdown-toggle" type="button" id="walletDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         เลือก wallet
                                     </button>
-                                    <!-- list ของ wallet -->
                                     <div class="dropdown-menu" aria-labelledby="walletDropdown">
-                                        <a class="dropdown-item" href="#" onclick="selectWallet('Wallet 1')">Wallet 1</a>
-                                        <a class="dropdown-item" href="#" onclick="selectWallet('Wallet 2')">Wallet 2</a>
-                                        <a class="dropdown-item" href="#" onclick="selectWallet('Wallet 3')">Wallet 3</a>
+                                        {% for wallet in wallet_list %}
+                                            <a class="dropdown-item" href="{% url 'main' %}?wallet_id={{ wallet.id }} " onclick="selectWallet('{{ wallet.wName }}')">{{ wallet.wName }}</a>
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <!-- ปุ่มสร้างโปรไฟล์ใหม่ -->
