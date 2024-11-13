@@ -37,7 +37,7 @@ class Wallet(models.Model):
     account = models.ForeignKey(Account, related_name='wallets', on_delete=models.CASCADE)
     wName = models.CharField(max_length=100)
     currency = models.CharField(max_length=10)
-    listCategory = models.JSONField(default=list)  # เปลี่ยนเป็น JSONField เพื่อเก็บรายการ category
+    listCategory = models.JSONField(default=list)  # JSONField for categories
     
     def __str__(self):
         return f"{self.account} ({self.wName})"

@@ -1,10 +1,30 @@
+{% if user.is_authenticated %}
 
-
-<form id="filter-form" method="GET" action="">
-    {{ form.as_p }}
-</form>
+{% if theme == 'dark' %}
+    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+{% endif %}
 
 <h2>Statements</h2>
+
+<form id="filter-form" method="GET" action="">
+    <div>
+        <label for="id_wallet">{{ form.wallet.label }}</label>
+        {{ form.wallet }}
+    </div>
+    <div>
+        <label for="id_start_date">{{ form.start_date.label }}</label>
+        {{ form.start_date }}
+        <label for="id_end_date">{{ form.end_date.label }}</label>
+        {{ form.end_date }}
+        <button type="submit">Filter</button>
+    </div>
+        
+    
+</form>
+
+
 <table>
     <tr>
         <th>Amount</th>
@@ -37,7 +57,18 @@
                     <option value="out" {% if statement.type == 'out' %}selected{% endif %}>Out</option>
                 </select>
             </td>
-            <td><input type="text" name="category" value="{{ statement.category }}" required></td>
+            <td>
+                <select id="category-select-{{statement.id}}" name="category" required>
+                    <option value="None">ไม่ระบุประเภท</option>
+                    {% for choice in choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="custom_category-{{statement.id}}" name="custom_category" placeholder="Enter new category" style="display:none;">
+                <!-- <input type="text" id="custom-category" name="category" placeholder="Enter new category" style=""> -->
+            </td>
             <td><input type="date" name="addDate" value="{{ statement.addDate|date:'Y-m-d' }}" required></td>
             <td><button type="submit">Save</button></td>
         </form>
@@ -59,40 +90,81 @@
                     <option value="out">Out</option>
                 </select>
             </td>
-            <td><input type="text" name="category" required></td>
+            <td>
+                <select id="category-select" name="category" required>
+                    <option value="None">ไม่ระบุประเภท</option>
+                    {% for choice in choices %}
+                        <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="custom_category" name="custom_category" placeholder="Enter new category" style="display:none;">
+                <!-- <input type="text" id="custom-category" name="category" placeholder="Enter new category" style=""> -->
+            </td>
             <td><input type="date" name="addDate" required></td>
             <td><button type="submit">Add Statement</button></td>
             <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
         </form>
-
-        
     </tr>
 
 </table>
 
 <script>
-document.getElementById('id_wallet').addEventListener('change', function() {
-    document.getElementById('filter-form').submit();
-});
+    document.getElementById('id_wallet').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
 
-document.getElementById('id_start_date').addEventListener('change', function() {
-    document.getElementById('filter-form').submit();
-});
+    document.getElementById('id_start_date').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
 
-document.getElementById('id_end_date').addEventListener('change', function() {
-    document.getElementById('filter-form').submit();
-});
+    document.getElementById('id_end_date').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
 
-function toggleEdit(statementId) {
-    const row = document.getElementById(`statement-${statementId}`);
-    const editrow = document.getElementById(`edit-statement-${statementId}`);
-    
-    if (row.style.display === "none") {
-        row.style.display = "";
-        editrow.style.display = "none";
-    } else {
-        row.style.display = "none";
-        editrow.style.display = "";
+    function toggleEdit(statementId) {
+        const row = document.getElementById(`statement-${statementId}`);
+        const editrow = document.getElementById(`edit-statement-${statementId}`);
+        const customCategory = document.getElementById(`custom_category-${statementId}`);
+        const cat= document.getElementById(`category-select-${statementId}`)
+
+        document.getElementById(`category-select-${statementId}`).addEventListener('change', function() {
+            var customCategory = document.getElementById(`custom_category-${statementId}`);
+            if (cat.value === 'other') {
+                customCategory.style.display = 'inline-block';
+            } else {
+                customCategory.style.display = 'none';
+            }
+        });
+
+        if (row.style.display === "none") {
+            row.style.display = "";
+            editrow.style.display = "none";
+        } else {
+            row.style.display = "none";
+            editrow.style.display = "";
+        }
     }
-}
+
+    document.getElementById('category-select').addEventListener('change', function() {
+        var customCategory = document.getElementById('custom_category');
+        if (this.value === 'other') {
+            customCategory.style.display = 'inline-block';
+        } else {
+            customCategory.style.display = 'none';
+        }
+    });
 </script>
+{% else %}
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Actions</th> <!-- เพิ่มคอลัมน์สำหรับ Edit และ Delete -->
+    </tr>
+    <td>User no Authenticated</td>
+</table>
+{% endif %}
