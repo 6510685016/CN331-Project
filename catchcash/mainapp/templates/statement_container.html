@@ -1,0 +1,98 @@
+
+
+<form id="filter-form" method="GET" action="">
+    {{ form.as_p }}
+</form>
+
+<h2>Statements</h2>
+<table>
+    <tr>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Actions</th> <!-- เพิ่มคอลัมน์สำหรับ Edit และ Delete -->
+    </tr>
+    {% for statement in statements %}
+    <tr id="statement-{{statement.id}}">
+        <!-- ที่จะแสดง -->
+        <td class="view-mode">{{ statement.amount }}</td>
+        <td class="view-mode">{{ statement.get_type_display }}</td>
+        <td class="view-mode">{{ statement.category }}</td>
+        <td class="view-mode">{{ statement.addDate }}</td>
+        <td class="view-mode">
+            <!-- ปุ่ม Edit Delete -->
+            <a href="javascript:void(0)" onclick="toggleEdit({{ statement.id }})">Edit</a>
+            <a href="{% url 'delete_statement' statement.id %}">Delete</a>
+        </td>
+    </tr>    
+    <tr id="edit-statement-{{statement.id}}" style="display:none;">
+        <!-- สำหรับแก้ไข -->
+        <form method="POST" action="{% url 'edit_statement' statement.id %}" class="edit-mode">
+            {% csrf_token %}
+            <td><input type="number" step="1.00" name="amount" value="{{ statement.amount }}" required></td>
+            <td>
+                <select name="type" required>
+                    <option value="in" {% if statement.type == 'in' %}selected{% endif %}>In</option>
+                    <option value="out" {% if statement.type == 'out' %}selected{% endif %}>Out</option>
+                </select>
+            </td>
+            <td><input type="text" name="category" value="{{ statement.category }}" required></td>
+            <td><input type="date" name="addDate" value="{{ statement.addDate|date:'Y-m-d' }}" required></td>
+            <td><button type="submit">Save</button></td>
+        </form>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No statements found.</td> <!-- เพิ่มช่องให้ตรงกับจำนวนคอลัมน์ทั้งหมด -->
+    </tr>
+    {% endfor %}
+
+    <!-- บรรทัดสำหรับการเพิ่ม statement ใหม่ -->
+    <tr>
+        <form method="POST" action="{% url 'add_statement' %}">
+            {% csrf_token %}
+            <td><input type="number" step="1.00" name="amount" required></td>
+            <td>
+                <select name="type" required>
+                    <option value="in">In</option>
+                    <option value="out">Out</option>
+                </select>
+            </td>
+            <td><input type="text" name="category" required></td>
+            <td><input type="date" name="addDate" required></td>
+            <td><button type="submit">Add Statement</button></td>
+            <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
+        </form>
+
+        
+    </tr>
+
+</table>
+
+<script>
+document.getElementById('id_wallet').addEventListener('change', function() {
+    document.getElementById('filter-form').submit();
+});
+
+document.getElementById('id_start_date').addEventListener('change', function() {
+    document.getElementById('filter-form').submit();
+});
+
+document.getElementById('id_end_date').addEventListener('change', function() {
+    document.getElementById('filter-form').submit();
+});
+
+function toggleEdit(statementId) {
+    const row = document.getElementById(`statement-${statementId}`);
+    const editrow = document.getElementById(`edit-statement-${statementId}`);
+    
+    if (row.style.display === "none") {
+        row.style.display = "";
+        editrow.style.display = "none";
+    } else {
+        row.style.display = "none";
+        editrow.style.display = "";
+    }
+}
+</script>

@@ -8,12 +8,14 @@
 </head>
 <body>
     Test main
-
+    
     <!-- Logout Button -->
     <form method="post" action="{% url 'logout' %}" class="d-inline ms-2"> <!-- Added ms-2 for spacing -->
         {% csrf_token %}
         <button type="submit" class="btn btn-outline-danger">Logout</button>
     </form>
     
+    <!-- Statement_Container -->
+    {% extends "statement_container.html" %}
 </body>
 </html>
