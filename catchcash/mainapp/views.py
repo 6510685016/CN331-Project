@@ -26,15 +26,13 @@ def main(request):
         if account.wallets.exists():
             if form.is_valid():
                 wallet = form.cleaned_data.get('wallet') if form.is_valid() else account.wallets.first()
-                start_date = form.cleaned_data.get('start_date')
-                end_date = form.cleaned_data.get('end_date')
+                date = form.cleaned_data.get('date')
 
                 statements = Statement.objects.filter(wallet=wallet)
 
-                if start_date:
-                    statements = statements.filter(addDate__gte=start_date)
-                if end_date:
-                    statements = statements.filter(addDate__lte=end_date)
+                if date:
+                    statements = statements.filter(addDate=date)
+                
                     
             else:
                 wallet = account.wallets.first()

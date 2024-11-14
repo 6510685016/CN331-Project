@@ -40,7 +40,7 @@ class Wallet(models.Model):
     listCategory = models.JSONField(default=list)  # JSONField for categories
     
     def __str__(self):
-        return f"{self.account} ({self.wName})"
+        return f"Wallet: {self.wName}"
 
     def add_wallet(self):
         self.save()
