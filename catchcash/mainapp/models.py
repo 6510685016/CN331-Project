@@ -49,7 +49,7 @@ class Wallet(models.Model):
         self.delete()
         
     def add_category(self, category):
-        if category not in self.listCategory:
+        if category not in self.listCategory and category not in [None, "other", "Other"]:
             self.listCategory.append(category)
             self.save()
 
