@@ -96,6 +96,7 @@ class Scope(models.Model):
 class Preset(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='presets', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
+    statement = models.JSONField(default=list)
 
     def __str__(self):
         return self.name

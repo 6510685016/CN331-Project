@@ -22,7 +22,7 @@
 }
 
 .bg-bar {
-  background-color:   #f4f6f9;
+  background-color:   #C9D6FF;
 }
 
 .abouttop {
@@ -91,16 +91,102 @@
   color: white; /* สีข้อความขาว */
 }
 
+.background{
+  background-color: #ffffff;
+}
 
+#logoutbutton{
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+}
 
-#id_date {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: auto;
-  height: auto;
-  color: transparent;
-  background: transparent;
+#totalin{
+  background-color: #E6FAFF;
+  border: 1px solid #E6FAFF;
+}
+
+#totalout{
+
+  background-color: #F7EFFF; 
+  border: 1px solid #F7EFFF;
+}
+
+#scope{
+  background-color: #E8F9F5; 
+  border: 1px solid #E8F9F5;
+}
+
+#statement_container{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 524px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#goal{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 250px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#objective{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 250px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#use_preset{
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-right: 10px;
+}
+
+#create_preset {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0;
+  margin-right: 5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#create_goal {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
+}
+
+#all_goal {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#create_scope {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
 }

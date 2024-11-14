@@ -9,122 +9,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
+    
     <title>Document</title>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
+            <!-- Toggle button for small screens -->
+            <button class="btn btn-primary d-md-none border" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar"
+            aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+                ☰ Menu
+         </button>
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 bg-light sidebar vh-100" style="background-color: #C9D6FF !important;">
-                <h3 class="p-3 " style = "color: black">CatchCash</h3>
+            <div class="col-md-3 col-lg-2 bg-bar sidebar collapse show vh-100" id="sidebar">
+                <h3 class="p-3 text-center text-md-start text-header">CatchCash</h3>
                 <ul class="nav flex-column p-5">
                     <li class="nav-item">
-                        <!-- <img src="home_icon.png" alt="Home Icon" style="width: 24px; height: 24px; margin-right: 10px;">  ####ถ้าจะใส่รูป-->
-                        <a class="nav-link h3 mb-4" style = "color: black;" href="#">Home</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="main.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Scope</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="scope.html">Scope</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Goal</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="goal.html">Goal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Analysis</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="analysis.html">Analysis</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Progression</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="progression.html">Progression</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Trophy</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="trophy.html">Trophy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">Setting</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="setting.html">Setting</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link h3 mb-4"style = "color: black;" href="#">About us</a>
+                        <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start" href="about.html">About us</a>
                     </li>
                 </ul>
             </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 p-4">
-                <!-- ส่วนขอบด้านบน (ไม่ต้องมีกรอบ) -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="p-3" style="background-color: #ffffff;">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <!-- เลือก wallet profile ที่มีอยู่ -->
-
-                                <form class="mt-3 mr-1" id="filter-form" method="GET" action="">
-                                    <label for="date-picker" tabindex="0">{{ form.date.label }}</label>
-                                        {{ form.date }}
-                                    {{ form.wallet }}
-                                </form>
-
-                                <button type="button" class="btn btn-primary mr-3" data-toggle="modal" data-target="#createWalletModal">
-                                    +
-                                </button>
-
-                                <!-- Popup สำหรับกรอกข้อมูลโปรไฟล์ใหม่ -->
-                                <div class="modal fade" id="createWalletModal" tabindex="-1" aria-labelledby="createWalletModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="createWalletModalLabel">สร้างโปรไฟล์ Wallet ใหม่</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
+        </div>
+        
+    </div>
+    
+    <!-- Main Content -->
+    <div class="col-md-9 col-lg-10 p-4 main-content">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="p-3 " id="background">
+                    <div class="d-flex justify-content-end align-items-center user-info">
+                        <!-- รูปภาพ และ ชื่อผู้ใช้ -->
+                           <h5 class="mr-3">{{user.account.name}}</h5>
+                           <h5 class="mr-3" src="{{user.account.pic}}"> PIC here</h5>
+                        <!-- ปุ่มออก -->
+                        <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary ms-2 logoutbutton" >
+                            Logout
+                        </a>
+                    </div>
+                    <!-- ปุ่มสร้าง wallet ใหม่ และ ปุ่มเลือก wallet -->
+                    <div class="d-flex justify-content-end button-group ">
+                        <button type="button" class="btn btn-primary ml-2 text-truncate" id="create_wallet" data-toggle="modal" data-target="#createWalletModal" style="max-width: 200px;">
+                            สร้าง wallet ใหม่
+                        </button>
+                        
+                        <!-- Popup สำหรับกรอกข้อมูลโปรไฟล์ใหม่ -->
+                        <div class="modal fade" id="createWalletModal" tabindex="-1" aria-labelledby="createWalletModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="createWalletModalLabel">สร้างโปรไฟล์ Wallet ใหม่</h5>
+                                    </div>
+                                    <form method="POST" action="{% url 'create_wallet' %}">
+                                        {% csrf_token %}
+                                        <!-- ฟอร์มกรอกข้อมูล -->
+                                        <div class="modal-body">
+                                            <!-- ชื่อ wallet -->
+                                            <div class="form-group">
+                                                <label for="walletName">ชื่อ Wallet</label>
+                                                <input type="text" class="form-control" id="wName" name="wName" required>
                                             </div>
-                                            <form method="POST" action="{% url 'create_wallet' %}">
-                                                {% csrf_token %}
-                                                <!-- ฟอร์มกรอกข้อมูล -->
-                                                <div class="modal-body">
-                                                    <!-- ชื่อ wallet -->
-                                                    <div class="form-group">
-                                                        <label for="walletName">ชื่อ Wallet</label>
-                                                        <input type="text" class="form-control" id="wName" name="wName" required>
-                                                    </div>
-                                                    <!-- ตัวเลือกหน่วยเงิน -->
-                                                    <div class="form-group">
-                                                        <label for="currency">หน่วยเงิน</label>
-                                                        <select class="form-control" id="currency" name="currency" required>
-                                                            <option value="THB">THB - บาท</option>
-                                                            <option value="USD">USD - ดอลลาร์</option>
-                                                            <option value="EUR">EUR - ยูโร</option>
-                                                            <option value="JPY">JPY - เยน</option>
-                                                        </select>
-                                                    </div>
-                                                    <!-- สร้างหมวดหมู่รายรับรายจ่าย -->
-                                                    <div class="form-group">
-                                                        <label for="categoryInput">เพิ่มหมวดหมู่</label>
-                                                        <input type="text" class="form-control mb-2" id="categoryInput" placeholder="พิมพ์ชื่อหมวดหมู่แล้วกดเพิ่ม">
-                                                        <button type="button" class="btn btn-secondary mb-2" onclick="addCategory()">เพิ่มหมวดหมู่</button>
+                                            <!-- ตัวเลือกหน่วยเงิน -->
+                                            <div class="form-group">
+                                                <label for="currency">หน่วยเงิน</label>
+                                                <select class="form-control" id="currency" name="currency" required>
+                                                    <option value="THB">THB - บาท</option>
+                                                    <option value="USD">USD - ดอลลาร์</option>
+                                                    <option value="EUR">EUR - ยูโร</option>
+                                                    <option value="JPY">JPY - เยน</option>
+                                                </select>
+                                            </div>
+                                            <!-- สร้างหมวดหมู่รายรับรายจ่าย -->
+                                            <div class="form-group">
+                                                <label for="categoryInput">เพิ่มหมวดหมู่</label>
+                                                <input type="text" class="form-control mb-2" id="categoryInput" placeholder="พิมพ์ชื่อหมวดหมู่แล้วกดเพิ่ม">
+                                                <button type="button" class="btn btn-secondary mb-2" onclick="addCategory()">เพิ่มหมวดหมู่</button>
 
-                                                        <!-- แสดงรายการหมวดหมู่ที่ผู้ใช้เพิ่ม -->
-                                                        <ul id="categoryList" class="list-group">
-                                                            <!-- หมวดหมู่ที่เพิ่มจะปรากฏที่นี่ -->
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <!-- ปุ่มตกลง ยกเลิก -->
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                                                    <button type="submit" class="btn btn-primary">บันทึก</button>
-                                                </div>
-                                            </form>
+                                                <!-- แสดงรายการหมวดหมู่ที่ผู้ใช้เพิ่ม -->
+                                                <ul id="categoryList" class="list-group">
+                                                    <!-- หมวดหมู่ที่เพิ่มจะปรากฏที่นี่ -->
+                                                </ul>
+                                            </div>
                                         </div>
+                                        <!-- ปุ่มตกลง ยกเลิก -->
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                                            <button type="submit" class="btn btn-primary">บันทึก</button>
+                                        </div>
+                                    </form>
                                     </div>
                                 </div>
-                                <!-- username -->
-                                <h5 class="mr-3">{{user.account.name}}</h5>
-                                <!-- profile picture -->
-                                <h5 class="mr-3" src="{{user.account.pic}}"> PIC here</h5>
-                                <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary " style=" background-color: rgb(3, 39, 53); border: 0cm; display: flex; align-items: center; justify-content: center;">
-                                    Logout
-                                </a>
                             </div>
+                            <form class="mt-2 mr-2 justify-content-end " id="filter-form" method="GET" action="">
+                                <div class="row ">
+                                    <!-- ฟอร์มเลือก Q -->
+                                    <div class="col-12 mb-3 justify-content-end text-end"> <!-- col-12 จะให้ฟอร์มเต็มความกว้างในมือถือ -->
+                                        {{ form.wallet }}
+                                    </div>
+                            </form>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center user-info">
+                            <form class=" mr-2 justify-content-end " id="filter-form" method="GET" action="">
+                                    <label for="id_start_date">{{ form.date.label }}</label>
+                                            {{ form.date }}
+                            </form>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -155,65 +169,84 @@
                         </div>
                     </div>
                 </div>
+                    <!-- Container หลัก -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Statement ด้านซ้าย -->
+        <div class="col-md-6">
+            <div class="p-3 d-flex flex-column" id="statement_container" style="min-height: 524px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
+                {% include "statement_container.html" %}
+                <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
+                <div class="mt-auto d-flex justify-content-around">
+                    <button class="btn btn-primary" id="use_preset" data-toggle="modal" data-target="#selectModal">ใช้ preset</button>
+                    <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
+                </div>
+            </div>
+        </div>
 
-                <!-- เนื้อหาด้านล่าง (ไม่ต้องมีกรอบ) -->
-                <div class="container-fluid">
-                    <div class="row">
-                        <!-- Statement -->
-                        <div class="col-md-6">
-                            <div class="p-3" style="background-color: #00ffd51a; border: 1px solid #ddd; height: 524px;">
-                                {% include "statement_container.html" %}
+        <!-- Modal ใช้ Preset -->
+        <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="selectModalLabel">เลือก Preset</h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- ฟอร์มเลือก Preset -->
+                        <form action="/use-preset" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="selection">เลือก Preset:</label>
+                                <select class="form-control" id="selection" name="selection" required>
+                                    <option value="" disabled selected>เลือก Preset</option>
+                                    <option value="option1">ตัวเลือกที่ 1</option>
+                                    <option value="option2">ตัวเลือกที่ 2</option>
+                                    <option value="option3">ตัวเลือกที่ 3</option>
+                                </select>
                             </div>
-                        </div>
-                        <!-- กรอบที่ 2 และ 3 ฝั่งขวา (แบ่งเป็นบนล่าง) -->
-                        <div class="col-md-6">
-                            <div class="row">
-                                <!-- Goal -->
-                                <div class="col-12 mb-4">
-                                    <div class="p-3" style="background-color: #00ffd51a; border: 1px solid #ddd; height: 250px;">
-                                        <h2>Goal</h2>
-                                        <p>เนื้อหาของกรอบที่ 2.</p>
-                                    </div>
-                                </div>
-                
-                                <!-- Objective -->
-                                <div class="col-12">
-                                    <div class="p-3" style="background-color: #00ffd51a; border: 1px solid #ddd; height: 250px;">
-                                        <h2>Objective</h2>
-                                        <p>เนื้อหาของกรอบที่ 3.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn btn-primary mt-2">ยืนยัน</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goal และ Objective ด้านขวา -->
+        <div class="col-md-6">
+            <div class="row">
+                <!-- Goal -->
+                <div class="col-12 mb-4">
+                    <div class="p-3" id="goal">
+                        <h2>Goal</h2>
+                        <p>เนื้อหาของ Goal.</p>
+                        <!-- ปุ่มสร้าง Goal -->
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#formModal" id="create_goal">สร้าง Goal</button>
                     </div>
                 </div>
 
-        <!-- ปุ่มที่ใช้ preset -->
-        <div class="row mt-4">
-            <div class="col-md-12 d-flex justify-content-center">
-                <!-- เลือก preset -->
-                <button class="btn btn-primary mr-5 ml-5" style="width: 200px; height: 75px; background-color: rgb(3, 39, 53); border: 0cm;" data-toggle="modal" data-target="#selectModal">ใช้ preset</button>
-                <div class="modal fade" id="selectModal" tabindex="-1" role="dialog" aria-labelledby="selectModalLabel" aria-hidden="true">
+                <!-- Modal สร้าง Goal -->
+                <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="selectModalLabel">ใช้ Preset</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <h5 class="modal-title" id="formModalLabel">ข้อมูลเป้าหมายใหม่</h5>
                             </div>
                             <div class="modal-body">
-                                <!-- form -->
-                                <form action="/use-preset" method="POST">
+                                <!-- ฟอร์มสร้าง Goal -->
+                                <form action="/submit-form" method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="selection">เลือก Preset:</label>
-                                        <select class="form-control" id="selection" name="selection" required>
-                                            <option value="" disabled selected>เลือก Preset</option>
-                                            <option value="option1">ตัวเลือกที่ 1</option>
-                                            <option value="option2">ตัวเลือกที่ 2</option>
-                                            <option value="option3">ตัวเลือกที่ 3</option>
-                                        </select>
+                                        <label for="name">ชื่อ:</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="amount">จำนวนเงิน:</label>
+                                        <input type="number" class="form-control" id="amount" name="amount" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="image">เลือกรูปภาพ:</label>
+                                        <input type="file" class="form-control-file" id="image" name="image" required>
                                     </div>
                                     <button type="submit" class="btn btn-primary">ยืนยัน</button>
                                 </form>
@@ -221,57 +254,54 @@
                         </div>
                     </div>
                 </div>
-                <!-- ตั้งค่า preset -->
-                <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary mr-5 ml-5" style="width: 200px; height: 75px; background-color: rgb(3, 39, 53); border: 0cm; display: flex; align-items: center; justify-content: center;">
-                    ตั้งค่า preset
-                </a>
-                <!-- สร้าง Goal -->
-                <button class="btn btn-primary mr-5 ml-5" data-toggle="modal" data-target="#formModal" style="width: 200px; height: 75px; background-color: rgb(3, 39, 53); border: 0cm; display: flex; align-items: center; justify-content: center;">
-                    สร้าง Goal
-                </button>
-                <!-- popup สร้าง Goal -->
-                <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="formModalLabel">ข้อมูลเป้าหมายใหม่</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
+
+                <!-- Scope -->
+                <div class="col-12">
+                    <div class="p-3" id="objective">
+                        <h2>Scope</h2>
+                        <p>เนื้อหาของ Objective.</p>
+                        <!-- ปุ่ม สร้าง scope ทั้งหมด -->
+                        <button class="btn btn-primary"data-toggle="modal" data-target="#scopeModal" id="create_scope">สร้าง Scope</button>
                     </div>
-                    <div class="modal-body">
-                        <!-- ฟอร์มภายใน -->
-                        <form action="/submit-form" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-
-                        <div class="form-group">
-                            <label for="name">ชื่อ:</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                     <!-- Modal สร้าง Goal -->
+                <div class="modal fade" id="scopeModal" tabindex="-1" role="dialog" aria-labelledby="scopeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="scopeModalLabel">ข้อมูลวงเงิน</h5>
+                            </div>
+                            <div class="modal-body">
+                                <!-- ฟอร์มสร้าง Goal -->
+                                <form action="/submit-form" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="name">ชื่อ:</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="amount">จำนวนเงิน:</label>
+                                        <input type="number" class="form-control" id="amount" name="amount" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="image">เลือกรูปภาพ:</label>
+                                        <input type="file" class="form-control-file" id="image" name="image" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                                </form>
+                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="amount">จำนวนเงิน:</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="image">เลือกรูปภาพ:</label>
-                            <input type="file" class="form-control-file" id="image" name="image" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                        </form>
-                    </div>
                     </div>
                 </div>
                 </div>
-                <!-- Goal ทั้งหมด -->
-                <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary mr-5 ml-5" style="width: 200px; height: 75px; background-color: rgb(3, 39, 53); border: 0cm; display: flex; align-items: center; justify-content: center;">
-                    Goal ทั้งหมด
-                </a>
             </div>
         </div>
-            
-</body>
+    </div>
+</div>
+
+                </div> 
+            </div>
+        </div>        
+    </body>
 </html>
 
 <!-- สร้าง wallet-->
@@ -288,3 +318,6 @@
         document.getElementById('filter-form').submit();
     });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
