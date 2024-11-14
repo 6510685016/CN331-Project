@@ -78,8 +78,8 @@ class FixStatement(models.Model):
 
 class Scope(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='scopes', on_delete=models.CASCADE, null=True)
-    spendMax = models.DecimalField(max_digits=10, decimal_places=2)
-    initTarget = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
     category = models.CharField(max_length=100)
     range = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
 
