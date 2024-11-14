@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Document</title>
+</head>
+
+<button type="button" class="btn btn-primary ml-2 mr-3" data-toggle="modal" data-target="#createWalletModal">
+    สร้าง Scope ใหม่
+</button>
+
+<div class="modal fade" id="createWalletModal" tabindex="-1" aria-labelledby="createWalletModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createWalletModalLabel">สร้างโปรไฟล์ Scope ใหม่</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'create_wallet' %}">
+                {% csrf_token %}
+                <!-- ฟอร์มกรอกข้อมูล -->
+                <div class="modal-body">
+                    <!-- wallet -->
+                    <div class="form-group">
+                        <label for="wallet">wallet</label>
+                        <select class="form-control" id="wallet" name="wallet" required>
+                            {% for wallet in wallet_list%}
+                            <option value={{wallet}}> {{wallet}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">amount</label>
+                        <input type="text" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <!-- ตัวเลือกประเภท -->
+                    <div class="form-group">
+                        <label for="type">ประเภท</label>
+                        <select class="form-control" id="type" name="type" required>
+                            <option value="out">รายจ่าย</option>
+                            <option value="in">รายรับ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">category</label>
+                        <select class="form-control" id="category" name="category" required>
+                            {% for category in category_list%}
+                            <option value={{category}}> {{category}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="range">ช่วงเวลา</label>
+                        <select class="form-control" id="range" name="range" required>
+                            <option value="1D">1 วัน</option>
+                            <option value="1W">1 สัปดาห์</option>
+                            <option value="1M">1 เดือน</option>
+                            <option value="1Y">1 ปี</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- ปุ่มตกลง ยกเลิก -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<button type="button" class="btn btn-primary ml-2 mr-3" data-toggle="modal" data-target="#createFixStatementModal">
+    สร้าง FixStatement ใหม่
+</button>
+
+<div class="modal fade" id="createFixStatementModal" tabindex="-1" aria-labelledby="createFixStatementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createFixStatementModalLabel">สร้างโปรไฟล์ FixStatement ใหม่</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'create_fixstatement' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- fix statement fields -->
+                    <div class="form-group">
+                        <label for="amount">จำนวน</label>
+                        <input type="text" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type">ประเภท</label>
+                        <select class="form-control" id="type" name="type" required>
+                            <option value="out">รายจ่าย</option>
+                            <option value="in">รายรับ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">หมวดหมู่</label>
+                        <input type="text" class="form-control" id="category" name="category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="frequency">ความถี่</label>
+                        <select class="form-control" id="frequency" name="frequency" required>
+                            <option value="1D">1 วัน</option>
+                            <option value="1W">1 สัปดาห์</option>
+                            <option value="1M">1 เดือน</option>
+                            <option value="1Y">1 ปี</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<button type="button" class="btn btn-primary ml-2 mr-3" data-toggle="modal" data-target="#createPresetModal">
+    สร้าง Preset ใหม่
+</button>
+
+<div class="modal fade" id="createPresetModal" tabindex="-1" aria-labelledby="createPresetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPresetModalLabel">สร้างโปรไฟล์ Preset ใหม่</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'create_preset' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- preset fields -->
+                    <div class="form-group">
+                        <label for="name">ชื่อ Preset</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<button type="button" class="btn btn-primary ml-2 mr-3" data-toggle="modal" data-target="#createMissionModal">
+    สร้าง Mission ใหม่
+</button>
+
+<div class="modal fade" id="createMissionModal" tabindex="-1" aria-labelledby="createMissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createMissionModalLabel">สร้างโปรไฟล์ Mission ใหม่</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'create_mission' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- mission fields -->
+                    <div class="form-group">
+                        <label for="mName">ชื่อภารกิจ</label>
+                        <input type="text" class="form-control" id="mName" name="mName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">จำนวน</label>
+                        <input type="text" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">วันที่ครบกำหนด</label>
+                        <input type="date" class="form-control" id="dueDate" name="dueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pic">อัพโหลดรูป</label>
+                        <input type="file" class="form-control" id="pic" name="pic">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
