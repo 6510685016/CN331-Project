@@ -135,3 +135,6 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media/")
 #Auth
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_REDIRECT_URL = 'auth'
+
+from datetime import datetime
+STATIC_VERSION = datetime.now().strftime("%Y%m%d%H%M%S")

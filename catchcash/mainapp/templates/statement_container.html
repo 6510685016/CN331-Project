@@ -1,26 +1,12 @@
 {% if user.is_authenticated %}
 
 {% if theme == 'dark' %}
-    <link href="/static/dark.css" rel="stylesheet" type="text/css" />
+    <link href="/static/dark.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
 {% else %}
-    <link href="/static/light.css" rel="stylesheet" type="text/css" />
+    <link href="/static/light.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
 {% endif %}
 
 <h2>Statements</h2>
-
-<form id="filter-form" method="GET" action="">
-    
-    <div>
-        <label for="id_start_date">{{ form.start_date.label }}</label>
-        {{ form.start_date }}
-        <label for="id_end_date">{{ form.end_date.label }}</label>
-        {{ form.end_date }}
-        <button type="submit">Filter</button>
-    </div>
-        
-    
-</form>
-
 
 <table>
     <tr>
@@ -108,18 +94,6 @@
 </table>
 
 <script>
-    document.getElementById('id_wallet').addEventListener('change', function() {
-        document.getElementById('filter-form').submit();
-    });
-
-    document.getElementById('id_start_date').addEventListener('change', function() {
-        document.getElementById('filter-form').submit();
-    });
-
-    document.getElementById('id_end_date').addEventListener('change', function() {
-        document.getElementById('filter-form').submit();
-    });
-
     function toggleEdit(statementId) {
         const row = document.getElementById(`statement-${statementId}`);
         const editrow = document.getElementById(`edit-statement-${statementId}`);
