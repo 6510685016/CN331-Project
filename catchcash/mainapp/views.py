@@ -83,7 +83,7 @@ def add_statement(request):
             statement.category = category  # กำหนด category ให้กับ statement
             statement.save()  # บันทึก statement ลงฐานข้อมูล
 
-            return redirect('main')  # กลับไปที่หน้า main
+            return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
     else:
         wallet_id = request.GET.get('wallet_id')
         wallet = Wallet.objects.get(id=wallet_id)
@@ -117,7 +117,7 @@ def edit_statement(request, id):
             statement = form.save(commit=False)
             statement.category = category  # กำหนด category ให้กับ statement
             statement.save()  # บันทึก statement ลงฐานข้อมูล
-            return redirect('main')  # กลับไปที่หน้า main
+            return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
     else:
         form = StatementForm(instance=Statement.objects.get(id=id))
     return render(request, 'edit_statement.html', {'form': form})
@@ -125,7 +125,7 @@ def edit_statement(request, id):
 def delete_statement(request, id):
     statement = Statement.objects.get(id=id)
     statement.delete()
-    return redirect('main')  # กลับไปที่หน้า main
+    return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
 
 def create_wallet(request):
     if request.method == 'POST':
@@ -139,5 +139,5 @@ def create_wallet(request):
         wallet = Wallet(account=account, wName=wName, currency=currency, listCategory=listCategory)
         wallet.save()
 
-        return redirect('main')  # กลับไปที่หน้า main หลังบันทึก
+        return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main หลังบันทึก
     return render(request, 'main.html')
