@@ -1,0 +1,106 @@
+@media (max-width: 767px) {
+    .sidebar {
+        font-size: 0.8rem; /* ขนาดฟอนต์สำหรับหน้าจอเล็ก */
+    }
+    .nav-link {
+        font-size: 1rem;
+    }
+}
+
+/* สำหรับหน้าจอกลาง (768px ถึง 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .sidebar {
+        font-size: 1rem; /* ขนาดฟอนต์สำหรับหน้าจอกลาง */
+    }
+    .nav-link {
+        font-size: 1.2rem;
+    }
+}
+
+/* สำหรับหน้าจอใหญ่ (มากกว่า 992px) */
+@media (min-width: 992px) {
+    .sidebar {
+        font-size: 1.2rem; /* ขนาดฟอนต์สำหรับหน้าจอใหญ่ */
+    }
+    .nav-link {
+        font-size: 1.3rem;
+    }
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px; /* กำหนดความกว้างของ Sidebar */
+}
+
+/* ให้เนื้อหาหลักย้ายไปขวาของ Sidebar */
+.main-content {
+    margin-left: 250px; /* ขยับเนื้อหาหลักไปทางขวาของ Sidebar */
+    padding: 20px;
+}
+
+/* สำหรับมือถือให้ Sidebar เป็นแบบซ่อนเมื่อไม่ต้องการ */
+@media (max-width: 767px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .user-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .user-info h5 {
+        margin-right: 10px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .date-group {
+        margin-top: 20px;
+    }
+}
+
+.user-info h5 {
+    margin-right: 15px !important; /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
+}
+
+.user-info a {
+    margin-left: 15px !important; /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
+}
+
+#create_wallet{
+    margin-right: 15px !important;
+    margin-top: 6px !important;
+    height: 39px !important;
+    justify-content: end !important;
+}
+
+@media (max-width: 768px) {
+    h2 {
+        font-size: 18px;  /* ลดขนาดของหัวข้อในมือถือ */
+    }
+    p {
+        font-size: 14px;  /* ลดขนาดของข้อความในมือถือ */
+    }
+}
+
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่องในมือถือ */
+    }
+}
