@@ -57,7 +57,7 @@ ROOT_URLCONF = 'catchcash.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,3 +133,4 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media/")
 #Auth
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_REDIRECT_URL = 'auth'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
