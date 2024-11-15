@@ -22,6 +22,7 @@ def main(request):
     wallet = Wallet.objects.none()
     sData = {}
     status = "ไม่พบการจำกัดวงเงิน"
+    sList_gByD = []
     
     if request.method == 'GET':
         form = WalletFilterForm(request.GET or None, account=account)
