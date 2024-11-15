@@ -21,7 +21,7 @@ def main(request):
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
-    status = ""
+    status = "ไม่พบการจำกัดวงเงิน"
     
     if request.method == 'GET':
         form = WalletFilterForm(request.GET or None, account=account)
@@ -31,16 +31,14 @@ def main(request):
             if form.is_valid():
                 wallet = form.cleaned_data.get('wallet') if form.is_valid() else account.wallets.first()
                 date = form.cleaned_data.get('date')
-
                 statements = Statement.objects.filter(wallet=wallet)
 
                 if date:
                     statements = statements.filter(addDate=date)
-                
-                    
+                statements = statements.order_by('type')
             else:
                 wallet = account.wallets.first()
-                statements = Statement.objects.filter(wallet=wallet)
+                statements = Statement.objects.filter(wallet=wallet).order_by('type')
 
             income = 0
             out = 0
@@ -51,19 +49,37 @@ def main(request):
                     out += s.amount
                     
             sData = {"in":income, "out":out}
+            
+            unique_add_dates_list = statements.values_list('addDate', flat=True)
+            unique_add_dates_list = list(set(unique_add_dates_list))
+            sList_gByD = []
+            print(unique_add_dates_list)
+            for d in unique_add_dates_list:
+                sList_D = statements.filter(addDate=d)
+                in_D = 0
+                out_D = 0
+                for s in sList_D:
+                    if s.type == "in":
+                        in_D += s.amount
+                    else:
+                        out_D += s.amount
+                in_D = f"{in_D:.2f}"
+                out_D = f"{out_D:.2f}"
+                sList_gByD += [{"statements":statements.filter(addDate=d), "in":in_D, "out":out_D}]
                 
             categories = wallet.get_categories()  # ดึง categories จาก wallet
             choices += [(category, category) for category in categories]
+            
+            if wallet.scopes.exists():
+                status = "scopes-exists" #ต้องแก้เป็นสถานะว่าตอนนั้นปกติหรือมีอะไรเกิน ให้ไปดูที่หน้า scope
+
 
         else:
             statements = Statement.objects.none()  # ถ้าไม่มี wallet
             
-        if wallet.scopes.exists():
-            status = "OK"
-        else:
-            status = "ไม่พบการจำกัดวงเงิน"
+        
 
-    return render(request, 'main.html', {'form': form, 'statements': statements, 'choices': choices, 'wallet': wallet, 'theme':theme, "data":sData, "status":status})
+    return render(request, 'main.html', {'form': form, 'statements': sList_gByD, 'choices': choices, 'wallet': wallet, 'theme':theme, "data":sData, "status":status})
 
 def about(request):
     return render(request, 'about.html')
@@ -98,6 +114,8 @@ def add_statement(request):
                 wallet.add_category(category)
 
             statement = form.save(commit=False)  # สร้าง instance ของ statement โดยไม่บันทึก
+            if(request.POST.get('addDate')!=""):
+                statement.addDate = request.POST.get('addDate')
             statement.wallet = wallet  # กำหนด wallet ให้กับ statement
             statement.category = category  # กำหนด category ให้กับ statement
             statement.save()  # บันทึก statement ลงฐานข้อมูล
@@ -134,6 +152,8 @@ def edit_statement(request, id):
                 statement.wallet.add_category(category)
             
             statement = form.save(commit=False)
+            if(request.POST.get('addDate')!=""):
+                statement.addDate = request.POST.get('addDate')
             statement.category = category  # กำหนด category ให้กับ statement
             statement.save()  # บันทึก statement ลงฐานข้อมูล
             return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main

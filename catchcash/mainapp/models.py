@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ValidationError
@@ -49,7 +50,7 @@ class Wallet(models.Model):
         self.delete()
         
     def add_category(self, category):
-        if category not in self.listCategory and category not in [None, "other", "Other"]:
+        if category not in self.listCategory and category not in [None, "None", "other", "Other"]:
             self.listCategory.append(category)
             self.save()
 
@@ -113,7 +114,7 @@ class Statement(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
     category = models.CharField(max_length=100)
-    addDate = models.DateField(auto_now_add=True)
+    addDate = models.DateField(default=timezone.now)
 
     def __str__(self):
         return f"{self.wallet} - {self.amount} ({self.type})"
