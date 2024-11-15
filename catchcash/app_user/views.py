@@ -23,18 +23,23 @@ def auth(request):
 
         elif 'register' in request.POST:
             register_form = RegisterForm(request.POST)
-            account_form = AccountForm(request.POST)
+            account_form = AccountForm(request.POST, request.FILES)
             show_register = True  
 
             if register_form.is_valid() and account_form.is_valid():
                 user = register_form.save(commit=False)
                 user.set_password(register_form.cleaned_data['password'])
                 user.save()
-
+                
+                profile_pic = account_form.cleaned_data.get('profile_pic')
+                print(profile_pic)
+                
+                
                 account = Account(
                 user=user,
                 name=account_form.cleaned_data['name'],
                 appTheme=account_form.cleaned_data['appTheme'],
+                profile_pic = profile_pic
                 )
                 account.save()
 

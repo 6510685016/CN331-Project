@@ -42,7 +42,7 @@
 
         <!-- Registration Form -->
         <div class="form-box register">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <h1>Registration</h1>
                 <div class="form-content">
@@ -101,6 +101,9 @@
                     </div>
                     <div class="input-box">
                         {{ account_form.appTheme }}
+                    </div>
+                    <div class="input-box">
+                        {{ account_form.profile_pic }}
                     </div>
 
                 </div>

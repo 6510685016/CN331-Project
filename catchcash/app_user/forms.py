@@ -65,7 +65,8 @@ class AccountForm(forms.ModelForm):
     
     class Meta:
         model = Account
-        fields = ['name', 'appTheme']
+        fields = ['name', 'appTheme', 'profile_pic']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
+            'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'})
         }
