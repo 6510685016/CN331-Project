@@ -32,17 +32,28 @@ def auth(request):
                 user.save()
 
                 account = Account(
-                    user=user,
-                    name=account_form.cleaned_data['name'],
-                    appTheme=account_form.cleaned_data['appTheme'],
+                user=user,
+                name=account_form.cleaned_data['name'],
+                appTheme=account_form.cleaned_data['appTheme'],
                 )
                 account.save()
 
-                messages.success(request, 'Registration successful. You can now log in.')
-                return redirect('main')
+
+                username = register_form.cleaned_data['username']  
+                password = register_form.cleaned_data['password']  
+                user = authenticate(request, username=username, password=password)
+        
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'Registration successful. You are now logged in.')
+                    return redirect('main')
+                else:
+                    messages.error(request, 'Authentication failed. Please try again.')
+
             else:
                 print(register_form.errors)
                 messages.error(request, 'Registration failed. Please check the details.')
+
 
     context = {
         'login_form': login_form,
@@ -52,5 +63,7 @@ def auth(request):
     }
 
     return render(request, 'registration/login_register.html', context)
+
+
 
 
