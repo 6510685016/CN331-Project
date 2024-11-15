@@ -12,7 +12,7 @@ class Account(models.Model):
     reward = models.IntegerField(default=0)
     lastLoginDate = models.DateField(auto_now_add=True)
     trophy = models.CharField(max_length=100, null=True, blank=True)
-    profile_pic = models.ImageField(upload_to='media/profile_photos/', blank=True, null=True)
+    profile_pic = models.ImageField(upload_to='profile_photos/',  default='profile_photos/default.jpg')
     
     def __str__(self):
         return self.name

@@ -74,7 +74,11 @@
                     <div class="d-flex justify-content-end align-items-center user-info">
                         <!-- รูปภาพ และ ชื่อผู้ใช้ -->
                         <h5 class="mr-3">{{user.account.name}}</h5>
-                        <h5 class="mr-3" src="{{user.account.pic}}"> PIC here</h5>
+                        <h5 class="mr-3">
+                            <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture"
+                                class="img-thumbnail rounded-circle" style="width: 100px; height: 100px;">
+                        </h5>
+
                         <!-- ปุ่มออก -->
                         <a href="/users/auth" class="btn btn-primary ms-2 logoutbutton">
                             Logout
