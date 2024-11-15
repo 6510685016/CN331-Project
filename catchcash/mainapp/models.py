@@ -13,6 +13,9 @@ class Account(models.Model):
     trophy = models.CharField(max_length=100, null=True, blank=True)
     profile_pic = models.ImageField(upload_to='media/profile_photos/', blank=True, null=True)
     
+    def __str__(self):
+        return self.name
+    
     def change_password(self, new_password):
         self.user.set_password(new_password)
         self.user.save()
@@ -34,8 +37,10 @@ class Wallet(models.Model):
     account = models.ForeignKey(Account, related_name='wallets', on_delete=models.CASCADE)
     wName = models.CharField(max_length=100)
     currency = models.CharField(max_length=10)
-    listCategory = models.JSONField(default=list)  # เปลี่ยนเป็น JSONField เพื่อเก็บรายการ category
-    balance = models.DecimalField(max_digits=10, decimal_places=2)
+    listCategory = models.JSONField(default=list)  # JSONField for categories
+    
+    def __str__(self):
+        return f"Wallet: {self.wName}"
 
     def add_wallet(self):
         self.save()
@@ -44,7 +49,7 @@ class Wallet(models.Model):
         self.delete()
         
     def add_category(self, category):
-        if category not in self.listCategory:
+        if category not in self.listCategory and category not in [None, "other", "Other"]:
             self.listCategory.append(category)
             self.save()
 
@@ -73,11 +78,14 @@ class FixStatement(models.Model):
 
 class Scope(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='scopes', on_delete=models.CASCADE, null=True)
-    spendMax = models.DecimalField(max_digits=10, decimal_places=2)
-    initTarget = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
     category = models.CharField(max_length=100)
     range = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
 
+    def __str__(self):
+        return f"Scope: {self.category} ({self.range})"
+    
     def add_scope(self):
         self.save()
 
@@ -88,7 +96,11 @@ class Scope(models.Model):
 class Preset(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='presets', on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
+    statement = models.JSONField(default=list)
 
+    def __str__(self):
+        return self.name
+    
     def add_preset(self):
         self.save()
 
@@ -103,6 +115,9 @@ class Statement(models.Model):
     category = models.CharField(max_length=100)
     addDate = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.wallet} - {self.amount} ({self.type})"
+    
     def add_statement(self):
         self.save()
 
@@ -117,6 +132,9 @@ class Mission(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     pic = models.ImageField(upload_to='missions/', null=True, blank=True)
 
+    def __str__(self):
+        return self.mName
+    
     def add_mission(self):
         self.save()
 

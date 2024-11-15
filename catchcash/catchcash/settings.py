@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_COOKIE_HTTPONLY = False
+
 ROOT_URLCONF = 'catchcash.urls'
 
 TEMPLATES = [
@@ -134,3 +136,6 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media/")
 LOGIN_REDIRECT_URL = 'main'
 LOGOUT_REDIRECT_URL = 'auth'
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+from datetime import datetime
+STATIC_VERSION = datetime.now().strftime("%Y%m%d%H%M%S")
