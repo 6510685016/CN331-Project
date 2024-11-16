@@ -54,7 +54,7 @@ def main(request):
             unique_add_dates_list = statements.values_list('addDate', flat=True)
             unique_add_dates_list = list(set(unique_add_dates_list))
             sList_gByD = []
-            print(unique_add_dates_list)
+            
             for d in unique_add_dates_list:
                 sList_D = statements.filter(addDate=d)
                 in_D = 0

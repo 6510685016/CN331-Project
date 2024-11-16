@@ -21,7 +21,10 @@ class WalletFilterForm(forms.Form):
 
         if account:
             # กำหนด queryset ของฟิลด์ wallet ให้แสดงเฉพาะ wallet ของ account นั้น
-            self.fields['wallet'].queryset = Wallet.objects.filter(account=account)
+            if account.wallets.exists():
+                self.fields['wallet'].queryset = Wallet.objects.filter(account=account)
+            else:
+                self.fields['wallet'].empty_label = "ไม่พบ Wallet"
 class StatementForm(forms.ModelForm):
     category = forms.CharField(label='Category', required=False)
 
