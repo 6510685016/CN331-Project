@@ -11,6 +11,8 @@ urlpatterns = [
     path('progression', views.progression, name='progression'),
     path('trophy', views.trophy, name='trophy'),
     
+    path('wallet_detail/<int:id>', views.wallet_detail, name='wallet_detail'),
+    
     path('edit_statement/<int:id>/', views.edit_statement, name='edit_statement'),
     path('delete_statement/<int:id>/', views.delete_statement, name='delete_statement'),
     path('add_statement/', views.add_statement, name='add_statement'),

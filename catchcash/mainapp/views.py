@@ -1,4 +1,4 @@
-from pyexpat.errors import messages
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -7,9 +7,6 @@ from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, State
 from .forms import WalletFilterForm, StatementForm
 
 # Create your views here.
-
-def login(request):
-    return render(request, 'login.html')
 
 def setting(request):
     return render(request, 'setting.html')
@@ -129,7 +126,7 @@ def add_statement(request):
         choices = [(category, category) for category in wallet.get_categories()]
         choices.append(("other", "Other"))  # เพิ่มตัวเลือก "other"
 
-        form = StatementForm(choices=choices)
+        form = StatementForm(wallet=wallet)
 
     return HttpResponse("ERROR, Can't add_statement")
 
@@ -289,7 +286,6 @@ def scope(request):
 
                 if date:
                     statements = statements.filter(addDate=date)
-                
                     
             else:
                 wallet = account.wallets.first()
@@ -308,7 +304,13 @@ def scope(request):
             categories = wallet.get_categories()  # ดึง categories จาก wallet
             choices += [(category, category) for category in categories]
 
-    return render(request, 'scope.html', {})
+    return render(request, 'scope.html', {
+        'sData' : sData,
+        'statements': statements
+        }) #ขอใส่เพื่อให้รัน  test ได้
+
+def wallet_detail(request, id):
+    return HttpResponse("This view is not yet implemented.")
 
 def progression(request):
     return render(request, 'progression.html')
