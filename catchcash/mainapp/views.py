@@ -1,4 +1,5 @@
 from pyexpat.errors import messages
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
@@ -130,11 +131,7 @@ def add_statement(request):
 
         form = StatementForm(choices=choices)
 
-    return render(request, 'add_statement.html', {
-        'form': form,
-        'choices': choices,
-        'wallet': wallet
-    })
+    return HttpResponse("ERROR, Can't add_statement")
 
 def edit_statement(request, id):
     if request.method == 'POST':
@@ -160,7 +157,7 @@ def edit_statement(request, id):
             return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
     else:
         form = StatementForm(instance=Statement.objects.get(id=id))
-    return render(request, 'edit_statement.html', {'form': form})
+    return HttpResponse("ERROR, Can't edit_statement")
     
 def delete_statement(request, id):
     statement = Statement.objects.get(id=id)
@@ -182,7 +179,7 @@ def create_wallet(request):
         wallet.save()
 
         return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main หลังบันทึก
-    return render(request, 'main.html')
+    return HttpResponse("ERROR, Can't create_wallet")
 
 
 
@@ -208,7 +205,7 @@ def create_fixstatement(request):
         return redirect(reverse('wallet_detail', args=[wallet_id]))
 
     wallets = Wallet.objects.all()
-    return render(request, 'create_fixstatement.html', {'wallets': wallets})
+    return HttpResponse("ERROR, Can't create_fixstatement")
 
 def create_scope(request):
     if request.method == 'POST':
@@ -232,7 +229,7 @@ def create_scope(request):
         return redirect(reverse('wallet_detail', args=[wallet_id]))
 
     wallets = Wallet.objects.all()
-    return render(request, 'create_scope.html', {'wallets': wallets})
+    return HttpResponse("ERROR, Can't create_scope")
 
 def create_mission(request):
     if request.method == 'POST':
@@ -256,7 +253,7 @@ def create_mission(request):
         return redirect(reverse('wallet_detail', args=[wallet_id]))
 
     wallets = Wallet.objects.all()
-    return render(request, 'create_mission.html', {'wallets': wallets})
+    return HttpResponse("ERROR, Can't create_mission")
 
 def create_preset(request):
     if request.method == 'POST':
@@ -274,7 +271,7 @@ def create_preset(request):
         return redirect(reverse('wallet_detail', args=[wallet_id]))
 
     wallets = Wallet.objects.all()
-    return render(request, 'create_preset.html', {'wallets': wallets})
+    return HttpResponse("ERROR, Can't create_preset")
 
 def scope(request):
     account = request.user.account
