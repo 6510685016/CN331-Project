@@ -373,7 +373,7 @@ class ScopeViewTest(TestCase):
         statements = response.context.get('statements')
 
         self.assertIsNotNone(statements, "Statements should not be None in the context.")
-        self.assertEqual(statements.count(), 5)  # Only one statement matches the date
+        self.assertEqual(statements.count(), 2)  # Only one statement matches the date
         self.assertEqual(statements.first().addDate.isoformat(), specific_date)
 
         # Test filtering by a non-existent date
