@@ -52,12 +52,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_COOKIE_HTTPONLY = False
+
 ROOT_URLCONF = 'catchcash.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,9 +129,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #media
-MEDIA_URL="media/"
-MEDIA_ROOT=os.path.join(BASE_DIR,"media/")
+MEDIA_URL='media/'
+MEDIA_ROOT=os.path.join(BASE_DIR, 'app_user', 'media')
 
 #Auth
 LOGIN_REDIRECT_URL = 'main'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'auth'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+from datetime import datetime
+STATIC_VERSION = datetime.now().strftime("%Y%m%d%H%M%S")
