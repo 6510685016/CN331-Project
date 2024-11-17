@@ -12,73 +12,71 @@ def setting(request):
     return render(request, 'setting.html')
 
 def main(request):
-    account = request.user.account # Account ของผู้ใช้ปัจจุบัน
+    account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
-    
-    form = WalletFilterForm()
+
+    form = WalletFilterForm(request.GET or None, account=account)
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
     status = "ไม่พบการจำกัดวงเงิน"
     sList_gByD = []
-    
+
     if request.method == 'GET':
-        form = WalletFilterForm(request.GET or None, account=account)
-        choices = [("other", "Other")]
-        
-        if account.wallets.exists():
-            if form.is_valid():
-                wallet = form.cleaned_data.get('wallet') if form.is_valid() else account.wallets.first()
-                date = form.cleaned_data.get('date')
-                statements = Statement.objects.filter(wallet=wallet)
+        if form.is_valid():
+            wallet = form.cleaned_data.get('wallet') or account.wallets.first()
+            date = form.cleaned_data.get('date')
+            statements = Statement.objects.filter(wallet=wallet)
 
-                if date:
-                    statements = statements.filter(addDate=date)
-                statements = statements.order_by('type')
-            else:
-                wallet = account.wallets.first()
-                statements = Statement.objects.filter(wallet=wallet).order_by('type')
-
-            income = 0
-            out = 0
-            for s in statements:
-                if s.type == "in":
-                    income += s.amount
-                else:
-                    out += s.amount
-                    
-            sData = {"in":income, "out":out}
-            
-            unique_add_dates_list = statements.values_list('addDate', flat=True)
-            unique_add_dates_list = list(set(unique_add_dates_list))
-            sList_gByD = []
-            
-            for d in unique_add_dates_list:
-                sList_D = statements.filter(addDate=d)
-                in_D = 0
-                out_D = 0
-                for s in sList_D:
-                    if s.type == "in":
-                        in_D += s.amount
-                    else:
-                        out_D += s.amount
-                in_D = f"{in_D:.2f}"
-                out_D = f"{out_D:.2f}"
-                sList_gByD += [{"statements":statements.filter(addDate=d), "in":in_D, "out":out_D}]
-                
-            categories = wallet.get_categories()  # ดึง categories จาก wallet
-            choices += [(category, category) for category in categories]
-            
-            if wallet.scopes.exists():
-                status = "scopes-exists" #ต้องแก้เป็นสถานะว่าตอนนั้นปกติหรือมีอะไรเกิน ให้ไปดูที่หน้า scope
-
-
+            if date:
+                statements = statements.filter(addDate=date)
+            statements = statements.order_by('type')
         else:
-            statements = Statement.objects.none()  # ถ้าไม่มี wallet
-            
-        
+            wallet = account.wallets.first()
+            statements = Statement.objects.filter(wallet=wallet).order_by('type')
 
-    return render(request, 'main.html', {'form': form, 'statements': sList_gByD, 'choices': choices, 'wallet': wallet, 'theme':theme, "data":sData, "status":status})
+        income, out = 0, 0
+        for s in statements:
+            if s.type == "in":
+                income += s.amount
+            else:
+                out += s.amount
+
+        sData = {"in": income, "out": out}
+
+        unique_add_dates_list = list(set(statements.values_list('addDate', flat=True)))
+        sList_gByD = []
+        for d in unique_add_dates_list:
+            sList_D = statements.filter(addDate=d)
+            in_D, out_D = 0, 0
+            for s in sList_D:
+                if s.type == "in":
+                    in_D += s.amount
+                else:
+                    out_D += s.amount
+            sList_gByD.append({
+                "statements": sList_D,
+                "in": f"{in_D:.2f}",
+                "out": f"{out_D:.2f}"
+            })
+
+        choices = [("other", "Other")]
+        categories = wallet.get_categories() if wallet else []
+        choices += [(category, category) for category in categories]
+
+        if wallet and wallet.scopes.exists():
+            status = "scopes-exists"
+
+    return render(request, 'main.html', {
+        'form': form,
+        'statements': sList_gByD,
+        'choices': choices,
+        'wallet': wallet,
+        'theme': theme,
+        "data": sData,
+        "status": status
+    })
+
 
 def about(request):
     return render(request, 'about.html')
