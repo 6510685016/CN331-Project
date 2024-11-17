@@ -1,43 +1,69 @@
-import json
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from .forms import UserRegisterForm, AccountForm
+from .forms import RegisterForm, LoginForm, AccountForm
 from mainapp.models import Account
-from django.contrib.auth.models import User
 
-def register(request):
-    if request.method == "POST":
-        user_form = UserRegisterForm(request.POST)
-        account_form = AccountForm(request.POST, request.FILES)  
+def auth(request):
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    account_form = AccountForm()
+    show_register = False  
 
-        if user_form.is_valid() and account_form.is_valid():
-            user = user_form.save()  
-            login(request, user)  
+    if request.method == 'POST':
+        if 'login' in request.POST:
+            login_form = LoginForm(request, data=request.POST)
+            if login_form.is_valid():
+                username = login_form.cleaned_data['username']
+                password = login_form.cleaned_data['password']
+                user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    return redirect('main')
 
-            profile_pic = account_form.cleaned_data.get('profile_pic') 
-            if not profile_pic:  # ถ้าไม่มีการอัปโหลดไฟล์
-                profile_pic = 'media/profile_photos/default.jpg'
+        elif 'register' in request.POST:
+            register_form = RegisterForm(request.POST)
+            account_form = AccountForm(request.POST, request.FILES)
+            show_register = True  
+            if register_form.is_valid() and account_form.is_valid():
+                user = register_form.save(commit=False)
+                user.set_password(register_form.cleaned_data['password'])
+                user.save()
+                
+                profile_pic = account_form.cleaned_data.get('profile_pic')
 
-            # บันทึกข้อมูลบัญชี
-            account = Account(
+                account = Account(
                 user=user,
                 name=account_form.cleaned_data['name'],
                 appTheme=account_form.cleaned_data['appTheme'],
-                profile_pic=profile_pic, 
-            )
+                profile_pic = profile_pic
+                )
+                account.save()
 
-            try:
-                account.save() 
-            except Exception as e:
-                print(f"Error saving Account: {e}")  
 
-            return redirect('main')
-    else:
-        user_form = UserRegisterForm()
-        account_form = AccountForm()
+                username = register_form.cleaned_data['username']  
+                password = register_form.cleaned_data['password']  
+                user = authenticate(request, username=username, password=password)
+        
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'Registration successful. You are now logged in.')
+                    return redirect('main')
+                
+
+            else:
+                messages.error(request, 'Registration failed. Please check the details.')
+
 
     context = {
-        "user_form": user_form,
-        "account_form": account_form,
+        'login_form': login_form,
+        'register_form': register_form,
+        'account_form': account_form,
+        'show_register': show_register,  
     }
-    return render(request, 'registration/register.html', context)
+
+    return render(request, 'registration/login_register.html', context)
+
+
+
+

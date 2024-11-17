@@ -1,0 +1,214 @@
+{% if user.is_authenticated %}
+
+{% if theme == 'dark' %}
+    <link href="/static/dark.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% endif %}
+
+
+<!-- bootstrap5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
+
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="col-6 mb-4">
+            Statements
+        </h2>
+    <!-- ปุ่มสำหรับซ่อน/แสดงฟอร์ม -->
+    {% if wallet %}
+        <div class="col-6">
+            <button type="button" class="btn btn-outline-dark" id="toggleFormButton">เพิ่ม</button>
+        </div>
+    {% endif %}
+    </div>
+    <!-- ฟอร์มสำหรับการเพิ่มข้อมูล -->
+    <div id="statementForm" style="display:none;">
+        <form method="POST" action="{% url 'add_statement' %}">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    เพิ่มรายการใหม่
+                </div>
+                <div class="card-body row">
+                    {% csrf_token %}
+                    <div class="col-md-7">
+                        <label>ระบุจำนวนเงิน</label>
+                        <input placeholder="ระบุจำนวนเงิน" type="number" class="form-control mr-1" step="1.00" name="amount" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label>ประเภท</label>
+                        <select name="type" class="form-control mr-1" required>
+                            <option value="in">รายรับ</option>
+                            <option value="out" selected>รายจ่าย</option>
+                        </select>
+                    </div>
+                    <div class="col-md-11">
+                        <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
+                        <select id="category-select" class="form-control mr-1" name="category" required>
+                            <option value="None">เลือกหมวดหมู่</option>
+                            {% for choice in choices %}
+                                <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
+                                    {{ choice.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" id="custom_category" name="custom_category" class="form-control mr-1" placeholder="Enter new category" style="display:none;">
+                    </div>
+                    <div class="col-md-7">
+                        <input type="date" class="form-control mr-1" name="addDate">
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn btn-outline-dark">เพิ่ม</button>
+                    </div> 
+                    <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- แสดงตารางแสดงstatements -->
+    {% for statements_Each_day in statements %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <span>{{ statements_Each_day.statements.0.addDate }}</span>
+                <div>
+                    <span class="badge bg-success px-3 py-2">{{ statements_Each_day.in }}</span>
+                    <span class="badge bg-danger px-3 py-2">{{ statements_Each_day.out }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% for statement in statements_Each_day.statements %}
+                    <div id="statement-{{statement.id}}" class="row mb-3 align-items-center">
+                        <div class="col-md-1">
+                            {% if statement.type == "in" %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                                </svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67"/>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <span>{{ statement.amount }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <span>{{ statement.category }}</span>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="javascript:void(0)" onclick="toggleEdit({{ statement.id }})" class="btn btn-sm btn-outline-primary me-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                </svg>
+                            </a>
+                            <a href="{% url 'delete_statement' statement.id %}" class="btn btn-sm btn-outline-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="edit-statement-{{statement.id}}" style="display:none;" class="mt-2">
+                        <form method="POST" action="{% url 'edit_statement' statement.id %}" class="row g-2">
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    แก้ไขรายการ
+                                </div>
+                                <div class="card-body row">
+                                    {% csrf_token %}
+                                    <div class="col-md-7">
+                                        <label>ระบุจำนวนเงิน</label>
+                                        <input placeholder="ระบุจำนวนเงิน" type="number" class="form-control mr-1" step="1.00" name="amount" value="{{ statement.amount }}" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>ประเภท</label>
+                                        <select name="type" class="form-control mr-1" required>
+                                            <option value="out" {% if statement.type == 'out' %}selected{% endif %}>รายจ่าย</option>
+                                            <option value="in" {% if statement.type == 'in' %}selected{% endif %}>รายรับ</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
+                                        <select id="category-select-{{statement.id}}" name="category" class="form-select" required>
+                                            <option value="None">ไม่ระบุประเภท</option>
+                                            {% for choice in choices %}
+                                                <option value="{{ choice.0 }}" {% if choice.0 == statement.category %}selected{% endif %}>
+                                                    {{ choice.1 }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <input type="text" id="custom_category-{{statement.id}}" name="custom_category" placeholder="Enter new category" class="form-control mt-2" style="display:none;">
+                                        <input type="date" name="addDate" value="{{ statement.addDate|date:'Y-m-d' }}" class="form-control">
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="submit" class="btn btn-outline-dark">ยืนยัน</button>
+                                    </div> 
+                                </div>
+                            </div>    
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-warning text-center">
+            No statements found.
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    function toggleEdit(statementId) {
+        const row = document.getElementById(`statement-${statementId}`);
+        const editrow = document.getElementById(`edit-statement-${statementId}`);
+        const customCategory = document.getElementById(`custom_category-${statementId}`);
+        const cat= document.getElementById(`category-select-${statementId}`)
+
+        document.getElementById(`category-select-${statementId}`).addEventListener('change', function() {
+            var customCategory = document.getElementById(`custom_category-${statementId}`);
+            if (cat.value === 'other') {
+                customCategory.style.display = 'inline-block';
+            } else {
+                customCategory.style.display = 'none';
+            }
+        });
+
+        if (row.style.display === "none") {
+            row.style.display = "";
+            editrow.style.display = "none";
+        } else {
+            row.style.display = "none";
+            editrow.style.display = "";
+        }
+    }
+
+    document.getElementById('category-select').addEventListener('change', function() {
+        var customCategory = document.getElementById('custom_category');
+        if (this.value === 'other') {
+            customCategory.style.display = 'inline-block';
+        } else {
+            customCategory.style.display = 'none';
+        }
+    });
+</script>
+<!-- JavaScript สำหรับซ่อน/แสดงฟอร์ม -->
+<script>
+    document.getElementById('toggleFormButton').addEventListener('click', function() {
+        var form = document.getElementById('statementForm');
+        // Toggle ซ่อน/แสดงฟอร์ม
+        if (form.style.display === "none") {
+            form.style.display = "block";
+        } else {
+            form.style.display = "none";
+        }
+    });
+</script>
+
+{% else %}
+    <td>User no Authenticated</td>
+{% endif %}

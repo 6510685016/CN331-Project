@@ -1,9 +1,3 @@
-body {
-  background: linear-gradient(160deg, #dbe8f4, #dbe8f4, #e3edf6, #e8ebf0, #f8f9fb, #e3ebf1);
-  font-family: verdana;
-  font-size: medium;
-}
-
 .content {
   display: flex;
   height: 93vh;
@@ -28,7 +22,7 @@ body {
 }
 
 .bg-bar {
-  background-color:   #f4f6f9;
+  background-color:   #C9D6FF;
 }
 
 .abouttop {
@@ -40,4 +34,170 @@ body {
   width: 100vw;
   height: 30vh;
   overflow-y:hidden;
+}
+
+#id_wallet {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff
+}
+
+#id_wallet.focus,#id_wallet:focus {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #0062cc;
+  box-shadow: 0 0 0 .2rem rgba(38,143,255,.5)
+}
+
+#id_wallet.disabled,#id_wallet:disabled {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff
+}
+
+#id_wallet:not(:disabled):not(.disabled).active,#id_wallet:not(:disabled):not(.disabled):active,.show>#id_wallet.dropdown-toggle {
+  color: #fff;
+  background-color: #0062cc;
+  border-color: #005cbf
+}
+
+#id_wallet:not(:disabled):not(.disabled).active:focus,#id_wallet:not(:disabled):not(.disabled):active:focus,.show>#id_wallet.dropdown-toggle:focus {
+  box-shadow: 0 0 0 .2rem rgba(38,143,255,.5)
+}
+
+#id_wallet option{
+  background-color: white; /* สีพื้นหลัง */
+  color: black; /* สีข้อความ */
+}
+
+#id_wallet option:checked{
+  background-color: #0069d9; /* สีน้ำเงิน */
+  color: white; /* สีข้อความขาว */
+}
+
+.background{
+  background-color: #ffffff;
+}
+
+#logoutbutton{
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+}
+
+#totalin{
+  background-color: #E6FAFF;
+  border: 1px solid #E6FAFF;
+}
+
+#totalout{
+
+  background-color: #F7EFFF; 
+  border: 1px solid #F7EFFF;
+}
+
+#scope{
+  background-color: #E8F9F5; 
+  border: 1px solid #E8F9F5;
+}
+
+#statement_container{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 524px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#goal{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 250px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#objective{
+  background-color: #00ffd51a; 
+  border: 1px solid #ddd; 
+  min-height: 250px; 
+  overflow: auto;
+  overflow-y: auto;
+}
+
+#use_preset{
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-right: 10px;
+}
+
+#create_preset {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0;
+  margin-right: 5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#create_goal {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
+}
+
+#all_goal {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#create_scope {
+  width: 150px; 
+  height: 75px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-top: 50px;
+  margin-right: 5px;
+}
+
+
+#toggleFormButton{
+  width: 100px; 
+  height: 50px; 
+  background-color: rgb(3, 39, 53); 
+  border: 0cm;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  color: white;
 }
