@@ -39,8 +39,7 @@
                 {% for preset in presets %}
                 <tr>
                     <td>{{ preset.name }}</td>
-                    <td>{{ preset.amount }}</td>
-                    <td>{{ preset.category }}</td>
+                    <td>{{ preset.statement }}</td>
                     <td>
                         <!-- เพิ่มปุ่มแก้ไขและลบ -->
                         <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
