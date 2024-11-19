@@ -211,7 +211,7 @@
                     <div class="mt-auto d-flex justify-content-around">
                         <button class="btn btn-primary" id="use_preset" data-toggle="modal"
                             data-target="#selectModal">ใช้ preset</button>
-                        <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
+                        <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
                     </div>
                 </div>
             </div>

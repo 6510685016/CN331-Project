@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
 from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, Statement
-from .forms import WalletFilterForm, StatementForm
+from .forms import PresetForm, WalletFilterForm, StatementForm
 
 # Create your views here.
 
@@ -315,3 +315,105 @@ def progression(request):
 
 def trophy(request):
     return render(request, 'trophy.html')
+
+def preset(request, wallet_id):
+    account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
+    theme = account.appTheme
+
+    # ดึงข้อมูล Wallet และ Preset ที่เกี่ยวข้อง
+    wallet = get_object_or_404(Wallet, id=wallet_id, account=account)
+    presets = Preset.objects.filter(wallet=wallet)
+
+    # สร้างฟอร์มใหม่สำหรับการเพิ่ม Preset
+    if request.method == 'POST':
+        form = PresetForm(request.POST)
+        if form.is_valid():
+            new_preset = form.save(commit=False)
+            new_preset.wallet = wallet
+            new_preset.save()
+            # Redirect กลับไปหน้าเดิมหลังการบันทึก
+            return redirect('preset', wallet_id=wallet.id)
+    else:
+        form = PresetForm()
+
+    return render(request, 'preset.html', {
+        'form': form,
+        'wallet': wallet,
+        'presets': presets,
+        'theme': theme,
+        })
+
+from django.shortcuts import get_object_or_404, redirect
+
+def edit_preset(request, preset_id):
+    preset = get_object_or_404(Preset, id=preset_id)
+    if request.method == 'POST':
+        form = PresetForm(request.POST, instance=preset)
+        if form.is_valid():
+            form.save()
+            return redirect('preset', wallet_id=preset.wallet.id)
+    else:
+        form = PresetForm(instance=preset)
+    return render(request, 'edit_preset.html', {'form': form})
+
+def delete_preset(request, preset_id):
+    preset = get_object_or_404(Preset, id=preset_id)
+    wallet_id = preset.wallet.id
+    preset.delete()
+    return redirect('preset', wallet_id=wallet_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def add_preset(request):
+#     if request.method == 'POST':
+#         wallet_id = request.POST.get('wallet_id')  # รับ wallet_id จาก POST
+#         wallet = Wallet.objects.get(id=wallet_id)  # ดึง wallet จาก id ที่ได้รับ
+#         form = StatementForm(request.POST)
+
+#         if form.is_valid():
+#             category = form.cleaned_data.get('category')
+
+#             if category == 'other':  # ถ้าผู้ใช้เลือก "other"
+#                 custom_category = request.POST.get('custom_category')
+#                 if custom_category:  # ถ้ามีการกรอกหมวดหมู่เอง
+#                     category = custom_category  # ใช้ค่าที่กรอก
+
+#             # ตรวจสอบหมวดหมู่ที่ได้รับ
+#             if category:
+#                 # ถ้าหมวดหมู่ไม่ใช่ "None" ก็เพิ่มหมวดหมู่ใหม่
+#                 wallet.add_category(category)
+
+#             statement = form.save(commit=False)  # สร้าง instance ของ statement โดยไม่บันทึก
+#             if(request.POST.get('addDate')!=""):
+#                 statement.addDate = request.POST.get('addDate')
+#             statement.wallet = wallet  # กำหนด wallet ให้กับ statement
+#             statement.category = category  # กำหนด category ให้กับ statement
+#             statement.save()  # บันทึก statement ลงฐานข้อมูล
+
+#             return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
+#     else:
+#         wallet_id = request.GET.get('wallet_id')
+#         wallet = Wallet.objects.get(id=wallet_id)
+#         choices = [(category, category) for category in wallet.get_categories()]
+#         choices.append(("other", "Other"))  # เพิ่มตัวเลือก "other"
+
+#         form = StatementForm(wallet=wallet)
+
+#     return HttpResponse("ERROR, Can't add_statement")

@@ -1,6 +1,7 @@
 # forms.py
 from django import forms
 from .models import Wallet, Statement
+from .models import Preset
 
 class WalletFilterForm(forms.Form):
     wallet = forms.ModelChoiceField(
@@ -59,3 +60,19 @@ class StatementForm(forms.ModelForm):
             return custom_category  # ถ้าเลือก "other" และกรอกหมวดหมู่เอง ให้ใช้ค่าจาก custom_category
 
         return category  # ถ้าไม่เลือก "other" ก็ใช้ค่า category ที่เลือก
+    
+class PresetForm(forms.ModelForm):
+    class Meta:
+        model = Preset
+        fields = ['name', 'statement']  # ใช้เฉพาะฟิลด์ที่ต้องการ
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter Preset Name'
+            }),
+            'statement': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Enter Statement as JSON',
+                'rows': 3
+            }),
+        }
