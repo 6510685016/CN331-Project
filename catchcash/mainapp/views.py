@@ -1,7 +1,10 @@
+from django.utils import timezone
 from django.contrib import messages
+from django.forms import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils.timezone import now
 
 from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, Statement
 from .forms import WalletFilterForm, StatementForm
@@ -19,8 +22,10 @@ def main(request):
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
-    status = "ไม่พบการจำกัดวงเงิน"
+    missions = Mission.objects.none()
+    scopes = Scope.objects.none()
     sList_gByD = []
+    date = now().date()
 
     if request.method == 'GET':
         if form.is_valid():
@@ -65,8 +70,11 @@ def main(request):
         choices += [(category, category) for category in categories]
 
         if wallet and wallet.scopes.exists():
-            status = "scopes-exists"
+            scopes = Scope.objects.filter(wallet=wallet)
 
+        if wallet and wallet.missions.exists():
+            missions = Mission.objects.filter(wallet=wallet)
+            
     return render(request, 'main.html', {
         'form': form,
         'statements': sList_gByD,
@@ -74,7 +82,9 @@ def main(request):
         'wallet': wallet,
         'theme': theme,
         "data": sData,
-        "status": status
+        "scopes": scopes,
+        "missions": missions,
+        "date": date
     })
 
 
@@ -315,3 +325,17 @@ def progression(request):
 
 def trophy(request):
     return render(request, 'trophy.html')
+
+def donate_to_mission(request, mission_id):
+    if request.method == "POST":
+        mission = get_object_or_404(Mission, id=mission_id)
+        try:
+            donate_amount = float(request.POST.get('donate_amount', 0))
+            mission.donate(donate_amount)  
+            messages.success(request, f"Donated {donate_amount} successfully!")
+        except ValidationError as e:
+            messages.error(request, str(e))
+        except ValueError:
+            messages.error(request, "Invalid donation amount.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponse("ERROR, Can't donate_to_mission")

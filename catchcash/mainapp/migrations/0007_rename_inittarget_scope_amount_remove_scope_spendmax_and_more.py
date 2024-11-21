@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='scope',
             name='type',
-            field=models.CharField(choices=[('in', 'In'), ('out', 'Out')], default=0, max_length=3),
+            field=models.CharField(choices=[('in', 'In'), ('out', 'Out')], default='out', max_length=3),
             preserve_default=False,
         ),
         migrations.AlterField(
