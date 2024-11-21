@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ValidationError
+from django.db.models import Sum
+from django.utils.timezone import now
 
 # ACCOUNTS model
 class Account(models.Model):
@@ -42,12 +46,6 @@ class Wallet(models.Model):
     
     def __str__(self):
         return f"Wallet: {self.wName}"
-
-    def add_wallet(self):
-        self.save()
-
-    def delete_wallet(self):
-        self.delete()
         
     def add_category(self, category):
         if category not in self.listCategory and category not in [None, "None", "other", "Other"]:
@@ -61,6 +59,10 @@ class Wallet(models.Model):
 
     def get_categories(self):
         return self.listCategory
+    
+    def balance(self):
+        #
+        return 0
 
 
 class FixStatement(models.Model):
@@ -69,13 +71,6 @@ class FixStatement(models.Model):
     type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
     category = models.CharField(max_length=100)
     frequency = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
-
-    def add_fix(self):
-        self.save()
-
-    def delete_fix(self):
-        self.delete()
-
 
 class Scope(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='scopes', on_delete=models.CASCADE, null=True)
@@ -87,12 +82,43 @@ class Scope(models.Model):
     def __str__(self):
         return f"Scope: {self.category} ({self.range})"
     
-    def add_scope(self):
-        self.save()
+    def status(self, date):
+        statements = Statement.objects.filter(wallet=self.wallet)
+        
+        # กรอง Statements ตามช่วงเวลา
+        if self.range == "1D":  # วันเดียว
+            statements = statements.filter(addDate=date)
+        elif self.range == "1W":  # สัปดาห์
+            start_week = date - timedelta(days=date.weekday())  # วันจันทร์ของสัปดาห์
+            end_week = start_week + timedelta(days=6)  # วันอาทิตย์
+            statements = statements.filter(addDate__range=[start_week, end_week])
+        elif self.range == "1M":  # เดือน
+            statements = statements.filter(addDate__year=date.year, addDate__month=date.month)
+        elif self.range == "1Y":  # ปี
+            statements = statements.filter(addDate__year=date.year)
+        
+        # คำนวณผลรวมของ Statements
+        total_in = statements.filter(type="in").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_out = statements.filter(type="out").aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        current_total = total_in - total_out
+        
+        if self.type == "in":  # เป้าหมายเงินเข้า
+            return self.amount - total_in
+        elif self.type == "out":  # เป้าหมายเงินออก
+            return self.amount - current_total
 
-    def delete_scope(self):
-        self.delete()
-
+    def statusToText(self):
+        date = now().date()
+        status = self.status(date)
+        if status > 0: #ไม่ตรงเป้า
+            if self.type == "in": 
+                return f"Income less then target by {status}."
+            else:
+                return f"Spent {status} more than planned."
+        else:  # status < 0
+            return "On target."
+        
 
 class Preset(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='presets', on_delete=models.CASCADE, null=True)
@@ -101,12 +127,6 @@ class Preset(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def add_preset(self):
-        self.save()
-
-    def delete_preset(self):
-        self.delete()
 
 
 class Statement(models.Model):
@@ -118,26 +138,54 @@ class Statement(models.Model):
 
     def __str__(self):
         return f"{self.wallet} - {self.amount} ({self.type})"
-    
-    def add_statement(self):
-        self.save()
-
-    def delete_statement(self):
-        self.delete()
-
 
 class Mission(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='missions', on_delete=models.CASCADE, null=True)
     mName = models.CharField(max_length=100)
     dueDate = models.DateField()
+    curAmount = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     pic = models.ImageField(upload_to='missions/', null=True, blank=True)
 
     def __str__(self):
         return self.mName
     
-    def add_mission(self):
+    def amountToGo(self):
+        return max(self.amount - self.curAmount, 0)
+    
+    def donate(self, money):
+        print("OK")
+        
+        # ตรวจสอบเงินบริจาค
+        if money <= 0:
+            raise ValidationError("Amount must be greater than 0.")
+        if money > self.amountToGo():
+            raise ValidationError("Amount exceeds the target left.")
+        
+        print("OK")
+        # สร้าง Statement รายการใหม่
+        Statement.objects.create(
+            wallet=self.wallet,
+            amount=money,
+            type='out',
+            category=f"Donation for {self.mName}",
+            addDate=timezone.now()
+        )
+        print("OK")
+        
+        # อัปเดต curAmount
+        money = Decimal(money)
+        self.curAmount = self.curAmount + money
         self.save()
-
-    def delete_mission(self):
-        self.delete()
+        return self.curAmount
+    
+    def isOutdate(self):
+        return timezone.now().date() > self.dueDate
+    
+    def status_text(self):
+        if self.isOutdate():
+            return "Outdated"
+        elif self.amountToGo() == 0:
+            return "Completed"
+        else:
+            return f"Amount to go: {self.amountToGo()}"

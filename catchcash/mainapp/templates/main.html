@@ -252,7 +252,23 @@
                     <div class="col-12 mb-4">
                         <div class="p-3" id="goal">
                             <h2>Goal</h2>
-                            <p>เนื้อหาของ Goal.</p>
+                            {% for m in missions %}
+                                    <p>{{ m.mName }}, Status: {{ m.status_text }}</p>
+                                    {% if not m.isOutdate and m.amountToGo > 0 %}
+                                        <form action="{% url 'donate_to_mission' m.id %}" method="post">
+                                            {% csrf_token %}
+                                            <label for="donate_amount_{{ m.id }}">Enter amount:</label>
+                                            <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="Enter amount">
+                                            <button type="submit" class="btn btn-success">Donate</button>
+                                        </form>
+                                    {% elif m.isOutdate %}
+                                        <p class="text-danger">Mission is outdated.</p>
+                                    {% else %}
+                                        <p class="text-success">Mission completed!</p>
+                                    {% endif %}
+                            {% empty %}
+                                <p>No missions available.</p>
+                            {% endfor %}
                             <!-- ปุ่มสร้าง Goal -->
                             <button class="btn btn-primary" data-toggle="modal" data-target="#formModal"
                                 id="create_goal">สร้าง Goal</button>
@@ -296,7 +312,11 @@
                     <div class="col-12">
                         <div class="p-3" id="objective">
                             <h2>Scope</h2>
-                            <p>เนื้อหาของ Objective.</p>
+                            {% for s in scopes %}
+                                <p>{{ s.category }}, {{ s.range }} : {{ s.statusToText }}</p>
+                            {% empty %}
+                                <p>No scopes available.</p>
+                            {% endfor %}
                             <!-- ปุ่ม สร้าง scope ทั้งหมด -->
                             <button class="btn btn-primary" data-toggle="modal" data-target="#scopeModal"
                                 id="create_scope">สร้าง Scope</button>
