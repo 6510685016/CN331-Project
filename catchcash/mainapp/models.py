@@ -61,8 +61,11 @@ class Wallet(models.Model):
         return self.listCategory
     
     def balance(self):
-        #
-        return 0
+        # Calculate the balance based on related statements
+        # Sum of 'in' type statements (add) and subtract 'out' type statements (spend)
+        total_in = self.statements.filter(type='in').aggregate(Sum('amount'))['amount__sum'] or 0
+        total_out = self.statements.filter(type='out').aggregate(Sum('amount'))['amount__sum'] or 0
+        return total_in - total_out
 
 
 class FixStatement(models.Model):
