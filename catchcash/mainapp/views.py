@@ -352,7 +352,7 @@ def donate_to_mission(request, mission_id):
             mission.donate(donate_amount)  
             messages.success(request, f"Donated {donate_amount} successfully!")
         except ValidationError as e:
-            messages.error(request, str(e))
+            messages.error(request, e.message)
         except ValueError:
             messages.error(request, "Invalid donation amount.")
         return redirect(request.META.get('HTTP_REFERER', '/'))
