@@ -1,3 +1,6 @@
+from datetime import timedelta
+from decimal import Decimal
+from django.forms import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -5,7 +8,211 @@ from .models import Account, Wallet, Statement, Scope, FixStatement, Mission, Pr
 from django.utils import timezone
 from .forms import WalletFilterForm, StatementForm
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.messages import get_messages
 
+class ScopeModelTest(TestCase):
+    def setUp(self):
+        # Create a test user and account
+        self.user = User.objects.create_user(username='testuser', password='password123')
+        self.account = Account.objects.create(
+            user=self.user,
+            name="Test User",
+            appTheme="light"
+        )
+
+        # Create a Wallet instance
+        self.wallet = Wallet.objects.create(
+            account=self.account,
+            wName="Test Wallet",
+            currency="USD",
+            listCategory=["Food", "Transport", "Shopping"]
+        )
+        
+        # Create some statements to be used in the tests
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('100.00'), type='in', addDate=timezone.now())
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('50.00'), type='out', addDate=timezone.now())
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('200.00'), type='in', addDate=timezone.now() - timedelta(weeks=2))
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('70.00'), type='out', addDate=timezone.now() - timedelta(weeks=2))
+    
+    def test_scope_str_representation(self):
+        # Create a scope
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal("100.00"),
+            type="out",
+            category="Food",
+            range="1W"
+        )
+
+        # Verify the string representation
+        self.assertEqual(str(scope), "Scope: Food (1W)")
+
+    
+    def test_status_in_1d(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            category='Test Income',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.status(date), Decimal('100.00'))  # The target was 200, 100 is already in, so 200-100=100 remains
+
+    def test_status_out_1d(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('50.00'),
+            type='out',
+            category='Test Expense',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.status(date), Decimal('0.00'))  # The target was 50, but already 50 is out, so 50-50=0
+
+    def test_status_in_1w(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('300.00'),
+            type='in',
+            category='Test Income',
+            range='1W'
+        )
+        # Assuming the current date is within the same week as the statement's
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.status(date), Decimal('200.00'))  # Target is 300, but already 200 in, so 300-200=100 remains
+
+    def test_status_out_1m(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('150.00'),
+            type='out',
+            category='Test Expense',
+            range='1M'
+        )
+        # Assuming the current date is within the month of the statements
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.status(date), Decimal('-30.00'))  # Target is 150, but already 100 out, so 150-100=50 remains
+    
+    def test_status_in_1y(self):
+        # Create a scope with the '1Y' range and an 'in' type target
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('500.00'),
+            type='in',
+            category='Test Yearly Income',
+            range='1Y'
+        )
+        
+        # Create statements for different years
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('100.00'), type='in', addDate=timezone.now() - timedelta(days=200))
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('150.00'), type='in', addDate=timezone.now())
+        
+        # We are using the current date for the test
+        date = timezone.now().date()
+        
+        # We expect the sum of income in this year to be 150.00
+        self.assertEqual(scope.status(date), Decimal('-50.00'))  # Target is 500, already 150 in, so 500 - 150 = 350 remains
+
+    def test_status_out_1y(self):
+        # Create a scope with the '1Y' range and an 'out' type target
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('300.00'),
+            type='out',
+            category='Test Yearly Expense',
+            range='1Y'
+        )
+        
+        # Create statements for different years
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('50.00'), type='out', addDate=timezone.now() - timedelta(days=365))  # 1 year ago
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('100.00'), type='out', addDate=timezone.now())  # This year
+        
+        # We are using the current date for the test
+        date = timezone.now().date()
+        
+        # We expect the sum of expenses this year to be 100.00
+        self.assertEqual(scope.status(date), Decimal('-80.00'))  # Target is 300, already 100 out, so 300 - 100 = 200 remains
+    
+    def test_status_to_text_in_1d(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            category='Test Income',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.statusToText(), "Income less then target by 100.00.")
+
+    def test_status_to_text_out_1d(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('50.00'),
+            type='out',
+            category='Test Expense',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.statusToText(), "On target.")
+        
+    def test_status_to_text_in_over(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            category='Test Income',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.statusToText(), "Income less then target by 100.00.")
+    
+    def test_status_to_text_out_over(self):
+        scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('20.00'),
+            type='out',
+            category='Test Expense',
+            range='1D'
+        )
+        date = timezone.now().date()  # Use current date for testing
+        self.assertEqual(scope.statusToText(), "Spent 30.00 more than planned.")
+    
+    def test_status_outdated(self):
+        mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Completed Mission",
+            dueDate=timezone.now().date() - timedelta(days=1),
+            curAmount=Decimal("50.00"),
+            amount=Decimal("100.00")
+        )
+
+        self.assertEqual(mission.status_text(), "[Completed Mission] 50.00/100.00USD (50.00%)")
+        
+    def test_status_amountTogo_equal_0(self):
+        mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Completed Mission",
+            dueDate=timezone.now().date() + timedelta(days=1),
+            curAmount=Decimal("100.00"),
+            amount=Decimal("100.00")
+        )
+
+        self.assertEqual(mission.status_text(), "[Completed Mission] 100.00/100.00USD (100.00%)")
+        
+    def test_mission_str_representation(self):
+        # Create a mission
+        mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Save for Vacation",
+            dueDate=timezone.now().date(),
+            curAmount=Decimal("500.00"),
+            amount=Decimal("1000.00"),
+        )
+
+        # Verify the string representation
+        self.assertEqual(str(mission), "Save for Vacation")
+        
 class ViewsTestCase(TestCase):
 
     def setUp(self):
@@ -13,14 +220,32 @@ class ViewsTestCase(TestCase):
         self.user = User.objects.create_user(username="testuser", password="testpassword")
         self.account = Account.objects.create(user=self.user, name="Test Account", appTheme="light")
         self.wallet = Wallet.objects.create(account=self.account, wName="Test Wallet", currency="USD", listCategory=["food", "transport"])
+        self.mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Test Mission",
+            dueDate="2025-01-01",
+            amount=Decimal('10000.00'),
+            pic=SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
+        )
+        
+    def test_account_str_method(self):
+        # Verify that __str__ returns the account name
+        self.assertEqual(str(self.account), "Test Account")
+        
+    def test_wallet_str(self):
+        # Test the __str__ method
+        self.assertEqual(str(self.wallet), "Wallet: Test Wallet")
         
     def test_setting_view(self):
         response = self.client.get(reverse('setting'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'setting.html')
 
-    def test_main_view_with_scope(self):
+    def test_change_password(self):
+        self.account.change_password('newpassword')
+        self.client.login(username='testuser', password='newpassword')
         
+    def test_main_view_with_scope(self): 
         self.statement1 = Statement.objects.create(wallet=self.wallet, amount=100, type='in', category="Salary", addDate=timezone.now())
         self.statement2 = Statement.objects.create(wallet=self.wallet, amount=50, type='out', category="Food", addDate=timezone.now())
         
@@ -33,7 +258,7 @@ class ViewsTestCase(TestCase):
         self.assertIn('form', response.context)
         self.assertIn('statements', response.context)
         self.assertIn('wallet', response.context)
-        
+    
     def test_main_no_wallet(self):
         self.wallet.delete()
         self.client.login(username="testuser", password="testpassword")
@@ -112,7 +337,7 @@ class ViewsTestCase(TestCase):
     def test_get_add_statement_view(self):
         response = self.client.get(f"{reverse('add_statement')}?wallet_id={self.wallet.id}")
         self.assertEqual(response.status_code, 200)
-
+        self.assertContains(response, "ERROR, Can't add_statement")
         
     def test_edit_statement_view(self):
         statement = Statement.objects.create(wallet=self.wallet, amount=200.00, type='out', category='food')
@@ -166,6 +391,7 @@ class ViewsTestCase(TestCase):
 
         # Check if the response is successful
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ERROR, Can't edit_statement")
 
     def test_delete_statement_view(self):
         # Test deleting a statement.
@@ -204,6 +430,8 @@ class ViewsTestCase(TestCase):
         
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+        
+        self.assertContains(response, "ERROR, Can't create_wallet")
 
     def test_create_fixstatement_valid_data(self):
         # Define valid data for a new FixStatement
@@ -235,6 +463,7 @@ class ViewsTestCase(TestCase):
 
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ERROR, Can't create_fixstatement")
     
     def test_create_scope_post(self):
         self.data = {
@@ -266,6 +495,7 @@ class ViewsTestCase(TestCase):
 
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ERROR, Can't create_scope")
         
     def test_create_misson_post(self):
         self.data = {
@@ -283,8 +513,8 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # Redirect after a successful post
 
         # Check if the mission is actually created in the database
-        self.assertEqual(Mission.objects.count(), 1)
-        mission = Mission.objects.first()
+        self.assertEqual(Mission.objects.count(), 2)
+        mission = Mission.objects.last()
         self.assertEqual(mission.wallet, self.wallet)
         self.assertEqual(mission.mName, 'Tokyo Trip')
         self.assertEqual(mission.dueDate.isoformat(), '2025-01-01')
@@ -297,6 +527,8 @@ class ViewsTestCase(TestCase):
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
         
+        self.assertContains(response, "ERROR, Can't create_mission")
+    
     def test_create_preset_post_valid_data(self):
         self.valid_data = {
             'wallet': self.wallet.id,
@@ -321,6 +553,12 @@ class ViewsTestCase(TestCase):
 
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ERROR, Can't create_preset")
+        
+    def test_str_representation(self):
+        # Test the __str__ method of Preset
+        preset = Preset.objects.create(wallet=self.wallet, name="Sample Preset")
+        self.assertEqual(str(preset), "Sample Preset")
     
     def test_progression_view(self):
         response = self.client.get(reverse('progression'))
@@ -336,6 +574,68 @@ class ViewsTestCase(TestCase):
         response = self.client.get(reverse('wallet_detail', args=[9999]))
         self.assertEqual(response.status_code, 200)  # Should return 404 as the wallet does not exist
 
+    def test_donate_successful(self):
+        # Donate amount
+        response = self.client.post(reverse('donate_to_mission', args=[self.mission.id]), {'donate_amount': '50.00'})
+        
+        # Check if donation was successful
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
+        
+        # Check if statement is created
+        self.assertEqual(Statement.objects.filter(wallet=self.wallet).count(), 1)
+        statement = Statement.objects.first()
+        self.assertEqual(statement.amount, Decimal('50.00'))
+        self.assertEqual(statement.type, 'out')
+        self.assertEqual(statement.category, 'Donation for Test Mission')
+        
+        # Check if curAmount is updated
+        self.mission.refresh_from_db()
+        self.assertEqual(self.mission.curAmount, Decimal('50.00'))
+        
+    def test_donate_less_than_zero(self):
+        # Donate invalid amount (e.g., negative or zero)
+        response = self.client.post(reverse('donate_to_mission', args=[self.mission.id]), {'donate_amount': '-10.00'})
+        self.assertRedirects(response, "/", status_code=302) #Expecting Redirect
+        
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(message[0].message,"Amount must be greater than 0.")
+        # No donation should be made
+        self.assertEqual(Statement.objects.filter(wallet=self.wallet).count(), 0)
+        
+    def test_donate_exceeds_target(self):
+        
+        # Donate more than the amount needed
+        response = self.client.post(reverse('donate_to_mission', args=[self.mission.id]), {'donate_amount': '100000.00'})
+        # Expecting an error message and redirect
+        self.assertRedirects(response, "/", status_code=302)
+        
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(message[0].message,"Amount exceeds the target left.")
+        
+        # No donation should be made
+        self.assertEqual(Statement.objects.filter(wallet=self.wallet).count(), 0)
+        
+    def test_donate_invalid_amount(self):
+        
+        # Donate more than the amount needed
+        response = self.client.post(reverse('donate_to_mission', args=[self.mission.id]), {'donate_amount': 'Invalid Amount'})
+        
+        # Expecting an error message and redirect
+        self.assertRedirects(response, "/", status_code=302)
+        
+        message = list(get_messages(response.wsgi_request))
+        self.assertEqual(message[0].message, "Invalid donation amount.")
+        
+        # No donation should be made
+        self.assertEqual(Statement.objects.filter(wallet=self.wallet).count(), 0)
+    
+    def test_donate_to_mission_get(self):
+        response = self.client.get(reverse('donate_to_mission', args=[1]))
+
+        # Check if the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ERROR, Can't donate_to_mission")
+        
 class ScopeViewTest(TestCase):
     def setUp(self):
         # Create a test user
@@ -353,6 +653,20 @@ class ScopeViewTest(TestCase):
         # Login the test user
         self.client.login(username='testuser', password='testpassword')
 
+    def test_statement_str_representation(self):
+        # Create a statement
+        statement = Statement.objects.create(
+            wallet=self.wallet,
+            amount=Decimal("150.00"),
+            type="in",
+            category="Salary",
+            addDate=timezone.now().date()
+        )
+
+        # Verify the string representation
+        expected_str = f"{self.wallet} - 150.00 (in)"
+        self.assertEqual(str(statement), expected_str)
+    
     def test_scope_view_calculations(self):
         # Test income and out calculation
         response = self.client.get(reverse('scope'))
