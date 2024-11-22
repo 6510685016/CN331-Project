@@ -65,7 +65,7 @@ class Wallet(models.Model):
         # Sum of 'in' type statements (add) and subtract 'out' type statements (spend)
         total_in = self.statements.filter(type='in').aggregate(Sum('amount'))['amount__sum'] or 0
         total_out = self.statements.filter(type='out').aggregate(Sum('amount'))['amount__sum'] or 0
-        return total_in - total_out
+        return f"{total_in - total_out:.2f}"
 
 
 class FixStatement(models.Model):
@@ -109,7 +109,7 @@ class Scope(models.Model):
         if self.type == "in":  # เป้าหมายเงินเข้า
             return self.amount - total_in
         elif self.type == "out":  # เป้าหมายเงินออก
-            return self.amount - current_total
+            return  total_out - self.amount 
 
     def statusToText(self):
         date = now().date()
@@ -157,15 +157,12 @@ class Mission(models.Model):
         return max(self.amount - self.curAmount, 0)
     
     def donate(self, money):
-        print("OK")
-        
         # ตรวจสอบเงินบริจาค
         if money <= 0:
             raise ValidationError("Amount must be greater than 0.")
         if money > self.amountToGo():
             raise ValidationError("Amount exceeds the target left.")
         
-        print("OK")
         # สร้าง Statement รายการใหม่
         Statement.objects.create(
             wallet=self.wallet,
@@ -174,7 +171,6 @@ class Mission(models.Model):
             category=f"Donation for {self.mName}",
             addDate=timezone.now()
         )
-        print("OK")
         
         # อัปเดต curAmount
         money = Decimal(money)
@@ -186,9 +182,7 @@ class Mission(models.Model):
         return timezone.now().date() > self.dueDate
     
     def status_text(self):
-        if self.isOutdate():
-            return "Outdated"
-        elif self.amountToGo() == 0:
-            return "Completed"
+        if self.isOutdate() or self.amountToGo() == 0:
+            return f"[{self.mName}] {self.curAmount}/{self.amount}{self.wallet.currency} ({self.curAmount/self.amount*100:.2f}%)"
         else:
-            return f"Amount to go: {self.amountToGo()}"
+            return f"[{self.mName}] {self.amountToGo()}{self.wallet.currency} more!"
