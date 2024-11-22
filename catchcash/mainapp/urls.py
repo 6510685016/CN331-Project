@@ -22,4 +22,6 @@ urlpatterns = [
     path('create_mission/', views.create_mission, name='create_mission'),
     path('create_preset/', views.create_preset, name='create_preset'),
     path('create_fixstatement/', views.create_fixstatement, name='create_fixstatement'),
+    
+    path('missions/donate/<int:mission_id>/', views.donate_to_mission, name='donate_to_mission'),
 ] 
