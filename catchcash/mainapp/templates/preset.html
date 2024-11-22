@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h2>Preset Management for Wallet: {{ wallet.wName }}</h2>
+        <h2 class="text-center">Preset Management for Wallet: {{ wallet.wName }}</h2>
 
         <!-- ฟอร์มสำหรับเพิ่ม Preset -->
         <form method="POST" class="mt-3 mb-4">
@@ -29,50 +29,50 @@
                 <label for="field3" class="form-label">ประเภท</label>
                 {{ form.field3 }}
             </div>
-            <button type="submit" class="btn btn-primary">เพิ่ม Preset</button>
+            <button type="submit" class="btn btn-primary w-100">เพิ่ม Preset</button>
         </form>
-        
 
         <!-- ตารางแสดง Preset -->
-        <h3>Existing Presets</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ชื่อ Preset</th>
-                    <th>Statement</th>
-                    <th>จำนวนเงิน</th>
-                    <th>ประเภท</th>
-                    <th>ตั้งค่า</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                {% for preset in presets %}
-                <tr>
-                    <td>
-                        <strong></strong> {{ preset.name|default:"N/A" }}<br>
-                    </td>
-                    <td>
-                        <strong></strong> {{ preset.statement.field1|default:"N/A" }}<br>
-                    </td>
-                    <td>
-                        <strong></strong> {{ preset.statement.field2|default:"N/A" }}<br>
-                    </td>
-                    <td>
-                        <strong></strong> {{ preset.statement.field3|default:"N/A" }}</td>
-                    <td>
-                        <!-- เพิ่มปุ่มแก้ไขและลบ -->
-                        <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="{% url 'delete_preset' preset.id %}" class="btn btn-danger btn-sm">Delete</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">No presets found for this wallet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h3 class="text-center">Existing Presets</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>ชื่อ Preset</th>
+                        <th>Statement</th>
+                        <th>จำนวนเงิน</th>
+                        <th>ประเภท</th>
+                        <th>ตั้งค่า</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for preset in presets %}
+                    <tr>
+                        <td>
+                            <strong></strong> {{ preset.name|default:"N/A" }}<br>
+                        </td>
+                        <td>
+                            <strong></strong> {{ preset.statement.field1|default:"N/A" }}<br>
+                        </td>
+                        <td>
+                            <strong></strong> {{ preset.statement.field2|default:"N/A" }}<br>
+                        </td>
+                        <td>
+                            <strong></strong> {{ preset.statement.field3|default:"N/A" }}</td>
+                        <td>
+                            <!-- เพิ่มปุ่มแก้ไขและลบ -->
+                            <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{% url 'delete_preset' preset.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No presets found for this wallet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

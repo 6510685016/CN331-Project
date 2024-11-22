@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
-
+from django.shortcuts import get_object_or_404, redirect
 from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, Statement
 from .forms import PresetForm, WalletFilterForm, StatementForm
 
@@ -357,7 +357,7 @@ def preset(request, wallet_id):
         'theme': theme,
         })
 
-from django.shortcuts import get_object_or_404, redirect
+
 
 def edit_preset(request, preset_id):
     preset = get_object_or_404(Preset, id=preset_id)
@@ -410,3 +410,5 @@ def use_preset(request, preset_id):
     
     # หากไม่ใช่ POST ให้ส่งสถานะไม่อนุญาต
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+
