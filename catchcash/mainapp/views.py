@@ -15,6 +15,11 @@ def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
 
+    if not account.wallets.exists():
+        # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
+        default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
+        return redirect('main')
+
     form = WalletFilterForm(request.GET or None, account=account)
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
@@ -351,7 +356,8 @@ def edit_preset(request, preset_id):
         form = PresetForm(request.POST, instance=preset)
         if form.is_valid():
             form.save()
-            return redirect('preset', wallet_id=preset.wallet.id)
+            if preset.wallet and preset.wallet.id:
+                return redirect('preset', wallet_id=preset.wallet.id)
     else:
         form = PresetForm(instance=preset)
     return render(request, 'edit_preset.html', {'form': form})
@@ -361,59 +367,3 @@ def delete_preset(request, preset_id):
     wallet_id = preset.wallet.id
     preset.delete()
     return redirect('preset', wallet_id=wallet_id)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def add_preset(request):
-#     if request.method == 'POST':
-#         wallet_id = request.POST.get('wallet_id')  # รับ wallet_id จาก POST
-#         wallet = Wallet.objects.get(id=wallet_id)  # ดึง wallet จาก id ที่ได้รับ
-#         form = StatementForm(request.POST)
-
-#         if form.is_valid():
-#             category = form.cleaned_data.get('category')
-
-#             if category == 'other':  # ถ้าผู้ใช้เลือก "other"
-#                 custom_category = request.POST.get('custom_category')
-#                 if custom_category:  # ถ้ามีการกรอกหมวดหมู่เอง
-#                     category = custom_category  # ใช้ค่าที่กรอก
-
-#             # ตรวจสอบหมวดหมู่ที่ได้รับ
-#             if category:
-#                 # ถ้าหมวดหมู่ไม่ใช่ "None" ก็เพิ่มหมวดหมู่ใหม่
-#                 wallet.add_category(category)
-
-#             statement = form.save(commit=False)  # สร้าง instance ของ statement โดยไม่บันทึก
-#             if(request.POST.get('addDate')!=""):
-#                 statement.addDate = request.POST.get('addDate')
-#             statement.wallet = wallet  # กำหนด wallet ให้กับ statement
-#             statement.category = category  # กำหนด category ให้กับ statement
-#             statement.save()  # บันทึก statement ลงฐานข้อมูล
-
-#             return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
-#     else:
-#         wallet_id = request.GET.get('wallet_id')
-#         wallet = Wallet.objects.get(id=wallet_id)
-#         choices = [(category, category) for category in wallet.get_categories()]
-#         choices.append(("other", "Other"))  # เพิ่มตัวเลือก "other"
-
-#         form = StatementForm(wallet=wallet)
-
-#     return HttpResponse("ERROR, Can't add_statement")

@@ -18,28 +18,48 @@
                 {{ form.name }}
             </div>
             <div class="mb-3">
-                <label for="amount" class="form-label">Statement</label>
-                {{ form.statement }}
+                <label for="field1" class="form-label">Statement</label>
+                {{ form.field1 }}
+            </div>
+            <div class="mb-3">
+                <label for="field2" class="form-label">Amount</label>
+                {{ form.field2 }}
+            </div>
+            <div class="mb-3">
+                <label for="field3" class="form-label">Type</label>
+                {{ form.field3 }}
             </div>
             <button type="submit" class="btn btn-primary">Add Preset</button>
         </form>
+        
 
         <!-- ตารางแสดง Preset -->
         <h3>Existing Presets</h3>
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>Preset Name</th>
+                    <th>Statement</th>
                     <th>Amount</th>
-                    <th>Category</th>
-                    <th>Actions</th>
+                    <th>type</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
+                
                 {% for preset in presets %}
                 <tr>
-                    <td>{{ preset.name }}</td>
-                    <td>{{ preset.statement }}</td>
+                    <td>
+                        <strong></strong> {{ preset.name|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field1|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field2|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field3|default:"N/A" }}</td>
                     <td>
                         <!-- เพิ่มปุ่มแก้ไขและลบ -->
                         <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
