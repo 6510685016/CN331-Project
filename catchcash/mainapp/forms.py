@@ -49,7 +49,19 @@ class StatementForm(forms.ModelForm):
             selected_category = self.instance.category if self.instance else None
 
             self.fields['category'] = forms.ChoiceField(
-                choices=choices + [("other", "Other")],  # เพิ่มตัวเลือกสำหรับกรอกเอง
+                choices=choices + [("other", "อื่นๆ (ระบุ)"), 
+                                   ("อื่นๆ", "อื่นๆ"), 
+                                   ("รายรับ", "รายรับ"),
+                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                                   ("จิปาถะ", "จิปาถะ"), 
+                                   ("บันเทิง", "บันเทิง"), 
+                                   ("ครอบครัว", "ครอบครัว"), 
+                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                                   ("แบ่งจ่ายรายการใหญ่", "แบ่งจ่ายรายการใหญ่"),
+                                   ],  # เพิ่มตัวเลือกสำหรับกรอกเอง
                 label='Category',
                 required=False,
                 initial=selected_category  # กำหนด category เดิมให้เป็นค่าเริ่มต้น

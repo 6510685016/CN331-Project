@@ -33,8 +33,8 @@
                 <div class="card-body row">
                     {% csrf_token %}
                     <div class="col-md-7">
-                        <label>ระบุจำนวนเงิน</label>
-                        <input placeholder="ระบุจำนวนเงิน" type="number" class="form-control mr-1" step="1.00" name="amount" required>
+                        <label>ระบุจำนวนเงิน ({{wallet.currency}})</label>
+                        <input placeholder="ระบุจำนวนเงิน ({{wallet.currency}})" type="number" class="form-control mr-1" step="1.00" name="amount" required>
                     </div>
                     <div class="col-md-4">
                         <label>ประเภท</label>
@@ -46,7 +46,7 @@
                     <div class="col-md-11">
                         <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
                         <select id="category-select" class="form-control mr-1" name="category" required>
-                            <option value="None">เลือกหมวดหมู่</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
                             {% for choice in choices %}
                                 <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
                                     {{ choice.1 }}
@@ -86,13 +86,13 @@
                                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
                                 </svg>
                             {% else %}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
                                 </svg>
                             {% endif %}
                         </div>
                         <div class="col-md-4">
-                            <span>{{ statement.amount }}</span>
+                            <span>{{ statement.amount }} {{wallet.currency}}</span>
                         </div>
                         <div class="col-md-3">
                             <span>{{ statement.category }}</span>
@@ -122,8 +122,8 @@
                                 <div class="card-body row">
                                     {% csrf_token %}
                                     <div class="col-md-7">
-                                        <label>ระบุจำนวนเงิน</label>
-                                        <input placeholder="ระบุจำนวนเงิน" type="number" class="form-control mr-1" step="1.00" name="amount" value="{{ statement.amount }}" required>
+                                        <label>ระบุจำนวนเงิน ({{wallet.currency}})</label>
+                                        <input placeholder="ระบุจำนวนเงิน ({{wallet.currency}})" type="number" class="form-control mr-1" step="1.00" name="amount" value="{{ statement.amount }}" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label>ประเภท</label>
@@ -135,7 +135,7 @@
                                     <div class="col-md-11">
                                         <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
                                         <select id="category-select-{{statement.id}}" name="category" class="form-select" required>
-                                            <option value="None">ไม่ระบุประเภท</option>
+                                            <option value="อื่นๆ">อื่นๆ</option>
                                             {% for choice in choices %}
                                                 <option value="{{ choice.0 }}" {% if choice.0 == statement.category %}selected{% endif %}>
                                                     {{ choice.1 }}
