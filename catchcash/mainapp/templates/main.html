@@ -65,7 +65,7 @@
         </div>
 
     <!-- Main Content -->
-    <div class="col-md-9 col-lg-10 p-4 main-content">
+    <div class="col-md-9 col-lg-10 main-content">
         <div class="row mb-4">
             <div class="col-12">
                 <div class="p-3 " id="background">
@@ -194,18 +194,17 @@
         <!-- วงเงิน -->
         <div class="col-md-4">
             <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
-                <h2>วงเงิน</h2>
-                <p>{{status}}</p>
+                <h2>เงินสุทธิ</h2>
+                <p>{{wallet.balance}} {{wallet.currency}}</p>
             </div>
         </div>
     </div>
     <!-- Container หลัก -->
-    <div class="container-fluid">
         <div class="row">
             <!-- Statement ด้านซ้าย -->
             <div class="col-md-6">
                 <div class="p-3 d-flex flex-column" id="statement_container"
-                    style="height: 524px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
+                    style="height: 624px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
                     {% include "statement_container.html" %}
                     <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
                     <div class="mt-auto d-flex justify-content-around">
@@ -217,8 +216,7 @@
             </div>
 
             <!-- Modal ใช้ Preset -->
-            <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -249,13 +247,45 @@
             <div class="col-md-6">
                 <div class="row">
                     <!-- Goal -->
-                    <div class="col-12 mb-4">
-                        <div class="p-3" id="goal">
-                            <h2>Goal</h2>
-                            <p>เนื้อหาของ Goal.</p>
-                            <!-- ปุ่มสร้าง Goal -->
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#formModal"
-                                id="create_goal">สร้าง Goal</button>
+                    <div class="col-12 mb-4"
+                    style="height: 300px; overflow-y: auto;">
+                        <div id="goal">
+                            <div class="container-fluid">
+                                <h2>Goal</h2>
+                                {% for m in missions %}
+                                    <div class="row">
+                                        {% if not m.isOutdate and m.amountToGo > 0 %}
+                                        <div class="col-6">{{ m.status_text }}</div>
+                                        <div class="col-6">
+                                            <form action="{% url 'donate_to_mission' m.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
+                                                <button type="submit" class="btn btn-success">Donate</button>
+                                            </form>
+                                        </div>
+                                        {% elif m.isOutdate %}
+                                        <div class="col-8">{{ m.status_text }}</div>
+                                        <div class="col-4">
+                                            <p class="text-danger">Outdated.</p>
+                                        </div>
+                                        {% else %}
+                                        <div class="col-8">{{ m.status_text }}</div>
+                                        <div class="col-4">
+                                            <p class="text-success">Completed!</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                {% empty %}
+                                    <div class="row">
+                                        <p>No missions available.</p>
+                                    </div>
+                                {% endfor %}
+                                <!-- ปุ่มสร้าง Goal -->
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#formModal"
+                                    id="create_goal">สร้าง Goal
+                                </button>
+                            </div>
+                            
                         </div>
                     </div>
 
@@ -294,12 +324,29 @@
 
                     <!-- Scope -->
                     <div class="col-12">
-                        <div class="p-3" id="objective">
+                    <div class="p-2" id="objective">
+                        <div class="container-fluid h-100" style="height: 300px; overflow-y: auto;">
                             <h2>Scope</h2>
-                            <p>เนื้อหาของ Objective.</p>
+                            {% for s in scopes %}
+                                <div class="row">
+                                {% if s.statusToText == "On target." %}
+                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
+                                    <p class="text-success col-2">OK</p>
+                                {% else %}
+                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
+                                    <p class="text-danger col-2">X</p>
+                                {% endif %}
+                                </div>
+                            {% empty %}
+                                <div class="row">
+                                    <p>No scopes available.</p>
+                                </div>
+                            {% endfor %}
                             <!-- ปุ่ม สร้าง scope ทั้งหมด -->
                             <button class="btn btn-primary" data-toggle="modal" data-target="#scopeModal"
                                 id="create_scope">สร้าง Scope</button>
+                        </div>
+                            
                         </div>
                         <!-- Modal สร้าง Goal -->
                         <div class="modal fade" id="scopeModal" tabindex="-1" role="dialog"
@@ -337,7 +384,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>
