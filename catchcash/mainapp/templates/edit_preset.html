@@ -8,10 +8,10 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h2>Edit Preset: {{ form.instance.name }}</h2>
+        <h2 class="text-center">Edit Preset: {{ form.instance.name }}</h2>
 
         <!-- ฟอร์มสำหรับแก้ไข Preset -->
-        <form method="POST">
+        <form method="POST" class="mt-4 mb-4">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="name" class="form-label">ชื่อ Preset</label>
@@ -29,11 +29,11 @@
                 <label for="field3" class="form-label">ประเภท</label>
                 {{ form.field3 }}
             </div>
-            <button type="submit" class="btn btn-primary">บันทึก</button>
+            <button type="submit" class="btn btn-primary w-100">บันทึก</button>
         </form>
 
-        <br>
-        <a href="{% url 'preset' wallet_id=form.instance.wallet.id %}" class="btn btn-secondary">ยกเลิก</a>
+        <!-- ปุ่มยกเลิก -->
+        <a href="{% url 'preset' wallet_id=form.instance.wallet.id %}" class="btn btn-secondary w-100">ยกเลิก</a>
     </div>
 </body>
 </html>

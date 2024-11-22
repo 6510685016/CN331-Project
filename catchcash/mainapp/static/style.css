@@ -104,3 +104,27 @@
         margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่องในมือถือ */
     }
 }
+
+.node {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 100px;
+    background-color: lightgray;
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.node:hover {
+    transform: scale(1.1);
+}
+.node.unlocked {
+    background-color: lightgreen;
+}
+.connection {
+    position: absolute;
+    background-color: black;
+    height: 2px;
+    transform-origin: 0 0;
+}
