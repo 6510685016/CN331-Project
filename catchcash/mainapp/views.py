@@ -2,12 +2,13 @@ from django.utils import timezone
 from django.contrib import messages
 from django.forms import ValidationError
 from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.timezone import now
 
 from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, Statement
-from .forms import WalletFilterForm, StatementForm
+from .forms import PresetForm, WalletFilterForm, StatementForm
 
 # Create your views here.
 
@@ -18,14 +19,30 @@ def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
 
+    if not account.wallets.exists():
+        # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
+        default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
+        return redirect('main')
+    wallet = None
+    presets = Preset.objects.filter(wallet__in=account.wallets.all())
     form = WalletFilterForm(request.GET or None, account=account)
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
     missions = Mission.objects.none()
     scopes = Scope.objects.none()
+    status = "ไม่พบการจำกัดวงเงิน"
     sList_gByD = []
     date = now().date()
+
+    if form.is_valid():
+        wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
+    if not wallet:
+        wallet = account.wallets.first()
+    if wallet:
+        presets = Preset.objects.filter(wallet=wallet)
+    else:
+        presets = Preset.objects.none()
 
     if request.method == 'GET':
         if form.is_valid():
@@ -84,7 +101,8 @@ def main(request):
         "data": sData,
         "scopes": scopes,
         "missions": missions,
-        "date": date
+        "status": status,
+        'presets': presets,
     })
 
 
@@ -339,3 +357,83 @@ def donate_to_mission(request, mission_id):
             messages.error(request, "Invalid donation amount.")
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return HttpResponse("ERROR, Can't donate_to_mission")
+def preset(request, wallet_id):
+    account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
+    theme = account.appTheme
+
+    # ดึงข้อมูล Wallet และ Preset ที่เกี่ยวข้อง
+    wallet = get_object_or_404(Wallet, id=wallet_id, account=account)
+    presets = Preset.objects.filter(wallet=wallet)
+
+    # สร้างฟอร์มใหม่สำหรับการเพิ่ม Preset
+    if request.method == 'POST':
+        form = PresetForm(request.POST)
+        if form.is_valid():
+            new_preset = form.save(commit=False)
+            new_preset.wallet = wallet
+            new_preset.save()
+            # Redirect กลับไปหน้าเดิมหลังการบันทึก
+            return redirect('preset', wallet_id=wallet.id)
+    else:
+        form = PresetForm()
+
+    return render(request, 'preset.html', {
+        'form': form,
+        'wallet': wallet,
+        'presets': presets,
+        'theme': theme,
+        })
+
+from django.shortcuts import get_object_or_404, redirect
+
+def edit_preset(request, preset_id):
+    preset = get_object_or_404(Preset, id=preset_id)
+    if request.method == 'POST':
+        form = PresetForm(request.POST, instance=preset)
+        if form.is_valid():
+            form.save()
+            if preset.wallet and preset.wallet.id:
+                return redirect('preset', wallet_id=preset.wallet.id)
+    else:
+        form = PresetForm(instance=preset)
+    return render(request, 'edit_preset.html', {'form': form})
+
+def delete_preset(request, preset_id):
+    preset = get_object_or_404(Preset, id=preset_id)
+    wallet_id = preset.wallet.id
+    preset.delete()
+    return redirect('preset', wallet_id=wallet_id)
+
+
+def use_preset(request, preset_id):
+    if request.method == 'POST':  # ใช้ POST เพื่อรับค่า
+        preset = get_object_or_404(Preset, id=preset_id)
+        
+        # ดึงข้อมูลจาก JSONField `statement`
+        statement_data = preset.statement
+        
+        # ตรวจสอบข้อมูลใน JSONField และสร้าง Statement ใหม่
+        category = statement_data.get('field1', 'อื่นๆ')  # Default 'อื่นๆ' หากไม่มีข้อมูล
+        amount = statement_data.get('field2', 0.0)
+        type_text = statement_data.get('field3', 'out')  # Default 'out' หากไม่มีข้อมูล
+
+         # แปลงค่า `field3` เป็น `type` ของ Statement
+        if type_text == 'รายรับ':
+            type_ = 'in'  # ใช้ 'in' สำหรับรายรับ
+        elif type_text == 'รายจ่าย':
+            type_ = 'out'  # ใช้ 'out' สำหรับรายจ่าย
+        
+        # สร้าง Statement ใหม่
+        statement = Statement.objects.create(
+            wallet=preset.wallet,  # ใช้ Wallet เดียวกับที่ Preset อ้างอิง
+            category=category,
+            amount=amount,
+            type=type_
+        )
+        statement.save()
+        
+        # ส่ง JSON Response กลับมา (กรณีใช้ AJAX)
+        return JsonResponse({'success': True, 'message': 'Statement created successfully.'})
+    
+    # หากไม่ใช่ POST ให้ส่งสถานะไม่อนุญาต
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
