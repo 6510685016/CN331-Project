@@ -146,7 +146,7 @@ class Mission(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='missions', on_delete=models.CASCADE, null=True)
     mName = models.CharField(max_length=100)
     dueDate = models.DateField()
-    curAmount = models.DecimalField(max_digits=10, decimal_places=2)
+    curAmount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     pic = models.ImageField(upload_to='missions/', null=True, blank=True)
 
