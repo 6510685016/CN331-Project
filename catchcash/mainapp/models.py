@@ -168,7 +168,7 @@ class Mission(models.Model):
             wallet=self.wallet,
             amount=money,
             type='out',
-            category=f"Donation for {self.mName}",
+            category=f"แบ่งจ่ายรายการใหญ่",
             addDate=timezone.now()
         )
         
