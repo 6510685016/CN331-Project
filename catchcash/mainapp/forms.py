@@ -62,17 +62,47 @@ class StatementForm(forms.ModelForm):
         return category  # ถ้าไม่เลือก "other" ก็ใช้ค่า category ที่เลือก
     
 class PresetForm(forms.ModelForm):
+    # ฟิลด์ย่อยสำหรับ statement
+    field1 = forms.CharField(
+        required=True,
+        label="Field 1",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter name'})
+    )
+    field2 = forms.IntegerField(
+        required=True,
+        label="Field 2",
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Amount'})
+    )
+    field3 = forms.ChoiceField(
+        required=True,
+        label="Field 3",
+        choices=[("choice1", "Income"), ("choice2", "Outcome")],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Preset
-        fields = ['name', 'statement']  # ใช้เฉพาะฟิลด์ที่ต้องการ
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Enter Preset Name'
-            }),
-            'statement': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Enter Statement as JSON',
-                'rows': 3
-            }),
+        fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        # รับ instance จาก Preset (object ที่แก้ไข)
+        instance = kwargs.get('instance')
+        if instance and instance.statement:
+            initial = kwargs.setdefault('initial', {})
+            # ดึงค่าจาก statement เพื่อใส่ในฟิลด์ย่อย
+            initial['field1'] = instance.statement.get('field1', '')
+            initial['field2'] = instance.statement.get('field2', '')
+            initial['field3'] = instance.statement.get('field3', '')
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # รวมค่าจากฟิลด์ย่อยเป็น statement
+        instance.statement = {
+            "field1": self.cleaned_data.get('field1'),
+            "field2": self.cleaned_data.get('field2'),
+            "field3": self.cleaned_data.get('field3')
         }
+        if commit:
+            instance.save()
+        return instance
