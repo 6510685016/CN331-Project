@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 
@@ -19,13 +19,21 @@ def main(request):
         # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
         default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
         return redirect('main')
-
+    wallet = None
+    presets = Preset.objects.filter(wallet__in=account.wallets.all())
     form = WalletFilterForm(request.GET or None, account=account)
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
     status = "ไม่พบการจำกัดวงเงิน"
     sList_gByD = []
+
+    if form.is_valid():
+        wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
+    if not wallet:
+        wallet = account.wallets.first()
+    if wallet:
+        presets = Preset.objects.filter(wallet=wallet)
 
     if request.method == 'GET':
         if form.is_valid():
@@ -79,7 +87,8 @@ def main(request):
         'wallet': wallet,
         'theme': theme,
         "data": sData,
-        "status": status
+        "status": status,
+        'presets': presets,
     })
 
 
@@ -367,3 +376,37 @@ def delete_preset(request, preset_id):
     wallet_id = preset.wallet.id
     preset.delete()
     return redirect('preset', wallet_id=wallet_id)
+
+
+def use_preset(request, preset_id):
+    if request.method == 'POST':  # ใช้ POST เพื่อรับค่า
+        preset = get_object_or_404(Preset, id=preset_id)
+        
+        # ดึงข้อมูลจาก JSONField `statement`
+        statement_data = preset.statement
+        
+        # ตรวจสอบข้อมูลใน JSONField และสร้าง Statement ใหม่
+        category = statement_data.get('field1', 'อื่นๆ')  # Default 'อื่นๆ' หากไม่มีข้อมูล
+        amount = statement_data.get('field2', 0.0)
+        type_text = statement_data.get('field3', 'out')  # Default 'out' หากไม่มีข้อมูล
+
+         # แปลงค่า `field3` เป็น `type` ของ Statement
+        if type_text == 'รายรับ':
+            type_ = 'in'  # ใช้ 'in' สำหรับรายรับ
+        elif type_text == 'รายจ่าย':
+            type_ = 'out'  # ใช้ 'out' สำหรับรายจ่าย
+        
+        # สร้าง Statement ใหม่
+        statement = Statement.objects.create(
+            wallet=preset.wallet,  # ใช้ Wallet เดียวกับที่ Preset อ้างอิง
+            category=category,
+            amount=amount,
+            type=type_
+        )
+        statement.save()
+        
+        # ส่ง JSON Response กลับมา (กรณีใช้ AJAX)
+        return JsonResponse({'success': True, 'message': 'Statement created successfully.'})
+    
+    # หากไม่ใช่ POST ให้ส่งสถานะไม่อนุญาต
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)

@@ -1,7 +1,9 @@
 # forms.py
-from django import forms
+from django import forms 
 from .models import Wallet, Statement
 from .models import Preset
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 class WalletFilterForm(forms.Form):
     wallet = forms.ModelChoiceField(
@@ -26,6 +28,7 @@ class WalletFilterForm(forms.Form):
                 self.fields['wallet'].queryset = Wallet.objects.filter(account=account)
             else:
                 self.fields['wallet'].empty_label = "ไม่พบ Wallet"
+                
 class StatementForm(forms.ModelForm):
     category = forms.CharField(label='Category', required=False)
 
@@ -76,7 +79,7 @@ class PresetForm(forms.ModelForm):
     field3 = forms.ChoiceField(
         required=True,
         label="Field 3",
-        choices=[("choice1", "Income"), ("choice2", "Outcome")],
+        choices=[("รายรับ", "รายรับ"), ("รายจ่าย", "รายจ่าย")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
@@ -106,3 +109,5 @@ class PresetForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+    
+

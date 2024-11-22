@@ -14,7 +14,7 @@
         <form method="POST" class="mt-3 mb-4">
             {% csrf_token %}
             <div class="mb-3">
-                <label for="name" class="form-label">Preset Name</label>
+                <label for="name" class="form-label">ชื่อ Preset</label>
                 {{ form.name }}
             </div>
             <div class="mb-3">
@@ -22,14 +22,14 @@
                 {{ form.field1 }}
             </div>
             <div class="mb-3">
-                <label for="field2" class="form-label">Amount</label>
+                <label for="field2" class="form-label">จำนวนเงิน</label>
                 {{ form.field2 }}
             </div>
             <div class="mb-3">
-                <label for="field3" class="form-label">Type</label>
+                <label for="field3" class="form-label">ประเภท</label>
                 {{ form.field3 }}
             </div>
-            <button type="submit" class="btn btn-primary">Add Preset</button>
+            <button type="submit" class="btn btn-primary">เพิ่ม Preset</button>
         </form>
         
 
@@ -38,11 +38,11 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Preset Name</th>
+                    <th>ชื่อ Preset</th>
                     <th>Statement</th>
-                    <th>Amount</th>
-                    <th>type</th>
-                    <th>Action</th>
+                    <th>จำนวนเงิน</th>
+                    <th>ประเภท</th>
+                    <th>ตั้งค่า</th>
                 </tr>
             </thead>
             <tbody>
