@@ -1,6 +1,6 @@
 # forms.py
 from django import forms 
-from .models import Wallet, Statement
+from .models import Mission, Scope, Wallet, Statement
 from .models import Preset
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -49,8 +49,7 @@ class StatementForm(forms.ModelForm):
             selected_category = self.instance.category if self.instance else None
 
             self.fields['category'] = forms.ChoiceField(
-                choices=choices + [("other", "อื่นๆ (ระบุ)"), 
-                                   ("อื่นๆ", "อื่นๆ"), 
+                choices=choices + [("อื่นๆ", "อื่นๆ"), 
                                    ("รายรับ", "รายรับ"),
                                    ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
                                    ("ค่าเดินทาง", "ค่าเดินทาง"), 
@@ -132,4 +131,25 @@ class PresetForm(forms.ModelForm):
             instance.save()
         return instance
     
+class ScopeForm(forms.ModelForm):
+    class Meta:
+        model = Scope
+        fields = ['amount', 'type', 'range']
 
+        widgets = {
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
+            'type': forms.Select(attrs={'class': 'form-control'}),
+            'range': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+class MissionForm(forms.ModelForm):
+    class Meta:
+        model = Mission
+        fields = ['mName', 'dueDate', 'amount']
+
+        widgets = {
+            'mName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Goal Name'}),
+            'dueDate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target Amount'}),
+            #'pic': forms.FileInput(attrs={'class': 'form-control'}),
+        }

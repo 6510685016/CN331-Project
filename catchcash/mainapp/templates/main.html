@@ -30,15 +30,15 @@
                 <ul class="nav flex-column p-5">
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="main.html">Home</a>
+                            href="main">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="scope.html">Scope</a>
+                            href="scope">Scope</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="goal.html">Goal</a>
+                            href="goal">Goal</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
@@ -46,19 +46,19 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="progression.html">Progression</a>
+                            href="progression">Progression</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="trophy.html">Trophy</a>
+                            href="trophy">Trophy</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="setting.html">Setting</a>
+                            href="setting">Setting</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link h3 mb-4 fs-4 text-reset fw-bold text-center text-md-start"
-                            href="about.html">About us</a>
+                            href="about">About us</a>
                     </li>
                 </ul>
             </div>
@@ -187,135 +187,122 @@
         </div>
     </div>
     <!-- Container หลัก -->
-        <div class="row">
-            <!-- Statement ด้านซ้าย -->
-            <div class="col-md-6">
-                <div class="p-3 d-flex flex-column" id="statement_container"
-                    style="height: 624px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
-                    {% include "statement_container.html" %}
-                    <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
-                    <div class="mt-auto d-flex justify-content-around">
-                        <button class="btn btn-primary" id="use_preset" data-toggle="modal"
-                            data-target="#selectModal">ใช้ preset</button>
-                            <!-- ฟอร์ม statement -->
-                            
-                        <!-- ปุ่มตั้งค่า preset -->
-                        <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal ใช้ Preset -->
-            <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="selectModalLabel">เลือก Preset</h5>
-                        </div>
-                        <div class="modal-body">
-                            <ul class="list-group">
-                                {% for preset in presets %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    {{ preset.name }}
-                                    <button class="btn btn-primary btn-sm use-preset-btn" data-preset-id="{{ preset.id }}">
-                                        ใช้
-                                    </button>
-                                </li>
-                                {% empty %}
-                                <li class="list-group-item text-center">ไม่มี Preset</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Goal และ Objective ด้านขวา -->
-            <div class="col-md-6">
-                <div class="row">
-                    <!-- Goal -->
-                    <div class="col-12 mb-4"
-                    style="height: 300px; overflow-y: auto;">
-                        <div id="goal">
-                            <div class="container-fluid">
-                                <h2>Goal</h2>
-                                {% for m in missions %}
-                                    <div class="row">
-                                        {% if not m.isOutdate and m.amountToGo > 0 %}
-                                        <div class="col-6">{{ m.status_text }}</div>
-                                        <div class="col-6">
-                                            <form action="{% url 'donate_to_mission' m.id %}" method="post">
-                                                {% csrf_token %}
-                                                <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
-                                                <button type="submit" class="btn btn-success">Donate</button>
-                                            </form>
-                                        </div>
-                                        {% elif m.isOutdate %}
-                                        <div class="col-8">{{ m.status_text }}</div>
-                                        <div class="col-4">
-                                            <p class="text-danger">Outdated.</p>
-                                        </div>
-                                        {% else %}
-                                        <div class="col-8">{{ m.status_text }}</div>
-                                        <div class="col-4">
-                                            <p class="text-success">Completed!</p>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                {% empty %}
-                                    <div class="row">
-                                        <p>No missions available.</p>
-                                    </div>
-                                {% endfor %}
-                                <!-- ปุ่มสร้าง Goal -->
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#formModal"
-                                    id="create_goal">สร้าง Goal
-                                </button>
+    <div class="row">
+        <!-- Statement ด้านซ้าย -->
+        <div class="col-md-6">
+            <div class="p-3 d-flex flex-column" id="statement_container"
+                style="height: 624px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
+                <!-- ส่วนหัว -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <h2 class="col-4 mb-4">
+                            Statements
+                        </h2>
+                        {% if wallet %}
+                            <div class="col-2">
+                                <button type="button" class="btn btn-outline-dark" id="toggleFormButton">เพิ่ม</button>
+                            </div>    
+                            <div class="col-3">
+                                <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
+                                <button type="button" class="btn btn-primary" id="use_preset" data-toggle="modal"
+                                    data-target="#selectModal">ใช้ preset</button>
                             </div>
-                            
-                        </div>
+                            <div class="col-3">
+                                <!-- ปุ่มตั้งค่า preset -->
+                                <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
+                            </div>
+                        {% endif %} 
                     </div>
+                </div>
+                {% include "statement_container.html" %}
+            </div>
+        </div>
 
-                    <!-- Modal สร้าง Goal -->
-                    <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="formModalLabel">ข้อมูลเป้าหมายใหม่</h5>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- ฟอร์มสร้าง Goal -->
-                                    <form action="/submit-form" method="POST" enctype="multipart/form-data">
+        <!-- Modal ใช้ Preset -->
+        <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="selectModalLabel">เลือก Preset</h5>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            {% for preset in presets %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ preset.name }}
+                                <button class="btn btn-primary btn-sm use-preset-btn" data-preset-id="{{ preset.id }}">
+                                    ใช้
+                                </button>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-center">ไม่มี Preset</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Goal และ Objective ด้านขวา -->
+        <div class="col-md-6">
+            <div class="row">
+                <!-- Goal -->
+                <div class="col-12 mb-4" style="height: 300px; overflow-y: auto;">
+                    <div id="goal">
+                        <div class="container-fluid m-2">
+                            <div class="row">
+                                <h2 class="col-8 mb-4">
+                                    Goal
+                                </h2>
+                                <!-- ปุ่มตั้งค่า Goal -->
+                                <a href="{% url 'goal' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Goal</a>
+                            </div>        
+                            {% for m in missions %}
+                            <div class="row">
+                                {% if not m.isOutdate and m.amountToGo > 0 %}
+                                <div class="col-6">{{ m.status_text }}</div>
+                                <div class="col-6">
+                                    <form action="{% url 'donate_to_mission' m.id %}" method="post">
                                         {% csrf_token %}
-                                        <div class="form-group">
-                                            <label for="name">ชื่อ:</label>
-                                            <input type="text" class="form-control" id="name" name="name" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="amount">จำนวนเงิน:</label>
-                                            <input type="number" class="form-control" id="amount" name="amount"
-                                                required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="image">เลือกรูปภาพ:</label>
-                                            <input type="file" class="form-control-file" id="image" name="image">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                                        <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
+                                        <button type="submit" class="btn btn-success">Donate</button>
                                     </form>
                                 </div>
+                                {% elif m.isOutdate %}
+                                <div class="col-8">{{ m.status_text }}</div>
+                                <div class="col-4">
+                                    <p class="text-danger">Outdated.</p>
+                                </div>
+                                {% else %}
+                                <div class="col-8">{{ m.status_text }}</div>
+                                <div class="col-4">
+                                    <p class="text-success">Completed!</p>
+                                </div>
+                                {% endif %}
                             </div>
+                            {% empty %}
+                            <div class="row">
+                                <p>No missions available.</p>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
+                </div>
 
-                    <!-- Scope -->
-                    <div class="col-12">
+                <!-- Scope -->
+                <div class="col-12">
                     <div class="p-2" id="objective">
                         <div class="container-fluid h-100" style="height: 300px; overflow-y: auto;">
-                            <h2>Scope</h2>
+                            <div class="row">
+                                <h2 class="col-8 mb-4">
+                                    Scope
+                                </h2>
+                                <!-- ปุ่มตั้งค่า scope -->
+                                <a href="{% url 'scope' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Scope</a>
+                            </div>  
                             {% for s in scopes %}
                                 <div class="row">
                                 {% if s.statusToText == "On target." %}
@@ -331,64 +318,13 @@
                                     <p>No scopes available.</p>
                                 </div>
                             {% endfor %}
-                            <!-- Button to Open Modal -->
-<button class="btn btn-primary" data-toggle="modal" data-target="#scopeModal" id="create_scope">
-    สร้าง Scope
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="scopeModal" tabindex="-1" role="dialog" aria-labelledby="scopeModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form method="POST" action="{% url 'create_scope' %}">
-                {% csrf_token %}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="scopeModalLabel">สร้าง Scope</h5>
-                </div>
-                <div class="modal-body">
-                    <!-- Amount -->
-                    <div class="form-group">
-                        <label for="amount">จำนวนเงิน</label>
-                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
-                    </div>
-
-                    <!-- Type -->
-                    <div class="form-group">
-                        <label for="type">ประเภท</label>
-                        <select class="form-control" id="type" name="type" required>
-                            <option value="out">เก็บเงิน</option>
-                            <option value="in">ควบคุมการใช้เงิน</option>
-                        </select>
-                    </div>
-
-                    <!-- Range -->
-                    <div class="form-group">
-                        <label for="range">ช่วงเวลา</label>
-                        <select class="form-control" id="range" name="range" required>
-                            <option value="1D">1 วัน</option>
-                            <option value="1W">1 สัปดาห์</option>
-                            <option value="1M">1 เดือน</option>
-                            <option value="1Y">1 ปี</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                    <button type="submit" class="btn btn-primary">บันทึก</button>
-                </div>
-                <!-- Add hidden input for wallet -->
-                <input type="hidden" name="wallet" value="{{ wallet.id }}">
-            </form>
-        </div>
-    </div>
-</div>
-
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </body>
-
 </html>
 
 <!-- สร้าง wallet-->
