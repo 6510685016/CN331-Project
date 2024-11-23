@@ -79,7 +79,6 @@ class Scope(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='scopes', on_delete=models.CASCADE, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
-    category = models.CharField(max_length=100)
     range = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
 
     def __str__(self):
@@ -89,20 +88,20 @@ class Scope(models.Model):
         statements = Statement.objects.filter(wallet=self.wallet)
         
         # กรอง Statements ตามช่วงเวลา
-        if self.range == "1D":  # วันเดียว
+        if self.range == "1 วัน":  # วันเดียว
             statements = statements.filter(addDate=date)
-        elif self.range == "1W":  # สัปดาห์
+        elif self.range == "1 สัปดาห์":  # สัปดาห์
             start_week = date - timedelta(days=date.weekday())  # วันจันทร์ของสัปดาห์
             end_week = start_week + timedelta(days=6)  # วันอาทิตย์
             statements = statements.filter(addDate__range=[start_week, end_week])
-        elif self.range == "1M":  # เดือน
+        elif self.range == "1 เดือน":  # เดือน
             statements = statements.filter(addDate__year=date.year, addDate__month=date.month)
-        elif self.range == "1Y":  # ปี
+        elif self.range == "1 ปี":  # ปี
             statements = statements.filter(addDate__year=date.year)
         
         # คำนวณผลรวมของ Statements
-        total_in = statements.filter(type="in").aggregate(Sum('amount'))['amount__sum'] or 0
-        total_out = statements.filter(type="out").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_in = statements.filter(type="เก็บเงิน").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_out = statements.filter(type="ควบคุมการใช้เงิน").aggregate(Sum('amount'))['amount__sum'] or 0
         
         current_total = total_in - total_out
         
