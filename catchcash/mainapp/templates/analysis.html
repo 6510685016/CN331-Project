@@ -5,123 +5,306 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CatchCASH</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        overflow-y: hidden;
+    /* Custom Styling */
+    .incomeOutcome-box {
+        height: 450px;
+        width: 350px;
+        border-radius: 30px;
+        background-color: #65ffe5c6;
+    }
+
+    .chartStyle {
+        height: 450px;
+        width: 350px;
+        border-radius: 30px;
+        background-color: #65ffe5c6;
     }
 </style>
 
-<body>
-
-    <div class="container-fluid">
-        <div class="h-100 border p-3 min-vh-100 row justify-content-center">
-            <!-- First Row -->
-            <div class="row border p-4 w-100">
-                <!-- Date & Time Placeholder -->
-                <div class="col-12 col-sm-4 col-md-4 col-lg-4 d-flex justify-content-center align-items-center">
-                    <p id="datetime">datetime</p>
-                </div>
-
-                <!-- Bar Chart -->
-                <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-                    <canvas id="polarAreaChart"></canvas>
-                </div>
-
-                <!-- Pie Chart -->
-                <div class="col-12 col-sm-4 col-md-4 col-lg-4">
-                    <canvas id="pieChart"></canvas>
+<body class="m-0 p-0 vw-100 vh-100">
+    <div class="d-flex w-100 h-50">
+        <!-- Left Box: Charts -->
+        <div class="w-75 mt-3">
+            <!-- Income Chart -->
+            <div class="h-50 w-25 ms-5 mb-3 chartStyle">
+                <canvas id="IncomeChart" class="p-3 h-100"></canvas>
+                <div id="no-data-message1" class="text-center" style="display: none;">
+                    <h5>No Income Data Available</h5>
                 </div>
             </div>
 
-            <!-- Polar Area Chart -->
-            <!-- Polar Area Chart -->
-            <div class="border p-4 d-flex justify-content-center">
-                <canvas id="barChart" height="200"></canvas>
+            <!-- Expenses Chart -->
+            <div class="h-50 ms-5 chartStyle">
+                <canvas id="ExpensesChart" class="p-3 w-100 h-100 "></canvas>
+                <div id="no-data-message2" class="text-center" style="display: none;">
+                    <h5>No Expense Data Available</h5>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Box: Filter & Transaction History -->
+        <div class="w-25">
+            <!-- Wallet & Date Filter -->
+            <div class="justify-content-end text-end mt-3 mb-3 me-3">
+                <label for="wallet-select" class="visually-hidden">Select Wallet</label>
+                <select id="wallet-select" name="wallet" class="btn btn-primary me-2" onchange="applyFilter()">
+                    {% if wallets %}
+                    {% for wallet in wallets %}
+                    <option value="{{ wallet.id }}">{{ wallet.wName }}</option>
+                    {% endfor %}
+                    {% else %}
+                    <option value="" disabled selected>No Wallets Available</option>
+                    {% endif %}
+                </select>
+
+                <input type="date" id="date-select" name="date" class="btn btn-light border" onchange="applyFilter()">
+            </div>
+
+            <!-- Income Outcome Box -->
+            <div class="d-flex flex-column mx-auto incomeOutcome-box">
+                <div class="border-bottom p-2 text-center">
+                    <h5>Income VS Outcome</h5>
+                </div>
+
+                <div id="no-data-message3" class="text-center" style="display: none;">
+                    <h5>No Income or Outcome</h5>
+                </div>
+
+                <div class="p-2 m-2">
+                    <canvas id="IncomeVsOutcomeChart" class="p-3 chartStyle"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Django data context
-        const data = {{ data| safe }};
-        const labels = {{ labels| safe }};
+    <!-- Summary Section -->
+    <div class="w-100 h-50 d-flex flex-column align-items-center justify-content-center">
+        <div class="h-75 w-75 d-flex align-items-center justify-content-center chartStyle">
+            <canvas id="sevenDaysChart" class="p-3 w-50 h-100"></canvas>
+        </div>
+    </div>
+</body>
 
-        // Bar Chart
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        new Chart(barCtx, {
+
+<script>
+    // On Page Load: Set default date and apply initial filter
+    window.onload = function () {
+        const defaultDate = new Date();
+        const formattedDate = defaultDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+        document.getElementById("date-select").value = formattedDate;
+
+        // ควรทดสอบการตั้งค่าเริ่มต้นของวันที่เมื่อโหลดหน้า
+        applyFilter();  // ควรทดสอบว่าฟังก์ชันนี้ทำงานตามที่คาดไว้
+    };
+
+    // Function to Load Data for Last Seven Days based on selected date
+    function loadDataForLastSevenDays(selectedDate) {
+        const walletId = document.getElementById("wallet-select").value;
+        console.log("Selected Date:", selectedDate, "Wallet ID:", walletId);
+
+        // ควรทดสอบการเลือกกระเป๋าและวันที่ว่าเลือกถูกต้องหรือไม่
+        if (!walletId) {
+            console.error("No wallet selected.");
+            return;
+        }
+
+        // Initialize arrays for balance and dates
+        const balanceList = new Array(7); // Ensure the array has the correct size
+        const dateList = [];
+
+        // ควรทดสอบการคำนวณวันย้อนหลัง 7 วัน
+        const dayList = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(selectedDate);
+            date.setDate(date.getDate() - i);
+            dayList.push(date.toISOString().split('T')[0]); // Format as YYYY-MM-DD
+        }
+
+        // Fetch data for each day and ensure order is preserved using the index
+        const fetchPromises = dayList.map((date, index) => {
+            const params = new URLSearchParams({ wallet_id: walletId, date: date });
+
+            return fetch(`/analysis/?${params.toString()}`, { method: 'GET' })
+                .then(response => response.ok ? response.json() : Promise.reject('Error'))
+                .then(data => {
+                    const balance = calculateBalance(data.statement);
+                    balanceList[index] = balance; // Ensure balance is stored at the correct index
+                    dateList[index] = date; // Ensure date is stored at the correct index
+                })
+                .catch(error => {
+                    console.error(`Error fetching data for ${date}:`, error);
+                    balanceList[index] = 0; // Add 0 if no data is found
+                    dateList[index] = date; // Store the date even if data is not found
+                });
+        });
+
+        // ควรทดสอบการสร้างกราฟหลังจากดึงข้อมูลครบ 7 วัน
+        Promise.all(fetchPromises)
+            .then(() => {
+                dateList.reverse()
+                balanceList.reverse()
+                console.log("Date List:", dateList);
+                console.log("Balance List:", balanceList);
+                createLineChart(balanceList, dateList); // ควรทดสอบว่าแสดงกราฟได้ถูกต้อง
+            })
+            .catch(error => console.error("Error in fetching data:", error));
+    }
+
+    // Function to Calculate Balance from Data
+    function calculateBalance(statement) {
+        let income = 0, outcome = 0;
+        if (statement && statement.length > 0) {
+            statement.forEach(item => {
+                if (item.type === 'in') income += parseFloat(item.amount);
+                if (item.type === 'out') outcome += parseFloat(item.amount);
+            });
+            return income - outcome;
+        }
+        return 0;
+    }
+
+    // Create Line Chart for Balance over Last Seven Days
+    function createLineChart(balanceList, dateList) {
+        const ctx = document.getElementById('sevenDaysChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dateList,
+                datasets: [{
+                    label: 'Balance',
+                    data: balanceList,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Balance' } }
+                }
+            }
+        });
+    }
+
+    // Apply Filter: Get Wallet and Date, Update Charts
+    function applyFilter() {
+        const walletId = document.getElementById("wallet-select").value;
+        const selectedDate = document.getElementById("date-select").value || document.getElementById("date-select").defaultValue;
+
+        // ควรทดสอบการเลือกกระเป๋าและวันที่
+        if (walletId || selectedDate) {
+            loadDataForLastSevenDays(selectedDate);  // ทดสอบการโหลดข้อมูลที่กรองแล้ว
+
+            const params = new URLSearchParams();
+            if (walletId) params.append('wallet_id', walletId);
+            if (selectedDate) params.append('date', selectedDate);
+
+            fetch(`/analysis/?${params.toString()}`, { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.statement && data.statement.length > 0) {
+                        let income = 0, outcome = 0;
+                        let incomeCategories = {}, expenseCategories = {};
+
+                        data.statement.forEach(statement => {
+                            if (statement.type === 'in') {
+                                income += parseFloat(statement.amount);
+                                incomeCategories[statement.category] = (incomeCategories[statement.category] || 0) + parseFloat(statement.amount);
+                            } else if (statement.type === 'out') {
+                                outcome += parseFloat(statement.amount);
+                                expenseCategories[statement.category] = (expenseCategories[statement.category] || 0) + parseFloat(statement.amount);
+                            }
+                        });
+
+                        // ควรทดสอบการอัปเดตกราฟ Income vs Outcome
+                        updateIncomeVsOutcomeChart(income, outcome);
+                        updateIncomeChart(incomeCategories);
+                        updateExpensesChart(expenseCategories);
+
+                        document.getElementById('no-data-message1').style.display = 'none';
+                        document.getElementById('no-data-message2').style.display = 'none';
+                        document.getElementById('no-data-message3').style.display = 'none';
+                        document.getElementById('IncomeVsOutcomeChart').style.display = 'block';
+                        document.getElementById('IncomeChart').style.display = 'block';
+                        document.getElementById('ExpensesChart').style.display = 'block';
+                    } else {
+                        document.getElementById('no-data-message1').style.display = 'block';
+                        document.getElementById('no-data-message2').style.display = 'block';
+                        document.getElementById('no-data-message3').style.display = 'block';
+                        document.getElementById('IncomeVsOutcomeChart').style.display = 'none';
+                        document.getElementById('IncomeChart').style.display = 'none';
+                        document.getElementById('ExpensesChart').style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+
+    // Update Income vs Outcome Doughnut Chart
+    function updateIncomeVsOutcomeChart(income, outcome) {
+        const ctx = document.getElementById('IncomeVsOutcomeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Income', 'Outcome'],
+                datasets: [{
+                    data: [income, outcome],
+                    backgroundColor: ['#4CAF50', '#F44336'],
+                }]
+            }
+        });
+    }
+
+    // Update Income Bar Chart
+    function updateIncomeChart(incomeCategories) {
+        const ctx = document.getElementById('IncomeChart').getContext('2d');
+        new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: Object.keys(incomeCategories),
                 datasets: [{
-                    label: 'Bar Chart',
-                    data: data,
-                    backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8']
+                    label: 'Income by Category',
+                    data: Object.values(incomeCategories),
+                    backgroundColor: '#4CAF50',
+                    borderColor: '#388E3C',
+                    borderWidth: 1
                 }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
             }
         });
+    }
 
-        // Pie Chart
-        const pieCtx = document.getElementById('pieChart').getContext('2d');
-        new Chart(pieCtx, {
-            type: 'pie',
+    // Update Expenses Bar Chart
+    function updateExpensesChart(expenseCategories) {
+        const ctx = document.getElementById('ExpensesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
             data: {
-                labels: labels,
+                labels: Object.keys(expenseCategories),
                 datasets: [{
-                    label: 'Pie Chart',
-                    data: data,
-                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#ffa726']
+                    label: 'Expenses by Category',
+                    data: Object.values(expenseCategories),
+                    backgroundColor: '#F44336',
+                    borderColor: '#D32F2F',
+                    borderWidth: 1
                 }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
             }
         });
+    }
 
-        // Polar Area Chart
-        const polarCtx = document.getElementById('polarAreaChart').getContext('2d');
-        new Chart(polarCtx, {
-            type: 'polarArea',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Polar Area Chart',
-                    data: data,
-                    backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4caf50']
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
-            }
-        });
+</script>
 
-    </script>
 
-</body>
+
 
 </html>
