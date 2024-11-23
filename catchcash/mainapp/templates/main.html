@@ -5,7 +5,7 @@ Main Page - CatchCASH
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid p-4 main-content" style="max-width: 100%; padding-right: 0;">
+    <div class="container-fluid p-4 main-content" style="max-width: 90%; padding-right: 0;">
         <div class="row mb-4">
             <div class="col-12">
                 <div class="p-3" id="background">
@@ -94,14 +94,22 @@ Main Page - CatchCASH
                     <p>{{ data.in }} {{ wallet.currency }}</p>
                 </div>
             </div>
-        <!-- วงเงิน -->
-        <div class="col-md-4">
-            <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
-                <h2>เงินสุทธิ</h2>
-                <p>{{wallet.balance}} {{wallet.currency}}</p>
+
+            <!-- รายจ่ายทั้งหมด -->
+            <div class="col-md-4">
+                <div class="p-3" style="background-color: #F7EFFF; border: 1px solid #F7EFFF;">
+                    <h2>รายจ่ายทั้งหมด</h2>
+                    <p>{{data.out}} {{wallet.currency}}</p>
+                </div>
+            </div>
+            <!-- วงเงิน -->
+            <div class="col-md-4">
+                <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
+                    <h2>เงินสุทธิ</h2>
+                    <p>{{wallet.balance}} {{wallet.currency}}</p>
+                </div>
             </div>
         </div>
-    </div>
     <!-- Container หลัก -->
     <div class="row">
         <!-- Statement ด้านซ้าย -->
@@ -233,15 +241,6 @@ Main Page - CatchCASH
                                     <p>No scopes available.</p>
                                 </div>
                             {% endfor %}
-                        </div>
-
-                        <!-- Scope -->
-                        <div class="col-12">
-                            <div class="p-3" id="objective">
-                                <h2>Scope</h2>
-                                <p>เนื้อหาของ Objective.</p>
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#scopeModal" id="create_scope">สร้าง Scope</button>
-                            </div>    
                         </div>
                     </div>
                 </div>
