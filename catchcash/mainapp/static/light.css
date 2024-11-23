@@ -140,14 +140,6 @@
   overflow-y: auto;
 }
 
-#use_preset{
-  width: 150px; 
-  height: 75px; 
-  background-color: rgb(3, 39, 53); 
-  border: 0cm;
-  margin-right: 10px;
-}
-
 #create_preset {
   width: 150px; 
   height: 75px; 
