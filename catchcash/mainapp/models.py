@@ -92,8 +92,8 @@ class Scope(models.Model):
             statements = statements.filter(addDate__year=date.year)
         
         # คำนวณผลรวมของ Statements
-        total_in = statements.filter(type="in").aggregate(Sum('amount'))['amount__sum'] or 0
-        total_out = statements.filter(type="out").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_in = statements.filter(type="เก็บเงิน").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_out = statements.filter(type="ควบคุมการใช้เงิน").aggregate(Sum('amount'))['amount__sum'] or 0
         
         current_total = total_in - total_out
         

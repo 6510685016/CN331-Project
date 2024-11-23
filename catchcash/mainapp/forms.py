@@ -77,10 +77,20 @@ class StatementForm(forms.ModelForm):
     
 class PresetForm(forms.ModelForm):
     # ฟิลด์ย่อยสำหรับ statement
-    field1 = forms.CharField(
+    field1 = forms.ChoiceField(
         required=True,
-        label="Field 1",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter name'})
+        label="Field 3",
+        choices=[("รายรับ", "รายรับ"),
+                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                                   ("จิปาถะ", "จิปาถะ"), 
+                                   ("บันเทิง", "บันเทิง"), 
+                                   ("ครอบครัว", "ครอบครัว"), 
+                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                                    ("อื่นๆ","อื่นๆ")],
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     field2 = forms.IntegerField(
         required=True,

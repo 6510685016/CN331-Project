@@ -217,27 +217,35 @@ def create_wallet(request):
 
 def create_scope(request):
     if request.method == 'POST':
-        wallet_id = request.POST['wallet']
-        amount = request.POST['amount']
-        type = request.POST['type']
-        category = request.POST['category']
-        range = request.POST['range']
+        # รับค่าจากฟอร์ม
+        wallet_id = request.POST.get('wallet')  # ดึงค่า wallet ที่ถูกส่งมาจากฟอร์ม
+        amount = request.POST.get('amount')
+        type = request.POST.get('type')
+        range_value = request.POST.get('range')
 
-        wallet = Wallet.objects.get(id=wallet_id)
+        try:
+            # ดึง wallet ที่เลือก
+            wallet = Wallet.objects.get(id=wallet_id)
 
-        new_scope = Scope(
-            wallet=wallet,
-            amount=amount,
-            type=type,
-            category=category,
-            range=range
-        )
-        new_scope.save()
-        messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
+            # สร้าง Scope ใหม่
+            new_scope = Scope(
+                wallet=wallet,
+                amount=amount,
+                type=type,
+                range=range_value
+            )
+            new_scope.save()
 
-    wallets = Wallet.objects.all()
-    return HttpResponse("ERROR, Can't create_scope")
+            messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
+            return redirect('main')  # เปลี่ยนเป็น URL ที่ต้องการ
+
+        except Wallet.DoesNotExist:
+            messages.error(request, 'ไม่พบกระเป๋าเงินที่เลือก')
+            return redirect('main')  # หรือ URL ที่ต้องการให้กลับไป
+    else:
+        # ถ้าเป็น GET ก็แสดงแบบฟอร์ม
+        return HttpResponse("ERROR, Can't create_scope")
+
 
 def delete_scope(request, scope_id):
     scope = get_object_or_404(Scope, id=scope_id)
@@ -301,8 +309,8 @@ def create_preset(request):
             name=name
         )
         new_preset.save()
-        messages.success(request, 'Preset ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
+        messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
+        return redirect('main')
 
     wallets = Wallet.objects.all()
     return HttpResponse("ERROR, Can't create_preset")
