@@ -67,14 +67,6 @@ class Wallet(models.Model):
         total_out = self.statements.filter(type='out').aggregate(Sum('amount'))['amount__sum'] or 0
         return f"{total_in - total_out:.2f}"
 
-
-class FixStatement(models.Model):
-    wallet = models.ForeignKey(Wallet, related_name='fix_statements', on_delete=models.CASCADE, null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    type = models.CharField(max_length=3, choices=[('in', 'In'), ('out', 'Out')])
-    category = models.CharField(max_length=100)
-    frequency = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
-
 class Scope(models.Model):
     wallet = models.ForeignKey(Wallet, related_name='scopes', on_delete=models.CASCADE, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
