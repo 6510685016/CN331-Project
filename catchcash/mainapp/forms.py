@@ -124,12 +124,11 @@ class PresetForm(forms.ModelForm):
 class ScopeForm(forms.ModelForm):
     class Meta:
         model = Scope
-        fields = ['amount', 'type', 'category', 'range']
+        fields = ['amount', 'type', 'range']
 
         widgets = {
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
             'type': forms.Select(attrs={'class': 'form-control'}),
-            'category': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category'}),
             'range': forms.Select(attrs={'class': 'form-control'}),
         }
         
@@ -139,7 +138,7 @@ class MissionForm(forms.ModelForm):
         fields = ['mName', 'dueDate', 'amount']
 
         widgets = {
-            'mName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mission Name'}),
+            'mName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Goal Name'}),
             'dueDate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target Amount'}),
             #'pic': forms.FileInput(attrs={'class': 'form-control'}),
