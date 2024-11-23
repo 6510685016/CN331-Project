@@ -24,7 +24,6 @@
                 <tr>
                     <th>Amount</th>
                     <th>Type</th>
-                    <th>Category</th>
                     <th>Range</th>
                     <th>Action</th>
                 </tr>
@@ -34,7 +33,6 @@
                 <tr>
                     <td>{{ scope.amount }}</td>
                     <td>{{ scope.get_type_display }}</td>
-                    <td>{{ scope.category }}</td>
                     <td>{{ scope.get_range_display }}</td>
                     <td>
                         <a href="{% url 'edit_scope' scope.id %}" class="btn btn-warning btn-sm">Edit</a>
