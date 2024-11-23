@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mainapp', '0008_mission_curamount'),
+        ('mainapp', '0009_alter_mission_curamount_delete_fixstatement'),
     ]
 
     operations = [
