@@ -1,5 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
+import json
 from django.forms import ValidationError
 from django.test import TestCase
 from django.urls import reverse
@@ -40,12 +41,11 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal("100.00"),
             type="out",
-            category="Food",
             range="1W"
         )
 
         # Verify the string representation
-        self.assertEqual(str(scope), "Scope: Food (1W)")
+        self.assertEqual(str(scope), "Scope: (1W)")
 
     
     def test_status_in_1d(self):
@@ -53,7 +53,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('200.00'),
             type='in',
-            category='Test Income',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -64,7 +63,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('50.00'),
             type='out',
-            category='Test Expense',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -75,7 +73,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('300.00'),
             type='in',
-            category='Test Income',
             range='1W'
         )
         # Assuming the current date is within the same week as the statement's
@@ -87,7 +84,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('150.00'),
             type='out',
-            category='Test Expense',
             range='1M'
         )
         # Assuming the current date is within the month of the statements
@@ -100,7 +96,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('500.00'),
             type='in',
-            category='Test Yearly Income',
             range='1Y'
         )
         
@@ -120,7 +115,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('300.00'),
             type='out',
-            category='Test Yearly Expense',
             range='1Y'
         )
         
@@ -139,7 +133,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('200.00'),
             type='in',
-            category='Test Income',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -150,7 +143,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('50.00'),
             type='out',
-            category='Test Expense',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -161,7 +153,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('200.00'),
             type='in',
-            category='Test Income',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -172,7 +163,6 @@ class ScopeModelTest(TestCase):
             wallet=self.wallet,
             amount=Decimal('20.00'),
             type='out',
-            category='Test Expense',
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
@@ -249,7 +239,7 @@ class ViewsTestCase(TestCase):
         self.statement1 = Statement.objects.create(wallet=self.wallet, amount=100, type='in', category="Salary", addDate=timezone.now())
         self.statement2 = Statement.objects.create(wallet=self.wallet, amount=50, type='out', category="Food", addDate=timezone.now())
         
-        self.scope1 = Scope.objects.create(wallet=self.wallet, amount=1000, type='out', category='Saving', range='1M')
+        self.scope1 = Scope.objects.create(wallet=self.wallet, amount=1000, type='out', range='1M')
         
         self.client.login(username="testuser", password="testpassword")
         response = self.client.get(reverse('main'))
@@ -258,17 +248,27 @@ class ViewsTestCase(TestCase):
         self.assertIn('form', response.context)
         self.assertIn('statements', response.context)
         self.assertIn('wallet', response.context)
-    
-    def test_main_no_wallet(self):
+        
+    def test_main_view_creates_default_wallet(self):
+        # Log in as the created user
+        self.client.login(username="testuser", password="testpassword")
         self.wallet.delete()
-        self.client.login(username="testuser", password="testpassword")
-        response = self.client.get(reverse('main'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'main.html')
-        self.assertIn('form', response.context)
-        self.assertIn('statements', response.context)
-        self.assertIn('wallet', response.context)
         
+        # Access the main view
+        url = reverse('main')
+        response = self.client.get(url)
+
+        # Verify that the response redirects to the main view
+        self.assertEqual(response.status_code, 302)  # Redirect to 'main'
+        self.assertRedirects(response, reverse('main'))
+
+        # Verify that a default wallet is created
+        wallets = Wallet.objects.filter(account=self.account)
+        self.assertEqual(wallets.count(), 1)  # Ensure one wallet is created
+        default_wallet = wallets.first()
+        self.assertEqual(default_wallet.wName, "Default Wallet")  # Default wallet name
+        self.assertEqual(default_wallet.account, self.account)  # Linked to the correct account
+
     def test_about_view(self):
         response = self.client.get(reverse('about'))
         self.assertEqual(response.status_code, 200)
@@ -470,7 +470,6 @@ class ViewsTestCase(TestCase):
             'wallet': self.wallet.id,
             'amount': 5000,
             'type': 'Out',
-            'category': 'Food',
             'range':'1M'
         }
 
@@ -486,7 +485,6 @@ class ViewsTestCase(TestCase):
         self.assertEqual(scope.wallet, self.wallet)
         self.assertEqual(scope.amount, 5000)
         self.assertEqual(scope.type, 'Out')
-        self.assertEqual(scope.category, 'Food')
         self.assertEqual(scope.range, '1M')
         
     def test_create_scope_get(self):
@@ -530,22 +528,27 @@ class ViewsTestCase(TestCase):
         self.assertContains(response, "ERROR, Can't create_mission")
     
     def test_create_preset_post_valid_data(self):
+        # Send a POST request with valid data
         self.valid_data = {
             'wallet': self.wallet.id,
             'name': 'New Preset',
         }
-        # Send a POST request with valid data
         response = self.client.post(reverse('create_preset'), self.valid_data)
 
-        # Check that the response redirects to the wallet detail page
+        # Check that the response redirects to the 'main' view
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('wallet_detail', args=[self.wallet.id]))
+        self.assertEqual(response.url, reverse('main'))
 
-        # Verify the preset is created in the database
+        # Check that a Preset object was created
         self.assertEqual(Preset.objects.count(), 1)
         preset = Preset.objects.first()
         self.assertEqual(preset.name, 'New Preset')
         self.assertEqual(preset.wallet, self.wallet)
+
+        # Check that a success message was added
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Preset ถูกสร้างสำเร็จแล้ว')
         
     def test_create_preset_get(self):
         # Send a GET request to the view
@@ -555,7 +558,157 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "ERROR, Can't create_preset")
         
-    def test_str_representation(self):
+    def test_preset_form_valid_data(self):
+        self.client.login(username="testuser", password="testpassword")
+        # Prepare valid POST data
+        data = {
+            'name': 'Valid Preset',
+            'field1': 'รายรับ',
+            'field2': 100,
+            'field3': 'รายจ่าย',
+        }
+        
+        # Get the URL for creating a preset
+        url = reverse('preset', args=[self.wallet.id])
+
+        # Submit the POST request with valid data
+        response = self.client.post(url, data)
+
+        # Ensure that the preset is created and redirected to the same page
+        self.assertEqual(response.status_code, 302)  # Redirect after successful creation
+        self.assertRedirects(response, reverse('preset', args=[self.wallet.id]))
+
+        # Check that the preset is saved in the database
+        preset = Preset.objects.first()  # Assuming it's the first preset created
+        self.assertEqual(preset.name, 'Valid Preset')
+        self.assertEqual(preset.statement['field1'], 'รายรับ')
+        self.assertEqual(preset.statement['field2'], 100)
+        self.assertEqual(preset.statement['field3'], 'รายจ่าย')
+
+    def test_edit_preset_form_invalid_data(self):
+        # Prepare invalid data (missing required fields)
+        self.client.login(username="testuser", password="testpassword")
+        self.preset = Preset.objects.create(
+            wallet=self.wallet,
+            name='Test Preset',
+            statement={'field1': 'รายรับ', 'field2': 100, 'field3': 'รายจ่าย'}
+        )
+        
+        data = {
+            'name': 'Updated Preset',  # Valid name
+            'field1': '',  # Invalid field1 (empty)
+            'field2': '',  # Invalid field2 (empty)
+            'field3': '',  # Invalid field3 (empty)
+        }
+
+        # Get the URL for editing the preset
+        url = reverse('edit_preset', args=[self.preset.id])
+
+        # Submit the POST request with invalid data
+        response = self.client.post(url, data)
+
+        # Ensure the response is rendered back with the form and errors
+        self.assertEqual(response.status_code, 200)  # The page should re-render with errors
+
+        # Get the form from the context
+        form = response.context['form']
+
+        # Check that the form contains errors for the required fields
+        # self.assertFormError(response, 'form', 'field1', 'This field is required.')
+        # self.assertFormError(response, 'form', 'field2', 'This field is required.')
+        # self.assertFormError(response, 'form', 'field3', 'This field is required.')
+
+    def test_edit_preset_form_valid_data(self):
+        # Prepare valid data
+        self.client.login(username="testuser", password="testpassword")
+        self.preset = Preset.objects.create(
+            wallet=self.wallet,
+            name='Test Preset',
+            statement={'field1': 'รายรับ', 'field2': 100, 'field3': 'รายจ่าย'}
+        )
+        
+        data = {
+            'name': 'Updated Preset',
+            'field1': 'รายรับ',
+            'field2': 200,
+            'field3': 'รายจ่าย',
+        }
+
+        # Get the URL for editing the preset
+        url = reverse('edit_preset', args=[self.preset.id])
+
+        # Submit the POST request with valid data
+        response = self.client.post(url, data)
+
+        # Ensure the preset is updated and redirected to the preset page
+        self.assertEqual(response.status_code, 302)  # Redirect after successful update
+        self.assertRedirects(response, reverse('preset', args=[self.wallet.id]))
+
+        # Verify the preset data was updated
+        updated_preset = Preset.objects.get(id=self.preset.id)
+        self.assertEqual(updated_preset.name, 'Updated Preset')
+        self.assertEqual(updated_preset.statement['field1'], 'รายรับ')
+        self.assertEqual(updated_preset.statement['field2'], 200)
+        self.assertEqual(updated_preset.statement['field3'], 'รายจ่าย')
+
+    def test_edit_preset_get_request(self):
+        
+        self.preset = Preset.objects.create(
+            wallet=self.wallet,
+            name='Test Preset',
+            statement={'field1': 'รายรับ', 'field2': 100, 'field3': 'รายจ่าย'}
+        )
+        
+        # Log in the test user
+        self.client.login(username='testuser', password='testpassword')
+        
+        # Get the URL for editing the preset
+        url = reverse('edit_preset', args=[self.preset.id])
+
+        # Send a GET request to the edit preset page
+        response = self.client.get(url)
+
+        # Ensure the page renders successfully (status code 200)
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the form is rendered with the preset's data pre-filled
+        form = response.context['form']
+        self.assertEqual(form.initial['name'], 'Test Preset')
+        self.assertEqual(form.initial['field1'], 'รายรับ')
+        self.assertEqual(form.initial['field2'], 100)
+        self.assertEqual(form.initial['field3'], 'รายจ่าย')
+        
+        
+    def test_delete_preset(self):
+        self.preset = Preset.objects.create(
+            wallet=self.wallet,
+            name="Test Preset",
+            statement={'field1': 'รายรับ', 'field2': 100, 'field3': 'รายจ่าย'}
+        )
+        
+        self.client.login(username='testuser', password='testpassword')
+        # Store the wallet ID before deletion for redirect check
+        wallet_id = self.wallet.id
+
+        # Get the URL for deleting the preset
+        url = reverse('delete_preset', args=[self.preset.id])
+
+        # Send a GET request to the delete URL
+        response = self.client.get(url)
+
+        # Ensure the response is a redirect
+        self.assertEqual(response.status_code, 302)  # Redirect status code
+        self.assertRedirects(response, reverse('preset', args=[wallet_id]))  # Redirects to the preset view of the wallet
+
+        # Verify the preset is deleted from the database
+        with self.assertRaises(Preset.DoesNotExist):
+            Preset.objects.get(id=self.preset.id)
+
+        # Verify the wallet is still intact and not deleted
+        self.assertEqual(Wallet.objects.count(), 1)  # Only one wallet should exist
+        self.assertEqual(Preset.objects.count(), 0)  # The preset should be deleted
+    
+    def test_str_preset(self):
         # Test the __str__ method of Preset
         preset = Preset.objects.create(wallet=self.wallet, name="Sample Preset")
         self.assertEqual(str(preset), "Sample Preset")
@@ -586,7 +739,7 @@ class ViewsTestCase(TestCase):
         statement = Statement.objects.first()
         self.assertEqual(statement.amount, Decimal('50.00'))
         self.assertEqual(statement.type, 'out')
-        self.assertEqual(statement.category, 'Donation for Test Mission')
+        self.assertEqual(statement.category, 'แบ่งจ่ายรายการใหญ่')
         
         # Check if curAmount is updated
         self.mission.refresh_from_db()
@@ -635,6 +788,105 @@ class ViewsTestCase(TestCase):
         # Check if the response status code is 200 (OK)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "ERROR, Can't donate_to_mission")
+        
+    def test_preset_view_get(self):
+        self.preset_data = Preset.objects.create(wallet=self.wallet, name="Preset 1")
+        
+        # Test that the preset page is rendered with the correct context
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.get(reverse('preset', args=[self.wallet.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'preset.html')
+        self.assertIn('form', response.context)
+        self.assertIn('wallet', response.context)
+        self.assertIn('presets', response.context)
+        self.assertEqual(len(response.context['presets']), 1)  # Preset should be returned in context
+        self.assertEqual(response.context['wallet'], self.wallet)
+        
+    def test_use_preset_creates_statement_in(self):
+        self.preset = Preset.objects.create(
+                wallet=self.wallet,
+                name="Test Preset",
+                statement={'field1': 'food', 'field2': 100, 'field3': 'รายจ่าย'}
+            )
+
+        # Log in the test user
+        self.client.login(username="testuser", password="testpassword")
+        
+        # Get the URL for using the preset
+        url = reverse('use_preset', args=[self.preset.id])
+
+        # Send a POST request to use the preset
+        response = self.client.post(url)
+
+        # Ensure the response is successful and returns the correct JSON
+        self.assertEqual(response.status_code, 200)  # Success status
+        response_data = json.loads(response.content)
+        self.assertTrue(response_data['success'])
+        self.assertEqual(response_data['message'], 'Statement created successfully.')
+
+        # Verify that exactly one Statement was created in the database
+        statements = Statement.objects.filter(wallet=self.wallet)
+        self.assertEqual(statements.count(), 1)
+
+        # Validate the attributes of the created Statement
+        statement = statements.last()  # Retrieve the created Statement
+        self.assertEqual(statement.category, 'food')
+        self.assertEqual(statement.amount, Decimal('100'))
+        self.assertEqual(statement.type, 'out')  # `field3` was 'รายจ่าย'
+        
+    def test_use_preset_creates_statement_out(self):
+        self.preset = Preset.objects.create(
+                wallet=self.wallet,
+                name="Test Preset",
+                statement={'field1': 'salary', 'field2': 100, 'field3': 'รายรับ'}
+            )
+
+        # Log in the test user
+        self.client.login(username="testuser", password="testpassword")
+        
+        # Get the URL for using the preset
+        url = reverse('use_preset', args=[self.preset.id])
+
+        # Send a POST request to use the preset
+        response = self.client.post(url)
+
+        # Ensure the response is successful and returns the correct JSON
+        self.assertEqual(response.status_code, 200)  # Success status
+        response_data = json.loads(response.content)
+        self.assertTrue(response_data['success'])
+        self.assertEqual(response_data['message'], 'Statement created successfully.')
+
+        # Verify that exactly one Statement was created in the database
+        statements = Statement.objects.filter(wallet=self.wallet)
+        self.assertEqual(statements.count(), 1)
+
+        # Validate the attributes of the created Statement
+        statement = statements.last()  # Retrieve the created Statement
+        self.assertEqual(statement.category, 'salary')
+        self.assertEqual(statement.amount, Decimal('100'))
+        self.assertEqual(statement.type, 'in')  # `field3` was 'รายจ่าย'
+        
+        
+    def test_use_preset_invalid_method(self):
+        self.preset = Preset.objects.create(
+                wallet=self.wallet,
+                name="Test Preset",
+                statement={'field1': 'food', 'field2': 100, 'field3': 'รายจ่าย'}
+            )
+
+        # Get the URL for using the preset
+        url = reverse('use_preset', args=[self.preset.id])
+
+        # Send a GET request instead of POST
+        response = self.client.get(url)
+
+        # Ensure the response returns a 405 Method Not Allowed status
+        self.assertEqual(response.status_code, 405)
+        response_data = json.loads(response.content)
+        self.assertFalse(response_data['success'])
+        self.assertEqual(response_data['message'], 'Invalid request method.')
         
 class ScopeViewTest(TestCase):
     def setUp(self):
@@ -695,3 +947,26 @@ class ScopeViewTest(TestCase):
         statements_no_match = response_no_match.context.get('statements')
 
         self.assertEqual(statements_no_match.count(), 0)  # No statements should match
+        
+    def test_create_scope_wallet_does_not_exist(self):
+        # Simulate a POST request with a wallet_id that doesn't exist
+        invalid_wallet_id = 99999  # ID that doesn't exist in the database
+
+        response = self.client.post(reverse('create_scope'), {
+            'wallet': invalid_wallet_id,
+            'amount': 1000,
+            'type': 'in',
+            'range': 5000,
+        })
+
+        # Check that the user is redirected to the main page
+        self.assertRedirects(response, reverse('main'))
+
+        # Check that the error message was added to the messages
+        storage = get_messages(response.wsgi_request)
+        messages = list(storage)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'ไม่พบกระเป๋าเงินที่เลือก')  # The error message in Thai
+
+        # Verify that no Scope was created
+        self.assertEqual(Scope.objects.count(), 0)  # No Scope should be created

@@ -80,7 +80,7 @@ class PresetForm(forms.ModelForm):
     # ฟิลด์ย่อยสำหรับ statement
     field1 = forms.ChoiceField(
         required=True,
-        label="Field 3",
+        label="Field 1",
         choices=[("รายรับ", "รายรับ"),
                                    ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
                                    ("ค่าเดินทาง", "ค่าเดินทาง"), 

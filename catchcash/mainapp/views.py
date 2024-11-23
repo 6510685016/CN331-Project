@@ -18,7 +18,7 @@ def setting(request):
 def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
-
+    
     if not account.wallets.exists():
         # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
         default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
@@ -41,8 +41,8 @@ def main(request):
         wallet = account.wallets.first()
     if wallet:
         presets = Preset.objects.filter(wallet=wallet)
-    else:
-        presets = Preset.objects.none()
+    # else:
+    #     presets = Preset.objects.none() # edit in future
 
     if request.method == 'GET':
         if form.is_valid():
@@ -308,7 +308,7 @@ def create_preset(request):
             name=name
         )
         new_preset.save()
-        messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
+        messages.success(request, 'Preset ถูกสร้างสำเร็จแล้ว')
         return redirect('main')
 
     wallets = Wallet.objects.all()
@@ -375,6 +375,7 @@ def donate_to_mission(request, mission_id):
             messages.error(request, "Invalid donation amount.")
         return redirect(request.META.get('HTTP_REFERER', '/'))
     return HttpResponse("ERROR, Can't donate_to_mission")
+
 def preset(request, wallet_id):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
