@@ -12,17 +12,6 @@
 <link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
 
 <div class="container-fluid">
-    <div class="row">
-        <h2 class="col-6 mb-4">
-            Statements
-        </h2>
-    <!-- ปุ่มสำหรับซ่อน/แสดงฟอร์ม -->
-    {% if wallet %}
-        <div class="col-6">
-            <button type="button" class="btn btn-outline-dark" id="toggleFormButton">เพิ่ม</button>
-        </div>
-    {% endif %}
-    </div>
     <!-- ฟอร์มสำหรับการเพิ่มข้อมูล -->
     <div id="statementForm" style="display:none;">
         <form method="POST" action="{% url 'add_statement' %}">
@@ -46,7 +35,6 @@
                     <div class="col-md-11">
                         <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
                         <select id="category-select" class="form-control mr-1" name="category" required>
-                            <option value="อื่นๆ">อื่นๆ</option>
                             {% for choice in choices %}
                                 <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
                                     {{ choice.1 }}
@@ -135,7 +123,6 @@
                                     <div class="col-md-11">
                                         <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
                                         <select id="category-select-{{statement.id}}" name="category" class="form-select" required>
-                                            <option value="อื่นๆ">อื่นๆ</option>
                                             {% for choice in choices %}
                                                 <option value="{{ choice.0 }}" {% if choice.0 == statement.category %}selected{% endif %}>
                                                     {{ choice.1 }}
