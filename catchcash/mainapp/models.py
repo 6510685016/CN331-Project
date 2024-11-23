@@ -88,15 +88,15 @@ class Scope(models.Model):
         statements = Statement.objects.filter(wallet=self.wallet)
         
         # กรอง Statements ตามช่วงเวลา
-        if self.range == "1 วัน":  # วันเดียว
+        if self.range == "1D":  # วันเดียว
             statements = statements.filter(addDate=date)
-        elif self.range == "1 สัปดาห์":  # สัปดาห์
+        elif self.range == "1W":  # สัปดาห์
             start_week = date - timedelta(days=date.weekday())  # วันจันทร์ของสัปดาห์
             end_week = start_week + timedelta(days=6)  # วันอาทิตย์
             statements = statements.filter(addDate__range=[start_week, end_week])
-        elif self.range == "1 เดือน":  # เดือน
+        elif self.range == "1M":  # เดือน
             statements = statements.filter(addDate__year=date.year, addDate__month=date.month)
-        elif self.range == "1 ปี":  # ปี
+        elif self.range == "1Y":  # ปี
             statements = statements.filter(addDate__year=date.year)
         
         # คำนวณผลรวมของ Statements
