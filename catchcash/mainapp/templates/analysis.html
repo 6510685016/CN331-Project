@@ -13,50 +13,84 @@
 </head>
 
 <style>
-    /* Custom Styling */
-    .incomeOutcome-box {
-        height: 450px;
-        width: 350px;
+    .incomeExpenses-Box {
+        height: 40vh;
+        width: 70vw;
+        background-color: #00ffd51a;
         border-radius: 30px;
-        background-color: #65ffe5c6;
+        margin-left: 50px;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 
-    .chartStyle {
-        height: 450px;
-        width: 350px;
+    .incomeVsExpenses-box {
+        height: 60vh;
+        width: 22vw;
+        background-color: #00ffd51a;
         border-radius: 30px;
-        background-color: #65ffe5c6;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+    }
+
+    .summary-Box {
+        height: 60vh;
+        width: 90vw;
+        background-color: #00ffd51a;
+        border-radius: 30px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 </style>
 
 <body class="m-0 p-0 vw-100 vh-100">
-    <div class="d-flex w-100 h-50">
+    <div class="d-flex">
         <!-- Left Box: Charts -->
         <div class="w-75 mt-3">
+
             <!-- Income Chart -->
-            <div class="h-50 w-25 ms-5 mb-3 chartStyle">
-                <canvas id="IncomeChart" class="p-3 h-100"></canvas>
-                <div id="no-data-message1" class="text-center" style="display: none;">
-                    <h5>No Income Data Available</h5>
+            <div class="d-flex flex-column align-items-center">
+                <h4 class="fw-bold">Income</h4>
+            </div>
+            <div class="incomeExpenses-Box border">
+                <canvas id="IncomeChart" class="p-3 w-100 h-100"></canvas>
+                <div id="no-data-message1" class="text-center"
+                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
+                    <h5 class=" mt-3 text-muted fw-bold">No Income Data Available</h5>
                 </div>
             </div>
 
             <!-- Expenses Chart -->
-            <div class="h-50 ms-5 chartStyle">
-                <canvas id="ExpensesChart" class="p-3 w-100 h-100 "></canvas>
-                <div id="no-data-message2" class="text-center" style="display: none;">
-                    <h5>No Expense Data Available</h5>
+            <div class="d-flex flex-column align-items-center mt-3">
+                <h4 class="fw-bold">Expenses</h4>
+            </div>
+            <div class="incomeExpenses-Box border">
+                <canvas id="ExpensesChart" class="p-3 w-100 h-100"></canvas>
+                <div id="no-data-message2" class="text-center"
+                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
+                    <h5 class="mt-3 text-muted fw-bold">No Expense Data Available</h5>
                 </div>
             </div>
 
+
         </div>
 
-        <!-- Right Box: Filter & Transaction History -->
+        <!-- Right Box: Filter & Income Vs Expense Box-->
         <div class="w-25">
-            <!-- Wallet & Date Filter -->
-            <div class="justify-content-end text-end mt-3 mb-3 me-3">
+            <!-- Wallet & Date Filter-->
+            <div class="justify-content-end text-end mt-3 mb-3 me-5">
                 <label for="wallet-select" class="visually-hidden">Select Wallet</label>
-                <select id="wallet-select" name="wallet" class="btn btn-primary me-2" onchange="applyFilter()">
+                <select id="wallet-select" name="wallet" class="btn me-2 border" style=" background-color: #F7EFFF;"
+                    onchange="applyFilter()">
                     {% if wallets %}
                     {% for wallet in wallets %}
                     <option value="{{ wallet.id }}">{{ wallet.wName }}</option>
@@ -66,70 +100,82 @@
                     {% endif %}
                 </select>
 
-                <input type="date" id="date-select" name="date" class="btn btn-light border" onchange="applyFilter()">
+                <input type="date" id="date-select" name="date" class="btn border" style=" background-color: #F7EFFF;"
+                    onchange="applyFilter()">
             </div>
 
-            <!-- Income Outcome Box -->
-            <div class="d-flex flex-column mx-auto incomeOutcome-box">
+            <!-- Income Vs Expense Box -->
+            <div class="incomeVsExpenses-box position-relative">
                 <div class="border-bottom p-2 text-center">
-                    <h5>Income VS Outcome</h5>
+                    <h5 class="fw-bold">Income Vs Expense</h5>
                 </div>
 
-                <div id="no-data-message3" class="text-center" style="display: none;">
-                    <h5>No Income or Outcome</h5>
+                <div id="no-data-message3" class="text-center position-absolute top-50 start-50 translate-middle"
+                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
+                    <h5 class="mt-3 text-muted fw-bold">No Income or Expense</h5>
                 </div>
 
-                <div class="p-2 m-2">
-                    <canvas id="IncomeVsOutcomeChart" class="p-3 chartStyle"></canvas>
+                <div class="p-4 w-100 h-100">
+                    <canvas id="IncomeVsExpensesChart"></canvas>
                 </div>
             </div>
+
         </div>
+
+
     </div>
 
-    <!-- Summary Section -->
-    <div class="w-100 h-50 d-flex flex-column align-items-center justify-content-center">
-        <div class="h-75 w-75 d-flex align-items-center justify-content-center chartStyle">
-            <canvas id="sevenDaysChart" class="p-3 w-50 h-100"></canvas>
+    <div class="d-flex align-items-center justify-content-center flex-column">
+        <div class="mt-3">
+            <h4 class="fw-bold">Balance Last 7 Days</h4>
+        </div>
+        <div class="summary-Box flex-column">
+            <canvas id="sevenDaysChart" class="p-3 w-100 h-100"></canvas>
         </div>
     </div>
 </body>
 
 
 <script>
-    // On Page Load: Set default date and apply initial filter
+
     window.onload = function () {
         const defaultDate = new Date();
-        const formattedDate = defaultDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const year = defaultDate.getFullYear();
+        const month = String(defaultDate.getMonth() + 1).padStart(2, '0');
+        const day = String(defaultDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+
+        console.log(formattedDate);
         document.getElementById("date-select").value = formattedDate;
 
-        // ควรทดสอบการตั้งค่าเริ่มต้นของวันที่เมื่อโหลดหน้า
-        applyFilter();  // ควรทดสอบว่าฟังก์ชันนี้ทำงานตามที่คาดไว้
+
+        applyFilter();
     };
 
-    // Function to Load Data for Last Seven Days based on selected date
+
     function loadDataForLastSevenDays(selectedDate) {
         const walletId = document.getElementById("wallet-select").value;
         console.log("Selected Date:", selectedDate, "Wallet ID:", walletId);
 
-        // ควรทดสอบการเลือกกระเป๋าและวันที่ว่าเลือกถูกต้องหรือไม่
+
         if (!walletId) {
             console.error("No wallet selected.");
             return;
         }
 
-        // Initialize arrays for balance and dates
-        const balanceList = new Array(7); // Ensure the array has the correct size
+
+        const balanceList = new Array(7);
         const dateList = [];
 
-        // ควรทดสอบการคำนวณวันย้อนหลัง 7 วัน
+
         const dayList = [];
         for (let i = 0; i < 7; i++) {
             const date = new Date(selectedDate);
             date.setDate(date.getDate() - i);
-            dayList.push(date.toISOString().split('T')[0]); // Format as YYYY-MM-DD
+            dayList.push(date.toISOString().split('T')[0]);
         }
 
-        // Fetch data for each day and ensure order is preserved using the index
+
         const fetchPromises = dayList.map((date, index) => {
             const params = new URLSearchParams({ wallet_id: walletId, date: date });
 
@@ -137,29 +183,29 @@
                 .then(response => response.ok ? response.json() : Promise.reject('Error'))
                 .then(data => {
                     const balance = calculateBalance(data.statement);
-                    balanceList[index] = balance; // Ensure balance is stored at the correct index
-                    dateList[index] = date; // Ensure date is stored at the correct index
+                    balanceList[index] = balance;
+                    dateList[index] = date;
                 })
                 .catch(error => {
                     console.error(`Error fetching data for ${date}:`, error);
-                    balanceList[index] = 0; // Add 0 if no data is found
-                    dateList[index] = date; // Store the date even if data is not found
+                    balanceList[index] = 0;
+                    dateList[index] = date;
                 });
         });
 
-        // ควรทดสอบการสร้างกราฟหลังจากดึงข้อมูลครบ 7 วัน
+
         Promise.all(fetchPromises)
             .then(() => {
                 dateList.reverse()
                 balanceList.reverse()
                 console.log("Date List:", dateList);
                 console.log("Balance List:", balanceList);
-                createLineChart(balanceList, dateList); // ควรทดสอบว่าแสดงกราฟได้ถูกต้อง
+                createLineChart(balanceList, dateList);
             })
             .catch(error => console.error("Error in fetching data:", error));
     }
 
-    // Function to Calculate Balance from Data
+
     function calculateBalance(statement) {
         let income = 0, outcome = 0;
         if (statement && statement.length > 0) {
@@ -172,7 +218,7 @@
         return 0;
     }
 
-    // Create Line Chart for Balance over Last Seven Days
+
     function createLineChart(balanceList, dateList) {
         const ctx = document.getElementById('sevenDaysChart').getContext('2d');
         new Chart(ctx, {
@@ -193,18 +239,22 @@
                     x: { title: { display: true, text: 'Date' } },
                     y: { title: { display: true, text: 'Balance' } }
                 }
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     }
 
-    // Apply Filter: Get Wallet and Date, Update Charts
+
     function applyFilter() {
         const walletId = document.getElementById("wallet-select").value;
         const selectedDate = document.getElementById("date-select").value || document.getElementById("date-select").defaultValue;
 
-        // ควรทดสอบการเลือกกระเป๋าและวันที่
+
         if (walletId || selectedDate) {
-            loadDataForLastSevenDays(selectedDate);  // ทดสอบการโหลดข้อมูลที่กรองแล้ว
+            loadDataForLastSevenDays(selectedDate);
 
             const params = new URLSearchParams();
             if (walletId) params.append('wallet_id', walletId);
@@ -227,22 +277,22 @@
                             }
                         });
 
-                        // ควรทดสอบการอัปเดตกราฟ Income vs Outcome
-                        updateIncomeVsOutcomeChart(income, outcome);
+
+                        updateIncomeVsExpensesChart(income, outcome);
                         updateIncomeChart(incomeCategories);
                         updateExpensesChart(expenseCategories);
 
                         document.getElementById('no-data-message1').style.display = 'none';
                         document.getElementById('no-data-message2').style.display = 'none';
                         document.getElementById('no-data-message3').style.display = 'none';
-                        document.getElementById('IncomeVsOutcomeChart').style.display = 'block';
+                        document.getElementById('IncomeVsExpensesChart').style.display = 'block';
                         document.getElementById('IncomeChart').style.display = 'block';
                         document.getElementById('ExpensesChart').style.display = 'block';
                     } else {
                         document.getElementById('no-data-message1').style.display = 'block';
                         document.getElementById('no-data-message2').style.display = 'block';
                         document.getElementById('no-data-message3').style.display = 'block';
-                        document.getElementById('IncomeVsOutcomeChart').style.display = 'none';
+                        document.getElementById('IncomeVsExpensesChart').style.display = 'none';
                         document.getElementById('IncomeChart').style.display = 'none';
                         document.getElementById('ExpensesChart').style.display = 'none';
                     }
@@ -252,8 +302,8 @@
     }
 
     // Update Income vs Outcome Doughnut Chart
-    function updateIncomeVsOutcomeChart(income, outcome) {
-        const ctx = document.getElementById('IncomeVsOutcomeChart').getContext('2d');
+    function updateIncomeVsExpensesChart(income, outcome) {
+        const ctx = document.getElementById('IncomeVsExpensesChart').getContext('2d');
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -262,6 +312,10 @@
                     data: [income, outcome],
                     backgroundColor: ['#4CAF50', '#F44336'],
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     }
@@ -280,6 +334,10 @@
                     borderColor: '#388E3C',
                     borderWidth: 1
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
             }
         });
     }
@@ -298,13 +356,14 @@
                     borderColor: '#D32F2F',
                     borderWidth: 1
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
             }
         });
     }
 
 </script>
-
-
-
 
 </html>
