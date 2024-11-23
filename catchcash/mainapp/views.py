@@ -315,3 +315,6 @@ def progression(request):
 
 def trophy(request):
     return render(request, 'trophy.html')
+
+def about(request):
+    return render(request, 'about.html')
