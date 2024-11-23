@@ -370,6 +370,9 @@ def progression(request):
 def trophy(request):
     return render(request, 'trophy.html')
 
+def about(request):
+    return render(request, 'about.html')
+
 def mission(request, wallet_id):
     wallet = get_object_or_404(Wallet, id=wallet_id)
     missions = Mission.objects.filter(wallet=wallet)
