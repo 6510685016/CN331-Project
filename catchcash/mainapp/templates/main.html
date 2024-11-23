@@ -45,19 +45,6 @@ Main Page - CatchCASH
                                                     <option value="JPY">JPY - เยน</option>
                                                 </select>
                                             </div>
-                                            <!-- สร้างหมวดหมู่รายรับรายจ่าย -->
-                                            <div class="form-group">
-                                                <label for="categoryInput">เพิ่มหมวดหมู่</label>
-                                                <input type="text" class="form-control mb-2" id="categoryInput"
-                                                    placeholder="พิมพ์ชื่อหมวดหมู่แล้วกดเพิ่ม">
-                                                <button type="button" class="btn btn-secondary mb-2"
-                                                    onclick="addCategory()">เพิ่มหมวดหมู่</button>
-
-                                                <!-- แสดงรายการหมวดหมู่ที่ผู้ใช้เพิ่ม -->
-                                                <ul id="categoryList" class="list-group">
-                                                    <!-- หมวดหมู่ที่เพิ่มจะปรากฏที่นี่ -->
-                                                </ul>
-                                            </div>
                                         </div>
                                         
                                         <!-- ปุ่มตกลง ยกเลิก -->
@@ -107,79 +94,145 @@ Main Page - CatchCASH
                     <p>{{ data.in }} {{ wallet.currency }}</p>
                 </div>
             </div>
-
-            <!-- Total Expenses -->
-            <div class="col-md-4">
-                <div class="p-3" style="background-color: #F7EFFF; border: 1px solid #F7EFFF;">
-                    <h2>รายจ่ายทั้งหมด</h2>
-                    <p>{{ data.out }} {{ wallet.currency }}</p>
-                </div>
+        <!-- วงเงิน -->
+        <div class="col-md-4">
+            <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
+                <h2>เงินสุทธิ</h2>
+                <p>{{wallet.balance}} {{wallet.currency}}</p>
             </div>
-
-            <!-- Credit Limit -->
-            <div class="col-md-4">
-                <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
-                    <h2>วงเงิน</h2>
-                    <p>{{ status }}</p>
+        </div>
+    </div>
+    <!-- Container หลัก -->
+    <div class="row">
+        <!-- Statement ด้านซ้าย -->
+        <div class="col-md-6">
+            <div class="p-3 d-flex flex-column" id="statement_container"
+                style="height: 624px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
+                <!-- ส่วนหัว -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <h2 class="col-4 mb-4">
+                            Statements
+                        </h2>
+                        {% if wallet %}
+                            <div class="col-2">
+                                <button type="button" class="btn btn-outline-dark" id="toggleFormButton">เพิ่ม</button>
+                            </div>    
+                            <div class="col-3">
+                                <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
+                                <button type="button" class="btn btn-primary" id="use_preset" data-toggle="modal"
+                                    data-target="#selectModal">ใช้ preset</button>
+                            </div>
+                            <div class="col-3">
+                                <!-- ปุ่มตั้งค่า preset -->
+                                <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
+                            </div>
+                        {% endif %} 
+                    </div>
+                </div>
+                {% include "statement_container.html" %}
+            </div>
+        </div>
+        <!-- Modal ใช้ Preset -->
+        <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="selectModalLabel">เลือก Preset</h5>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            {% for preset in presets %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ preset.name }}
+                                <button class="btn btn-primary btn-sm use-preset-btn" data-preset-id="{{ preset.id }}">
+                                    ใช้
+                                </button>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-center">ไม่มี Preset</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Statement and Goal Section -->
-        <div class="container-fluid">
+      
+    <!-- Goal และ Objective ด้านขวา -->
+        <div class="col-md-6">
             <div class="row">
-                <!-- Statement (Left Side) -->
-                <div class="col-md-6">
-                    <div class="p-3 d-flex flex-column" id="statement_container"
-                         style="height: 524px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
-                        {% include "statement_container.html" %}
-                        <!-- Preset Buttons -->
-                        <div class="mt-auto d-flex justify-content-around">
-                            <button class="btn btn-primary" id="use_preset" data-toggle="modal" data-target="#selectModal">ใช้ preset</button>
-                            <a href="URL_ที่_คุณ_ต้องการ" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
+                <!-- Goal -->
+                <div class="col-12 mb-4" style="height: 300px; overflow-y: auto;">
+                    <div id="goal">
+                        <div class="container-fluid m-2">
+                            <div class="row">
+                                <h2 class="col-8 mb-4">
+                                    Goal
+                                </h2>
+                                <!-- ปุ่มตั้งค่า Goal -->
+                                <a href="{% url 'goal' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Goal</a>
+                            </div>        
+                            {% for m in missions %}
+                            <div class="row">
+                                {% if not m.isOutdate and m.amountToGo > 0 %}
+                                <div class="col-6">{{ m.status_text }}</div>
+                                <div class="col-6">
+                                    <form action="{% url 'donate_to_mission' m.id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
+                                        <button type="submit" class="btn btn-success">Donate</button>
+                                    </form>
+                                </div>
+                                {% elif m.isOutdate %}
+                                <div class="col-8">{{ m.status_text }}</div>
+                                <div class="col-4">
+                                    <p class="text-danger">Outdated.</p>
+                                </div>
+                                {% else %}
+                                <div class="col-8">{{ m.status_text }}</div>
+                                <div class="col-4">
+                                    <p class="text-success">Completed!</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <div class="row">
+                                <p>No missions available.</p>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
-                <!-- Goal and Scope (Right Side) -->
-                <div class="col-md-6">
-                    <div class="row">
-                        <!-- Goal -->
-                        <div class="col-12 mb-4">
-                            <div class="p-3" id="goal">
-                                <h2>Goal</h2>
-                                <p>เนื้อหาของ Goal.</p>
-                                <button class="btn btn-primary" data-toggle="modal" data-target="#formModal" id="create_goal">สร้าง Goal</button>
-                            </div>
-                        </div>
-
-                        <!-- Modal for Goal Creation -->
-                        <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="formModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="formModalLabel">ข้อมูลเป้าหมายใหม่</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="/submit-form" method="POST" enctype="multipart/form-data">
-                                            {% csrf_token %}
-                                            <div class="form-group">
-                                                <label for="name">ชื่อ:</label>
-                                                <input type="text" class="form-control" id="name" name="name" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="amount">จำนวนเงิน:</label>
-                                                <input type="number" class="form-control" id="amount" name="amount" required>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="image">เลือกรูปภาพ:</label>
-                                                <input type="file" class="form-control-file" id="image" name="image" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                                        </form>
-                                    </div>
+                <!-- Scope -->
+                <div class="col-12">
+                    <div class="p-2" id="objective">
+                        <div class="container-fluid h-100" style="height: 300px; overflow-y: auto;">
+                            <div class="row">
+                                <h2 class="col-8 mb-4">
+                                    Scope
+                                </h2>
+                                <!-- ปุ่มตั้งค่า scope -->
+                                <a href="{% url 'scope' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Scope</a>
+                            </div>  
+                            {% for s in scopes %}
+                                <div class="row">
+                                {% if s.statusToText == "On target." %}
+                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
+                                    <p class="text-success col-2">OK</p>
+                                {% else %}
+                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
+                                    <p class="text-danger col-2">X</p>
+                                {% endif %}
                                 </div>
-                            </div>
+                            {% empty %}
+                                <div class="row">
+                                    <p>No scopes available.</p>
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <!-- Scope -->
@@ -188,40 +241,61 @@ Main Page - CatchCASH
                                 <h2>Scope</h2>
                                 <p>เนื้อหาของ Objective.</p>
                                 <button class="btn btn-primary" data-toggle="modal" data-target="#scopeModal" id="create_scope">สร้าง Scope</button>
-                            </div>
-
-                            <!-- Modal for Scope Creation -->
-                            <div class="modal fade" id="scopeModal" tabindex="-1" role="dialog" aria-labelledby="scopeModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="scopeModalLabel">ข้อมูลวงเงิน</h5>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="/submit-form" method="POST" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <label for="name">ชื่อ:</label>
-                                                    <input type="text" class="form-control" id="name" name="name" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="amount">จำนวนเงิน:</label>
-                                                    <input type="number" class="form-control" id="amount" name="amount" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="image">เลือกรูปภาพ:</label>
-                                                    <input type="file" class="form-control-file" id="image" name="image" required>
-                                                </div>
-                                                <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            </div>    
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+              
+<!-- สร้าง wallet-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- filter-->
+<script>
+    function applyFilter() {
+        const wallet = document.getElementById('wallet-select').value;
+        const date = document.getElementById('date-filter').value;
+    
+        const params = new URLSearchParams();
+        if (wallet) params.append('wallet', wallet);
+        if (date) params.append('date', date);
+    
+        // อัปเดต URL และโหลดหน้าใหม่
+        window.location.href = '?' + params.toString();
+    }
+    
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.use-preset-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const presetId = this.getAttribute('data-preset-id');
+            
+            // ส่งคำขอ AJAX
+            fetch(`/use-preset/${presetId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // ใช้ CSRF Token
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();   // รีโหลดหน้า
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred.');
+            });
+        });
+    });
+</script>
 {% endblock %}
