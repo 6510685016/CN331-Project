@@ -205,6 +205,71 @@ class ScopeModel_and_Mission_Test(TestCase):
         # Verify the string representation
         self.assertEqual(str(mission), "Save for Vacation")
         
+    def test_edit_scope_get(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            range='1M'
+        )
+        # URL for editing the scope
+        self.edit_url = reverse('edit_scope', kwargs={'scope_id': self.scope.id})
+        
+        """Test that the edit scope page loads with the correct form."""
+        response = self.client.get(self.edit_url)
+        # Check if the response is successful
+        self.assertEqual(response.status_code, 200)
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'edit_scope.html')
+        # Verify that the form is pre-filled with the scope's data
+        self.assertContains(response, str(self.scope.amount))
+        self.assertContains(response, self.scope.type)
+        self.assertContains(response, self.scope.range)
+    def test_edit_scope_post_valid_data(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            range='1M'
+        )
+        # URL for editing the scope
+        self.edit_url = reverse('edit_scope', kwargs={'scope_id': self.scope.id})
+        
+        """Test that the scope is updated successfully with valid data."""
+        updated_data = {
+            'amount': '300.00',
+            'type': 'out',
+            'range': '1W'
+        }
+        response = self.client.post(self.edit_url, updated_data)
+        # Refresh the scope object from the database
+        self.scope.refresh_from_db()
+        # Check if the scope was updated correctly
+        self.assertEqual(self.scope.amount, Decimal(updated_data['amount']))
+        self.assertEqual(self.scope.type, updated_data['type'])
+        self.assertEqual(self.scope.range, updated_data['range'])
+        # Check if the user is redirected to the 'scope' page for the wallet
+        expected_redirect_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+        
+    def test_delete_scope(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=500.00,
+            type="in",
+            range="1M",
+        )
+        """Test if the scope is deleted and the user is redirected."""
+        # Confirm the scope exists before the request
+        self.assertEqual(Scope.objects.count(), 1)
+        # Make a GET request to delete the scope
+        response = self.client.get(reverse('delete_scope', kwargs={'scope_id': self.scope.id}))
+        # Confirm the scope is deleted
+        self.assertEqual(Scope.objects.count(), 0)
+        # Check redirection to the correct URL
+        expected_redirect_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+        
     def test_edit_mission_get(self):
         self.mission = Mission.objects.create(
             wallet=self.wallet,
@@ -426,10 +491,8 @@ class ViewsTestCase(TestCase):
     def test_main_view_creates_default_wallet(self):
         # Log in as the created user
         self.client.login(username="testuser", password="testpassword")
-        
-    def test_main_no_wallet(self): #มีอันใหม่ที่ไม่ fail แล้ว 1
         self.wallet.delete()
-        
+
         # Access the main view
         url = reverse('main')
         response = self.client.get(url)
@@ -457,26 +520,6 @@ class ViewsTestCase(TestCase):
         self.assertIn('form', response.context)
         self.assertIn('statements', response.context)
         self.assertIn('wallet', response.context)
-
-    def test_analysis_view(self): #มีอันใหม่ที่ไม่ fail แล้ว 2
-        # Make a GET request to the 'analysis' view
-        response = self.client.get(reverse('analysis'))  # Make sure 'analysis' is the correct URL name
-        
-        # Check that the response status code is 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        
-        # Check if the correct template is used
-        self.assertTemplateUsed(response, 'analysis.html')
-        
-        # Check that the context contains 'data' and 'labels'
-        self.assertIn('data', response.context)
-        self.assertIn('labels', response.context)
-        
-        # Check that the 'data' context contains the expected list of numbers
-        self.assertEqual(response.context['data'], [10, 20, 30, 40, 50])
-        
-        # Check that the 'labels' context contains the expected list of strings
-        self.assertEqual(response.context['labels'], ["A", "B", "C", "D", "E"])
         
     def test_add_statement_view(self):
         statement_data1 = {
@@ -1105,3 +1148,66 @@ class ScopeViewTest(TestCase):
 
         # Verify that no Scope was created
         self.assertEqual(Scope.objects.count(), 0)  # No Scope should be created
+
+class AnalysisViewTest(TestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create_user(username='testuser', password='password')
+        
+        # Create an Account for the user
+        self.account = Account.objects.create(user=self.user)
+        
+        # Create wallets associated with the account
+        self.wallet1 = Wallet.objects.create(account=self.account, wName='Wallet 1', currency='USD')
+        self.wallet2 = Wallet.objects.create(account=self.account, wName='Wallet 2', currency='EUR')
+        # Create statements for wallet1
+        self.statement1 = Statement.objects.create(wallet=self.wallet1, amount=100, type='expense', category='Food', addDate=date(2024, 11, 20))
+        self.statement2 = Statement.objects.create(wallet=self.wallet1, amount=50, type='income', category='Salary', addDate=date(2024, 11, 21))
+        # Create statements for wallet2
+        self.statement3 = Statement.objects.create(wallet=self.wallet2, amount=200, type='expense', category='Shopping', addDate=date(2024, 11, 20))
+    
+    def test_analysis_view_no_wallet_id(self):
+        # Test accessing the analysis page without wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'analysis.html')
+        self.assertIn('wallets', response.context)
+        self.assertEqual(len(response.context['wallets']), 2)
+        
+    def test_analysis_view_with_valid_wallet_id(self):
+        # Test accessing the analysis page with a valid wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertContains(response, self.statement1.amount)
+        self.assertContains(response, self.statement2.amount)
+        
+    def test_analysis_view_with_invalid_wallet_id(self):
+        # Test accessing the analysis page with an invalid wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + '?wallet_id=999')
+        # Expecting a 404 error response
+        self.assertEqual(response.status_code, 404)  # Corrected to expect a 404 status code
+        
+        # Check if the JSON response contains the error message
+        response_data = response.json()  # Parse the JSON response
+        self.assertIn('error', response_data)  # Ensure there's an 'error' key
+        self.assertEqual(response_data['error'], 'Wallet not found')  # Check if the error message matches
+    def test_analysis_view_with_wallet_id_and_date(self):
+        # Test accessing the analysis page with a valid wallet_id and selected_date
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}&date=2024-11-21')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertContains(response, self.statement2.amount)
+        self.assertNotContains(response, self.statement1.amount)
+        
+    def test_analysis_view_with_wallet_id_and_no_matching_statements(self):
+        # Test when there are no matching statements for a given date
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}&date=2024-12-01')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertNotContains(response, 'amount')  # No statement found for the given date
