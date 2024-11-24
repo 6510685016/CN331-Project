@@ -1,17 +1,18 @@
 from datetime import timedelta
+import datetime
 from decimal import Decimal
 import json
 from django.forms import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Account, Wallet, Statement, Scope, FixStatement, Mission, Preset
+from .models import Account, Wallet, Statement, Scope, Mission, Preset
 from django.utils import timezone
-from .forms import WalletFilterForm, StatementForm
+from .forms import WalletFilterForm, StatementForm, ScopeForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages import get_messages
 
-class ScopeModelTest(TestCase):
+class ScopeModel_and_Mission_Test(TestCase):
     def setUp(self):
         # Create a test user and account
         self.user = User.objects.create_user(username='testuser', password='password123')
@@ -203,6 +204,107 @@ class ScopeModelTest(TestCase):
         # Verify the string representation
         self.assertEqual(str(mission), "Save for Vacation")
         
+    def test_edit_mission_get(self):
+        self.mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Test Mission",
+            dueDate='2024-12-31',
+            curAmount=Decimal('200.00'),
+            amount=Decimal('500.00'),
+        )
+        """Test if the edit mission page loads with the correct form."""
+        response = self.client.get(reverse('edit_mission', kwargs={'mission_id': self.mission.id}))
+
+        # Check if the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'edit_mission.html')
+
+        # Verify that the form is pre-filled with the mission's data
+        self.assertContains(response, self.mission.mName)
+        self.assertContains(response, self.mission.amount)
+        
+    def test_edit_mission_post_valid_data(self):
+        self.mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Test Mission",
+            dueDate='2024-12-31',
+            curAmount=Decimal('200.00'),
+            amount=Decimal('500.00'),
+        )
+        
+        self.edit_url = reverse('edit_mission', kwargs={'mission_id': self.mission.id})
+        
+        """Test if the mission is updated with valid data."""
+        updated_data = {
+            'mName': "Updated Mission Name",
+            'dueDate': "2024-11-30",
+            'amount': "600.00",
+        }
+
+        response = self.client.post(self.edit_url, updated_data)
+
+        # Refresh the mission object from the database
+        self.mission.refresh_from_db()
+
+        # Check if the mission was updated correctly
+        self.assertEqual(self.mission.mName, updated_data['mName'])
+        self.assertEqual(self.mission.dueDate.isoformat(), updated_data['dueDate'])
+        self.assertEqual(self.mission.amount, Decimal(updated_data['amount']))
+
+        # Check if the user is redirected to the 'goal' page
+        expected_redirect_url = reverse('goal', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+        
+    def test_delete_mission(self):
+        self.mission = Mission.objects.create(
+            wallet=self.wallet,
+            mName="Test Mission",
+            dueDate='2024-12-31',
+            amount=Decimal('500.00'),
+            curAmount=Decimal('100.00')
+        )
+
+        # URL for deleting the mission
+        self.delete_url = reverse('delete_mission', kwargs={'mission_id': self.mission.id})
+
+        """Test that the mission is deleted successfully."""
+        response = self.client.get(self.delete_url)
+
+        # Check if the mission is deleted from the database
+        with self.assertRaises(Mission.DoesNotExist):
+            self.mission.refresh_from_db()
+
+        # Ensure the user is redirected to the 'goal' page with the wallet ID
+        expected_redirect_url = reverse('goal', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+    
+    def test_mission_filter(self):
+        """Test that a new mission is created when the form is valid."""
+        # Data for the form submission (valid data)
+        post_data = {
+            'mName': 'Test Mission',
+            'dueDate': '2024-12-31',
+            'amount': Decimal('500.00')
+        }
+        self.url = reverse('goal', kwargs={'wallet_id': self.wallet.id})
+
+        # Make a POST request to the mission page
+        response = self.client.post(self.url, data=post_data)
+
+        # Check if the mission is created in the database
+        mission = Mission.objects.filter(wallet=self.wallet, mName='Test Mission').first()
+        self.assertIsNotNone(mission)
+        self.assertEqual(mission.mName, 'Test Mission')
+        self.assertEqual(mission.dueDate, datetime.date(2024, 12, 31))
+        self.assertEqual(mission.amount, Decimal('500.00'))
+
+        # Ensure the user is redirected to the correct page (goal page for this wallet)
+        expected_redirect_url = reverse('goal', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+    
+        
 class ViewsTestCase(TestCase):
 
     def setUp(self):
@@ -217,6 +319,77 @@ class ViewsTestCase(TestCase):
             amount=Decimal('10000.00'),
             pic=SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
         )
+        
+    def test_change_theme(self):
+        # Call the change_theme method
+        new_theme = "dark"
+        self.account.change_theme(new_theme)
+
+        # Verify that the appTheme is updated
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.appTheme, new_theme)
+    
+    def test_change_name(self):
+        # Call the change_name method
+        new_name = "Updated Name"
+        self.account.change_name(new_name)
+
+        # Verify that the name is updated
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.name, new_name)
+
+    def test_change_pic(self):
+        # Call the change_pic method
+        new_pic = "profile_photos/default.jpg"
+        self.account.change_pic(new_pic)
+
+        # Verify that the profile_pic is updated
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.profile_pic, new_pic)
+    
+    def test_about_view(self):
+        """Test if the about view renders correctly."""
+        # Get the response for the about view
+        response = self.client.get(reverse('about'))
+
+        # Check if the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'about.html')
+        
+    def test_remove_category(self):
+        self.wallet = Wallet.objects.create(
+            account=self.account,
+            wName="Test Wallet",
+            currency="USD",
+            listCategory=["Food", "Transport", "Shopping"]
+        )
+        # Remove an existing category
+        
+        self.wallet.remove_category("Food")
+        self.wallet.refresh_from_db()
+        self.assertNotIn("Food", self.wallet.listCategory)
+
+        # Try to remove a non-existent category
+        initial_count = len(self.wallet.listCategory)
+        self.wallet.remove_category("NonExistentCategory")
+        self.wallet.refresh_from_db()
+        self.assertEqual(len(self.wallet.listCategory), initial_count)
+        
+    def test_statement_str_representation(self):
+        # Create a statement
+        statement = Statement.objects.create(
+            wallet=self.wallet,
+            amount=Decimal("150.00"),
+            type="in",
+            category="Salary",
+            addDate=timezone.now().date()
+        )
+
+        # Verify the string representation
+        expected_str = f"{self.wallet} - 150.00 (in)"
+        self.assertEqual(str(statement), expected_str)
         
     def test_account_str_method(self):
         # Verify that __str__ returns the account name
@@ -268,11 +441,6 @@ class ViewsTestCase(TestCase):
         default_wallet = wallets.first()
         self.assertEqual(default_wallet.wName, "Default Wallet")  # Default wallet name
         self.assertEqual(default_wallet.account, self.account)  # Linked to the correct account
-
-    def test_about_view(self):
-        response = self.client.get(reverse('about'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'about.html')
         
     def test_main_form(self):
         self.client.login(username="testuser", password="testpassword")
@@ -432,39 +600,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         
         self.assertContains(response, "ERROR, Can't create_wallet")
-
-    def test_create_fixstatement_valid_data(self):
-        # Define valid data for a new FixStatement
-        data = {
-            'wallet': self.wallet.id,
-            'amount': 100.00,
-            'type': 'in',  # 'in' or 'out'
-            'category': 'Salary',
-            'frequency': '1M'  # 1 Month
-        }
-
-        # Send a POST request to create a new FixStatement
-        response = self.client.post(reverse('create_fixstatement'), data)
-        self.assertEqual(response.status_code, 302)
-        # Check if a FixStatement was created in the database
-        self.assertEqual(FixStatement.objects.count(), 1)
-
-        # Check if the created FixStatement's fields match the submitted data
-        fixstatement = FixStatement.objects.first()
-        self.assertEqual(fixstatement.wallet, self.wallet)
-        self.assertEqual(fixstatement.amount, 100.00)
-        self.assertEqual(fixstatement.type, 'in')
-        self.assertEqual(fixstatement.category, 'Salary')
-        self.assertEqual(fixstatement.frequency, '1M')
         
-    def test_create_fixstatement_get(self):
-        # Send a GET request to the view
-        response = self.client.get(reverse('create_fixstatement'))
-
-        # Check if the response status code is 200 (OK)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "ERROR, Can't create_fixstatement")
-    
     def test_create_scope_post(self):
         self.data = {
             'wallet': self.wallet.id,
@@ -495,15 +631,15 @@ class ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "ERROR, Can't create_scope")
         
-    def test_create_misson_post(self):
+    def test_create_mission_post(self):
         self.data = {
-            'wallet' : self.wallet.id,
-            'mName' : 'Tokyo Trip',
-            'dueDate' : '2025-01-01',
-            'amount' : 10000,
-            'pic' :  SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
+            'wallet': self.wallet.id,
+            'mName': 'Tokyo Trip',
+            'dueDate': '2025-01-01',
+            'amount': 10000,
+            'pic': SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
         }
-        
+
         # Send a POST request with valid data to create a new mission
         response = self.client.post(reverse('create_mission'), self.data)
 
@@ -518,7 +654,7 @@ class ViewsTestCase(TestCase):
         self.assertEqual(mission.dueDate.isoformat(), '2025-01-01')
         self.assertEqual(mission.amount, 10000)
         
-    def test_create_mission_get(self):
+    def test_create_goal_get(self):
         # Send a GET request to the view
         response = self.client.get(reverse('create_mission'))
 
@@ -888,6 +1024,7 @@ class ViewsTestCase(TestCase):
         self.assertFalse(response_data['success'])
         self.assertEqual(response_data['message'], 'Invalid request method.')
         
+    
 class ScopeViewTest(TestCase):
     def setUp(self):
         # Create a test user
@@ -905,49 +1042,44 @@ class ScopeViewTest(TestCase):
         # Login the test user
         self.client.login(username='testuser', password='testpassword')
 
-    def test_statement_str_representation(self):
-        # Create a statement
-        statement = Statement.objects.create(
-            wallet=self.wallet,
-            amount=Decimal("150.00"),
-            type="in",
-            category="Salary",
-            addDate=timezone.now().date()
-        )
+    def test_scope_view_get(self):
+        """Test GET request for the scope view."""
+        self.scope_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        response = self.client.get(self.scope_url)
 
-        # Verify the string representation
-        expected_str = f"{self.wallet} - 150.00 (in)"
-        self.assertEqual(str(statement), expected_str)
-    
-    def test_scope_view_calculations(self):
-        # Test income and out calculation
-        response = self.client.get(reverse('scope'))
+        # Check if the page loads correctly
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'scope.html')
+
+        # Check if the wallet and form are in the context
+        self.assertEqual(response.context['wallet'], self.wallet)
+        self.assertIsInstance(response.context['form'], ScopeForm)
+
+        # Check if scopes are in the context (should be empty initially)
+        scopes = response.context['scopes']
+        self.assertEqual(scopes.count(), 0)  # Scopes should be empty
         
-        
-        sData = {"in": 100.00, "out": 70.00}  # Expected values from setup
-        self.assertEqual(response.context.get('sData'), sData)
+    def test_scope_view_post_valid_data(self):
+        self.scope_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        """Test POST request with valid data."""
+        data = {
+            'amount': 100.00,
+            'type': 'in',
+            'range': '1M',
+        }
+        response = self.client.post(self.scope_url, data)
 
+        # Check if the scope was created and associated with the wallet
+        self.assertEqual(Scope.objects.count(), 1)
+        scope = Scope.objects.first()
+        self.assertEqual(scope.amount, data['amount'])
+        self.assertEqual(scope.type, data['type'])
+        self.assertEqual(scope.range, data['range'])
+        self.assertEqual(scope.wallet, self.wallet)
 
-    def test_scope_date_filtering(self):
-        # Create statements with different dates
-        specific_date = '2024-11-16'
-        Statement.objects.create(wallet=self.wallet, amount=50.00, type="in", addDate=specific_date)
-        Statement.objects.create(wallet=self.wallet, amount=30.00, type="out", addDate='2024-11-16')
+        # Check redirection after successful form submission
+        self.assertRedirects(response, self.scope_url)
 
-        # Test filtering by specific date
-        response = self.client.get(reverse('scope'), {"date": specific_date, "wallet":self.wallet.id})
-        statements = response.context.get('statements')
-
-        self.assertIsNotNone(statements, "Statements should not be None in the context.")
-        self.assertEqual(statements.count(), 2)  # Only one statement matches the date
-        self.assertEqual(statements.first().addDate.isoformat(), specific_date)
-
-        # Test filtering by a non-existent date
-        response_no_match = self.client.get(reverse('scope'), {"date": '2024-11-15', "wallet": self.wallet.id})
-        statements_no_match = response_no_match.context.get('statements')
-
-        self.assertEqual(statements_no_match.count(), 0)  # No statements should match
-        
     def test_create_scope_wallet_does_not_exist(self):
         # Simulate a POST request with a wallet_id that doesn't exist
         invalid_wallet_id = 99999  # ID that doesn't exist in the database
@@ -970,3 +1102,82 @@ class ScopeViewTest(TestCase):
 
         # Verify that no Scope was created
         self.assertEqual(Scope.objects.count(), 0)  # No Scope should be created
+        
+    def test_delete_scope(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=500.00,
+            type="in",
+            range="1M",
+        )
+        """Test if the scope is deleted and the user is redirected."""
+        # Confirm the scope exists before the request
+        self.assertEqual(Scope.objects.count(), 1)
+
+        # Make a GET request to delete the scope
+        response = self.client.get(reverse('delete_scope', kwargs={'scope_id': self.scope.id}))
+
+        # Confirm the scope is deleted
+        self.assertEqual(Scope.objects.count(), 0)
+
+        # Check redirection to the correct URL
+        expected_redirect_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+        
+    def test_edit_scope_get(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            range='1M'
+        )
+
+        # URL for editing the scope
+        self.edit_url = reverse('edit_scope', kwargs={'scope_id': self.scope.id})
+        
+        """Test that the edit scope page loads with the correct form."""
+        response = self.client.get(self.edit_url)
+
+        # Check if the response is successful
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the correct template is used
+        self.assertTemplateUsed(response, 'edit_scope.html')
+
+        # Verify that the form is pre-filled with the scope's data
+        self.assertContains(response, str(self.scope.amount))
+        self.assertContains(response, self.scope.type)
+        self.assertContains(response, self.scope.range)
+
+    def test_edit_scope_post_valid_data(self):
+        self.scope = Scope.objects.create(
+            wallet=self.wallet,
+            amount=Decimal('200.00'),
+            type='in',
+            range='1M'
+        )
+
+        # URL for editing the scope
+        self.edit_url = reverse('edit_scope', kwargs={'scope_id': self.scope.id})
+        
+        """Test that the scope is updated successfully with valid data."""
+        updated_data = {
+            'amount': '300.00',
+            'type': 'out',
+            'range': '1W'
+        }
+
+        response = self.client.post(self.edit_url, updated_data)
+
+        # Refresh the scope object from the database
+        self.scope.refresh_from_db()
+
+        # Check if the scope was updated correctly
+        self.assertEqual(self.scope.amount, Decimal(updated_data['amount']))
+        self.assertEqual(self.scope.type, updated_data['type'])
+        self.assertEqual(self.scope.range, updated_data['range'])
+
+        # Check if the user is redirected to the 'scope' page for the wallet
+        expected_redirect_url = reverse('scope', kwargs={'wallet_id': self.wallet.id})
+        self.assertRedirects(response, expected_redirect_url)
+    

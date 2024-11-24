@@ -74,7 +74,7 @@ class Scope(models.Model):
     range = models.CharField(max_length=2, choices=[('1D', '1 Day'), ('1W', '1 Week'), ('1M', '1 Month'), ('1Y', '1 Year')])
 
     def __str__(self):
-        return f"Scope: {self.category} ({self.range})"
+        return f"Scope: ({self.range})"
     
     def status(self, date):
         statements = Statement.objects.filter(wallet=self.wallet)
@@ -92,8 +92,8 @@ class Scope(models.Model):
             statements = statements.filter(addDate__year=date.year)
         
         # คำนวณผลรวมของ Statements
-        total_in = statements.filter(type="เก็บเงิน").aggregate(Sum('amount'))['amount__sum'] or 0
-        total_out = statements.filter(type="ควบคุมการใช้เงิน").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_in = statements.filter(type="in").aggregate(Sum('amount'))['amount__sum'] or 0
+        total_out = statements.filter(type="out").aggregate(Sum('amount'))['amount__sum'] or 0
         
         current_total = total_in - total_out
         
@@ -139,7 +139,7 @@ class Mission(models.Model):
     dueDate = models.DateField()
     curAmount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    pic = models.ImageField(upload_to='missions/', null=True, blank=True)
+    pic = models.ImageField(upload_to='goal', null=True, blank=True)
 
     def __str__(self):
         return self.mName

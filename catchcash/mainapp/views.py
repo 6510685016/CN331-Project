@@ -117,9 +117,6 @@ def main(request):
     })
 
 
-def about(request):
-    return render(request, 'about.html')
-
 def analysis(request):
     data = [10, 20, 30, 40, 50]
     labels = ["A", "B", "C", "D", "E"]
@@ -272,7 +269,7 @@ def create_mission(request):
         )
         new_mission.save()
         messages.success(request, 'Goal ถูกสร้างสำเร็จแล้ว')
-        return redirect('goal', wallet_id=mission.wallet.id)
+        return redirect('goal', wallet_id=new_mission.wallet.id)
 
     wallets = Wallet.objects.all()
     return HttpResponse("ERROR, Can't create_mission")
@@ -334,19 +331,6 @@ def scope(request, wallet_id):
         'scopes': scopes,
         'form': form,
     })
-
-def edit_scope(request, scope_id):
-    scope = get_object_or_404(Scope, id=scope_id)
-
-    if request.method == 'POST':
-        form = ScopeForm(request.POST, instance=scope)
-        if form.is_valid():
-            form.save()
-            return redirect('scope', wallet_id=scope.wallet.id)
-    else:
-        form = ScopeForm(instance=scope)
-
-    return render(request, 'edit_scope.html', {'form': form, 'scope': scope})
 
 def edit_scope(request, scope_id):
     scope = get_object_or_404(Scope, id=scope_id)
