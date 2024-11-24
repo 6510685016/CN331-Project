@@ -25,12 +25,12 @@
                 
                 <!-- Navigation Links -->
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="main">Home</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="analysis">Analysis</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="progression">Progression</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="trophy">Trophy</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="setting">Setting</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="about">About us</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'main' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'analysis' %}">Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'progression' %}">Progression</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'trophy' %}">Trophy</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'setting' %}">Setting</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'about' %}">About us</a></li>
                 </ul>
 
                 <!-- Logout Button -->

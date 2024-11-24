@@ -1,134 +1,140 @@
 {% extends "base.html" %}
 
 {% block title %}
-About CatchCASH
+Analysis CatchCASH
 {% endblock %}
 
 {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+</head>
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .d-flex {
+        display: flex;
+        flex-wrap: nowrap;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .flex-grow-1 {
+        flex-grow: 1;
+    }
+
+    .incomeExpenses-Box,
+    .incomeVsExpenses-box,
+    .summary-Box {
+        box-sizing: border-box;
+        overflow-y: auto; /* Allow scrolling inside individual charts if content overflows */
+    }
+
     .incomeExpenses-Box {
         height: 40vh;
-        width: 70vw;
-        background-color: #00ffd51a;
-        border-radius: 30px;
-        margin-left: 50px;
-        margin-top: 10px;
+        width: 70%;
+        border-radius: 15px;
+        background-color: #e6f7ff;
         display: flex;
         justify-content: center;
         align-items: center;
+        margin: 10px auto;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
     }
 
     .incomeVsExpenses-box {
         height: 60vh;
-        width: 22vw;
-        background-color: #00ffd51a;
-        border-radius: 30px;
+        border-radius: 15px;
+        background-color: #e6f7ff;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-
     }
 
     .summary-Box {
         height: 60vh;
-        width: 90vw;
-        background-color: #00ffd51a;
-        border-radius: 30px;
-        margin-top: 10px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: 90%;
+        border-radius: 15px;
+        background-color: #e6f7ff;
+        margin: 20px auto;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+    }
+
+    .main-content {
+        overflow-y: auto;
+        height: calc(100vh - 80px); /* Adjust based on your header/footer height */
+    }
+
+    canvas {
+        max-width: 100%;
+        max-height: 100%;
     }
 </style>
 
-
-    <div class="d-flex">
-        <!-- Left Box: Charts -->
-        <div class="w-75 mt-3">
-
+<body class="m-0 p-0 vh-100 d-flex flex-column">
+    <div class="d-flex flex-grow-1 overflow-hidden">
+        <!-- Left Section: Charts -->
+        <div class="d-flex flex-column w-75 overflow-auto px-4">
             <!-- Income Chart -->
-            <div class="d-flex flex-column align-items-center">
+            <div class="d-flex flex-column align-items-center mt-3">
                 <h4 class="fw-bold">Income</h4>
-            </div>
-            <div class="incomeExpenses-Box border">
-                <canvas id="IncomeChart" class="p-3 w-100 h-100"></canvas>
-                <div id="no-data-message1" class="text-center"
-                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
-                    <h5 class=" mt-3 text-muted fw-bold">No Income Data Available</h5>
+                <div class="incomeExpenses-Box border">
+                    <canvas id="IncomeChart"></canvas>
+                    <div id="no-data-message1" class="text-center" style="display: none;">
+                        <h5 class="mt-3 text-muted fw-bold">No Income Data Available</h5>
+                    </div>
                 </div>
             </div>
 
             <!-- Expenses Chart -->
-            <div class="d-flex flex-column align-items-center mt-3">
+            <div class="d-flex flex-column align-items-center mt-4">
                 <h4 class="fw-bold">Expenses</h4>
-            </div>
-            <div class="incomeExpenses-Box border">
-                <canvas id="ExpensesChart" class="p-3 w-100 h-100"></canvas>
-                <div id="no-data-message2" class="text-center"
-                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
-                    <h5 class="mt-3 text-muted fw-bold">No Expense Data Available</h5>
+                <div class="incomeExpenses-Box border">
+                    <canvas id="ExpensesChart"></canvas>
+                    <div id="no-data-message2" class="text-center" style="display: none;">
+                        <h5 class="mt-3 text-muted fw-bold">No Expense Data Available</h5>
+                    </div>
                 </div>
             </div>
-
-
         </div>
 
-        <!-- Right Box: Filter & Income Vs Expense Box-->
-        <div class="w-25">
-            <!-- Wallet & Date Filter-->
-            <div class="justify-content-end text-end mt-3 mb-3 me-5">
-                <label for="wallet-select" class="visually-hidden">Select Wallet</label>
-                <select id="wallet-select" name="wallet" class="btn me-2 border" style=" background-color: #F7EFFF;"
-                    onchange="applyFilter()">
+        <!-- Right Section: Filter & Income vs Expense -->
+        <div class="d-flex flex-column w-25 p-3">
+            <div class="text-end mb-3">
+                <select id="wallet-select" class="form-select mb-2" onchange="applyFilter()">
                     {% if wallets %}
                     {% for wallet in wallets %}
                     <option value="{{ wallet.id }}">{{ wallet.wName }}</option>
                     {% endfor %}
                     {% else %}
-                    <option value="" disabled selected>No Wallets Available</option>
+                    <option value="" disabled>No Wallets Available</option>
                     {% endif %}
                 </select>
-
-                <input type="date" id="date-select" name="date" class="btn border" style=" background-color: #F7EFFF;"
-                    onchange="applyFilter()">
+                <input type="date" id="date-select" class="form-control" onchange="applyFilter()">
             </div>
-
-            <!-- Income Vs Expense Box -->
-            <div class="incomeVsExpenses-box position-relative">
-                <div class="border-bottom p-2 text-center">
-                    <h5 class="fw-bold">Income Vs Expense</h5>
-                </div>
-
-                <div id="no-data-message3" class="text-center position-absolute top-50 start-50 translate-middle"
-                    style="display: none; height: 50px; width: 100%; background-color: rgb(222, 224, 127);">
+            <div class="incomeVsExpenses-box border">
+                <canvas id="IncomeVsExpensesChart"></canvas>
+                <div id="no-data-message3" class="text-center" style="display: none;">
                     <h5 class="mt-3 text-muted fw-bold">No Income or Expense</h5>
                 </div>
-
-                <div class="p-4 w-100 h-100">
-                    <canvas id="IncomeVsExpensesChart"></canvas>
-                </div>
             </div>
-
-        </div>
-
-
-    </div>
-
-    <div class="d-flex align-items-center justify-content-center flex-column">
-        <div class="mt-3">
-            <h4 class="fw-bold">Balance Last 7 Days</h4>
-        </div>
-        <div class="summary-Box flex-column">
-            <canvas id="sevenDaysChart" class="p-3 w-100 h-100"></canvas>
         </div>
     </div>
 
-
+    <!-- Summary Section -->
+    <div class="summary-Box mx-auto mt-4">
+        <h4 class="text-center">Balance Last 7 Days</h4>
+        <canvas id="sevenDaysChart"></canvas>
+    </div>
+</body>
 
 <script>
 
@@ -361,4 +367,6 @@ About CatchCASH
 </script>
 
 
+
 {% endblock %}
+

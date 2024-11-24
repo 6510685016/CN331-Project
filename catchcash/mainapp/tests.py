@@ -1,7 +1,11 @@
+
 from datetime import timedelta
 from decimal import Decimal
 import json
 from django.forms import ValidationError
+
+from datetime import date
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -252,6 +256,8 @@ class ViewsTestCase(TestCase):
     def test_main_view_creates_default_wallet(self):
         # Log in as the created user
         self.client.login(username="testuser", password="testpassword")
+        
+    def test_main_no_wallet(self): #มีอันใหม่ที่ไม่ fail แล้ว 1
         self.wallet.delete()
         
         # Access the main view
@@ -287,7 +293,7 @@ class ViewsTestCase(TestCase):
         self.assertIn('statements', response.context)
         self.assertIn('wallet', response.context)
 
-    def test_analysis_view(self):
+    def test_analysis_view(self): #มีอันใหม่ที่ไม่ fail แล้ว 2
         # Make a GET request to the 'analysis' view
         response = self.client.get(reverse('analysis'))  # Make sure 'analysis' is the correct URL name
         
@@ -970,3 +976,74 @@ class ScopeViewTest(TestCase):
 
         # Verify that no Scope was created
         self.assertEqual(Scope.objects.count(), 0)  # No Scope should be created
+
+class AnalysisViewTest(TestCase):
+    def setUp(self):
+        # Create a user
+        self.user = User.objects.create_user(username='testuser', password='password')
+        
+        # Create an Account for the user
+        self.account = Account.objects.create(user=self.user)
+        
+        # Create wallets associated with the account
+        self.wallet1 = Wallet.objects.create(account=self.account, wName='Wallet 1', currency='USD')
+        self.wallet2 = Wallet.objects.create(account=self.account, wName='Wallet 2', currency='EUR')
+
+        # Create statements for wallet1
+        self.statement1 = Statement.objects.create(wallet=self.wallet1, amount=100, type='expense', category='Food', addDate=date(2024, 11, 20))
+        self.statement2 = Statement.objects.create(wallet=self.wallet1, amount=50, type='income', category='Salary', addDate=date(2024, 11, 21))
+
+        # Create statements for wallet2
+        self.statement3 = Statement.objects.create(wallet=self.wallet2, amount=200, type='expense', category='Shopping', addDate=date(2024, 11, 20))
+
+    def test_analysis_view_no_wallet_id(self):
+        # Test accessing the analysis page without wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'analysis.html')
+        self.assertIn('wallets', response.context)
+        self.assertEqual(len(response.context['wallets']), 2)
+
+    def test_analysis_view_with_valid_wallet_id(self):
+        # Test accessing the analysis page with a valid wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertContains(response, self.statement1.amount)
+        self.assertContains(response, self.statement2.amount)
+        
+    def test_analysis_view_with_invalid_wallet_id(self):
+        # Test accessing the analysis page with an invalid wallet_id
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + '?wallet_id=999')
+
+        # Expecting a 404 error response
+        self.assertEqual(response.status_code, 404)  # Corrected to expect a 404 status code
+        
+        # Check if the JSON response contains the error message
+        response_data = response.json()  # Parse the JSON response
+        self.assertIn('error', response_data)  # Ensure there's an 'error' key
+        self.assertEqual(response_data['error'], 'Wallet not found')  # Check if the error message matches
+
+    def test_analysis_view_with_wallet_id_and_date(self):
+        # Test accessing the analysis page with a valid wallet_id and selected_date
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}&date=2024-11-21')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertContains(response, self.statement2.amount)
+        self.assertNotContains(response, self.statement1.amount)
+        
+    def test_analysis_view_with_wallet_id_and_no_matching_statements(self):
+        # Test when there are no matching statements for a given date
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('analysis') + f'?wallet_id={self.wallet1.id}&date=2024-12-01')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.wallet1.wName)
+        self.assertNotContains(response, 'amount')  # No statement found for the given date

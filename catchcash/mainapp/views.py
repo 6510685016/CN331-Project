@@ -121,10 +121,61 @@ def about(request):
     return render(request, 'about.html')
 
 def analysis(request):
-    data = [10, 20, 30, 40, 50]
-    labels = ["A", "B", "C", "D", "E"]
+    # ดึงข้อมูลผู้ใช้ที่เข้าสู่ระบบในปัจจุบัน
+    user = request.user
+    account = Account.objects.filter(user=user).first()  # ทดสอบ: ตรวจสอบว่าผู้ใช้สามารถดึงข้อมูลบัญชีได้หรือไม่
 
-    return render(request, 'analysis.html', {'data': data, 'labels': labels})
+    # ดึงพารามิเตอร์จากคำขอ GET
+    wallet_id = request.GET.get('wallet_id')  # ทดสอบ: ตรวจสอบว่า wallet_id ถูกดึงจาก GET request ถูกต้องหรือไม่
+    selected_date = request.GET.get('date')  # ดึงวันที่ที่เลือกจากคำขอ GET  # ทดสอบ: ตรวจสอบว่า selected_date ถูกดึงได้ถูกต้องจากคำขอ GET
+
+    # หากมีการระบุ wallet_id, ให้ดึงข้อมูลกระเป๋าที่ตรงกับ wallet_id และกรองข้อมูล
+    if wallet_id:
+        try:
+            # ดึงข้อมูลกระเป๋าที่เลือก ถ้าพบ
+            wallet = account.wallets.get(id=wallet_id)  # ทดสอบ: ตรวจสอบว่าดึงกระเป๋าตาม wallet_id ได้หรือไม่
+            # กรองรายการ Statement ตามกระเป๋าที่เลือก
+            statements = Statement.objects.filter(wallet=wallet)  # ทดสอบ: ตรวจสอบว่า Statement สามารถกรองตามกระเป๋าได้หรือไม่
+            
+            # หากมีการระบุวันที่ ให้กรองรายการตามวันที่นั้น
+            if selected_date:
+                statements = statements.filter(addDate=selected_date)  # ทดสอบ: ตรวจสอบว่า Statement สามารถกรองตามวันที่ได้หรือไม่
+
+            # เตรียมข้อมูล Statement เพื่อส่งกลับไปยัง frontend
+            statement_data = []
+            for statement in statements:
+                statement_data.append({
+                    'amount': statement.amount,
+                    'type': statement.type,
+                    'category': statement.category,
+                    'date': statement.addDate
+                })
+
+            # ส่งข้อมูลกระเป๋าและรายการ Statement กลับไปยัง frontend ในรูปแบบ JSON
+            return JsonResponse({
+                'wallet_name': wallet.wName,
+                'currency': wallet.currency,
+                'statement': statement_data
+            })
+
+        except Wallet.DoesNotExist:
+            # หากไม่พบกระเป๋า, ให้ตอบกลับ JSON พร้อม error 404
+            return JsonResponse({'error': 'Wallet not found'}, status=404)  # ทดสอบ: ตรวจสอบกรณีที่ไม่พบกระเป๋าและตอบกลับข้อผิดพลาดได้หรือไม่
+
+    else:
+        # หากไม่ได้เลือก wallet_id ให้แสดงรายการกระเป๋าทั้งหมดของผู้ใช้
+        wallets = account.wallets.all()  # ทดสอบ: ตรวจสอบว่าแสดงรายการกระเป๋าทั้งหมดได้ถูกต้องเมื่อไม่มี wallet_id
+        data = None  # ไม่มีข้อมูลเฉพาะที่จะต้องแสดง
+        labels = None  # ไม่มี labels ที่จะแสดง
+
+        # แสดงหน้ารายการกระเป๋าใน template analysis.html
+        return render(request, 'analysis.html', {
+            'wallets': wallets,
+            'data': data,
+            'labels': labels
+        })
+
+
 
 
 
