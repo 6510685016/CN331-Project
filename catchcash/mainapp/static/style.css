@@ -1,108 +1,88 @@
-@media (max-width: 767px) {
-    .sidebar {
-        font-size: 0.8rem; /* ขนาดฟอนต์สำหรับหน้าจอเล็ก */
-    }
-    .nav-link {
-        font-size: 1rem;
-    }
-}
-
-/* สำหรับหน้าจอกลาง (768px ถึง 991px) */
-@media (min-width: 768px) and (max-width: 991px) {
-    .sidebar {
-        font-size: 1rem; /* ขนาดฟอนต์สำหรับหน้าจอกลาง */
-    }
-    .nav-link {
-        font-size: 1.2rem;
-    }
-}
-
-/* สำหรับหน้าจอใหญ่ (มากกว่า 992px) */
-@media (min-width: 992px) {
-    .sidebar {
-        font-size: 1.2rem; /* ขนาดฟอนต์สำหรับหน้าจอใหญ่ */
-    }
-    .nav-link {
-        font-size: 1.3rem;
-    }
-}
-
+/* base styles สำหรับ sidebar */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
+    width: 250px;
     height: 100vh;
-    width: 250px; /* กำหนดความกว้างของ Sidebar */
+    background-color: #C9D6FF;
+    z-index: 100;
+    overflow-y: auto;
 }
 
-/* ให้เนื้อหาหลักย้ายไปขวาของ Sidebar */
+
+/* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
 .main-content {
-    margin-left: 250px; /* ขยับเนื้อหาหลักไปทางขวาของ Sidebar */
-    padding: 20px;
+    width: 100%;
+    margin-left: 0;
+    padding-right: 0;
 }
 
-/* สำหรับมือถือให้ Sidebar เป็นแบบซ่อนเมื่อไม่ต้องการ */
-@media (max-width: 767px) {
-    .sidebar {
-        position: static;
-        width: 100%;
-    }
-    .main-content {
-        margin-left: 0;
-    }
+
+/* ปรับขนาดฟอนต์สำหรับ sidebar */
+.sidebar .user-info h5 {
+    font-size: 1.2rem;
+    margin-top: 10px;
 }
 
-@media (max-width: 767px) {
-    .user-info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    .user-info h5 {
-        margin-right: 10px;
-    }
-
-    .button-group {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    .date-group {
-        margin-top: 20px;
-    }
+/* ปรับขนาดรูปโปรไฟล์ */
+.sidebar .profile-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
 }
 
+/* ปุ่ม logout ที่ด้านล่าง sidebar */
+.logout-btn {
+    position: absolute;
+    bottom: 40px;  /* เพิ่มระยะห่างจากขอบล่าง */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logout-btn a {
+    display: block;
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+/* ปรับรูปแบบของ user-info */
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* ปรับระยะห่างของชื่อผู้ใช้ */
 .user-info h5 {
     margin-right: 15px !important; /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
 }
 
+/* ปรับระยะห่างของปุ่ม */
 .user-info a {
     margin-left: 15px !important; /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
-#create_wallet{
+/* ปรับสไตล์ของปุ่ม create_wallet */
+#create_wallet {
     margin-right: 15px !important;
     margin-top: 6px !important;
     height: 39px !important;
     justify-content: end !important;
 }
 
-@media (max-width: 768px) {
-    h2 {
-        font-size: 18px;  /* ลดขนาดของหัวข้อในมือถือ */
-    }
-    p {
-        font-size: 14px;  /* ลดขนาดของข้อความในมือถือ */
-    }
+/* ปรับขนาดของตัวอักษร */
+h2 {
+    font-size: 18px;  /* ลดขนาดของหัวข้อ */
 }
 
-@media (max-width: 768px) {
-    .col-md-6 {
-        margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่องในมือถือ */
-    }
+p {
+    font-size: 14px;  /* ลดขนาดของข้อความ */
 }
 
 .node {
@@ -127,4 +107,8 @@
     background-color: black;
     height: 2px;
     transform-origin: 0 0;
+}
+/* เพิ่มระยะห่างระหว่างกล่อง */
+.col-md-6 {
+    margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่อง */
 }

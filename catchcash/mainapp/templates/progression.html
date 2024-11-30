@@ -15,16 +15,20 @@
     </div>
 
     <script>
+    const walletCount = {{ wallet_count|safe }};
+    </script>
+    <script>
         // Node data
+        
         const nodes = [
-            { id: 1, name: "Start", x: 30, y: 250, unlocked: true },
-            { id: 2, name: "Node 2", x: 300, y: 150, unlocked: false },
-            { id: 3, name: "Node 3", x: 200, y: 500, unlocked: false },
-            { id: 4, name: "Node 4", x: 700, y: 100, unlocked: false },
-            { id: 5, name: "Node 5", x: 900, y: 350, unlocked: false },
-            { id: 6, name: "Node 6", x: 700, y: 500, unlocked: false },
+            { id: 1, name: "Start", x: 30, y: 250, unlocked: false, condition: () => walletCount > 1 },
+            { id: 2, name: "Node 2", x: 300, y: 150, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 2 },
+            { id: 3, name: "Node 3", x: 200, y: 500, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 3 },
+            { id: 4, name: "Node 4", x: 700, y: 100, unlocked: false, condition: () => nodes.find(n => n.id === 6).unlocked },
+            { id: 5, name: "Node 5", x: 900, y: 350, unlocked: false, condition: () => nodes.find(n => n.id === 4).unlocked && nodes.find(n => n.id === 6).unlocked },
+            { id: 6, name: "Node 6", x: 700, y: 500, unlocked: false, condition: () => nodes.find(n => n.id === 3).unlocked },
         ];
-
+    
         // Connections between nodes
         const connections = [
             { from: 1, to: 2 },
@@ -34,58 +38,66 @@
             { from: 4, to: 5 },
             { from: 6, to: 5 },
         ];
-
+    
         const container = document.getElementById("graph-container");
-
-        // Node size (assuming square node)
-        const NODE_RADIUS = 50; // Half of node width/height (100px / 2)
-
+        const NODE_RADIUS = 50;
+    
         // Create nodes
         nodes.forEach(node => {
             const div = document.createElement("div");
-            div.className = `node ${node.unlocked ? "unlocked" : ""}`;
+            div.className = `node ${node.unlocked ? "unlocked" : "locked"}`;
             div.style.left = `${node.x}px`;
             div.style.top = `${node.y}px`;
             div.textContent = node.name;
             container.appendChild(div);
         });
-
+    
         // Draw connections
         connections.forEach(conn => {
             const fromNode = nodes.find(n => n.id === conn.from);
             const toNode = nodes.find(n => n.id === conn.to);
-
+    
             if (fromNode && toNode) {
                 const line = document.createElement("div");
                 line.className = "connection";
-
-                // Calculate the center points of the nodes
+    
                 const x1 = fromNode.x + NODE_RADIUS;
                 const y1 = fromNode.y + NODE_RADIUS;
                 const x2 = toNode.x + NODE_RADIUS;
                 const y2 = toNode.y + NODE_RADIUS;
-
-                // Calculate the angle of the line
+    
                 const angle = Math.atan2(y2 - y1, x2 - x1);
-
-                // Adjust the start and end points to avoid overlapping with node borders
+    
                 const adjustedX1 = x1 + Math.cos(angle) * NODE_RADIUS;
                 const adjustedY1 = y1 + Math.sin(angle) * NODE_RADIUS;
                 const adjustedX2 = x2 - Math.cos(angle) * NODE_RADIUS;
                 const adjustedY2 = y2 - Math.sin(angle) * NODE_RADIUS;
-
-                // Calculate line length
+    
                 const length = Math.sqrt((adjustedX2 - adjustedX1) ** 2 + (adjustedY2 - adjustedY1) ** 2);
-
-                // Set the line's style
+    
                 line.style.width = `${length}px`;
                 line.style.left = `${adjustedX1}px`;
                 line.style.top = `${adjustedY1}px`;
                 line.style.transform = `rotate(${Math.atan2(adjustedY2 - adjustedY1, adjustedX2 - adjustedX1) * (180 / Math.PI)}deg)`;
-
+    
                 container.appendChild(line);
             }
         });
+        // Update nodes' status based on conditions
+        function updateNodes() {
+            nodes.forEach(node => {
+                if (!node.unlocked && node.condition && node.condition()) {
+                    node.unlocked = true;
+                    const nodeElement = document.querySelectorAll('.node')[node.id - 1];
+                    if (nodeElement) {
+                        nodeElement.classList.remove("locked");
+                        nodeElement.classList.add("unlocked");
+                    }
+                }
+            });
+        }
+    
+        // Call updateNodes initially
+        updateNodes();
     </script>
-</body>
-</html>
+    

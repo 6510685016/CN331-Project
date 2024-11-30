@@ -18,7 +18,7 @@
                 {{ form.name }}
             </div>
             <div class="mb-3">
-                <label for="field1" class="form-label">Statement</label>
+                <label for="field1" class="form-label">หมวดหมู่</label>
                 {{ form.field1 }}
             </div>
             <div class="mb-3">
@@ -33,46 +33,45 @@
         </form>
 
         <!-- ตารางแสดง Preset -->
-        <h3 class="text-center">Existing Presets</h3>
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>ชื่อ Preset</th>
-                        <th>Statement</th>
-                        <th>จำนวนเงิน</th>
-                        <th>ประเภท</th>
-                        <th>ตั้งค่า</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for preset in presets %}
-                    <tr>
-                        <td>
-                            <strong></strong> {{ preset.name|default:"N/A" }}<br>
-                        </td>
-                        <td>
-                            <strong></strong> {{ preset.statement.field1|default:"N/A" }}<br>
-                        </td>
-                        <td>
-                            <strong></strong> {{ preset.statement.field2|default:"N/A" }}<br>
-                        </td>
-                        <td>
-                            <strong></strong> {{ preset.statement.field3|default:"N/A" }}</td>
-                        <td>
-                            <!-- เพิ่มปุ่มแก้ไขและลบ -->
-                            <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{% url 'delete_preset' preset.id %}" class="btn btn-danger btn-sm">Delete</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">No presets found for this wallet.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <h3>Existing Presets</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ชื่อ Preset</th>
+                    <th>หมวดหมู่</th>
+                    <th>จำนวนเงิน</th>
+                    <th>ประเภท</th>
+                    <th>ตั้งค่า</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% for preset in presets %}
+                <tr>
+                    <td>
+                        <strong></strong> {{ preset.name|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field1|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field2|default:"N/A" }}<br>
+                    </td>
+                    <td>
+                        <strong></strong> {{ preset.statement.field3|default:"N/A" }}</td>
+                    <td>
+                        <!-- เพิ่มปุ่มแก้ไขและลบ -->
+                        <a href="{% url 'edit_preset' preset.id %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'delete_preset' preset.id %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No presets found for this wallet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
