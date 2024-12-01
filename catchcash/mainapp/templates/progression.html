@@ -1,46 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progression Nodes</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
+{% extends 'base.html' %}
 
-</head>
-<body>
+{% block title %}
+Main Page - CatchCASH
+{% endblock %}
+
+{% block content %}
     <div class="container mt-5">
         <h2 class="text-center">Progression Nodes</h2>
         <div id="graph-container" style="position: relative; height: 800px; border: 1px solid #ccc;"></div>
     </div>
 
     <script>
-    const walletCount = {{ wallet_count|safe }};
-    </script>
-    <script>
+        const walletCount = {{ wallet_count|safe }};
+        const presetCount = {{ preset_count|safe }};
+        const missionCount = {{mission_count|safe}};
+        const scopeCount = {{scope_count|safe}};
+        const hasSuccessfulMission = {{ has_successful_mission|yesno:"true,false" }};
+        const totalIncome = {{ total_income|safe }};
+     
         // Node data
-        
         const nodes = [
-            { id: 1, name: "Start", x: 30, y: 250, unlocked: false, condition: () => walletCount > 1 },
-            { id: 2, name: "Node 2", x: 300, y: 150, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 2 },
-            { id: 3, name: "Node 3", x: 200, y: 500, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 3 },
-            { id: 4, name: "Node 4", x: 700, y: 100, unlocked: false, condition: () => nodes.find(n => n.id === 6).unlocked },
-            { id: 5, name: "Node 5", x: 900, y: 350, unlocked: false, condition: () => nodes.find(n => n.id === 4).unlocked && nodes.find(n => n.id === 6).unlocked },
-            { id: 6, name: "Node 6", x: 700, y: 500, unlocked: false, condition: () => nodes.find(n => n.id === 3).unlocked },
+            { id: 1, name: "Welcome!", x: 30, y: 300, unlocked: true},
+            { id: 2, name: "Create Wallet", x: 220, y: 125, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 1 },
+            { id: 3, name: "Create Preset", x: 550, y: 75, unlocked: false, condition: () => nodes.find(n => n.id === 2).unlocked &&  presetCount > 0},
+            { id: 4, name: "Create Scope", x: 810, y: 165, unlocked: false, condition: () => nodes.find(n => n.id === 3).unlocked && scopeCount > 0 },
+            { id: 5, name: "Create Goal", x: 200, y: 550, unlocked: false, condition: () => missionCount > 0 },
+            { id: 6, name: "Complete Goal", x: 460, y: 530, unlocked: false, condition: () => nodes.find(n => n.id === 5).unlocked && hasSuccessfulMission},
+            { id: 7, name: "1000+ Income", x: 700, y: 550, unlocked: false, condition: () => nodes.find(n => n.id === 6).unlocked && totalIncome > 999 },
+            { id: 8, name: "Finished", x: 970, y: 300, unlocked: false, condition: () => nodes.find(n => n.id === 7).unlocked && nodes.find(n => n.id === 4).unlocked },
         ];
-    
+     
         // Connections between nodes
         const connections = [
             { from: 1, to: 2 },
-            { from: 1, to: 3 },
-            { from: 2, to: 4 },
-            { from: 3, to: 6 },
-            { from: 4, to: 5 },
-            { from: 6, to: 5 },
+            { from: 2, to: 3 },
+            { from: 3, to: 4 },
+            { from: 4, to: 8 },
+            { from: 1, to: 5 },
+            { from: 5, to: 6 },
+            { from: 6, to: 7 },
+            { from: 7, to: 8 },
+            
         ];
     
         const container = document.getElementById("graph-container");
-        const NODE_RADIUS = 50;
+        const NODE_RADIUS = 60;
     
         // Create nodes
         nodes.forEach(node => {
@@ -83,6 +87,7 @@
                 container.appendChild(line);
             }
         });
+    
         // Update nodes' status based on conditions
         function updateNodes() {
             nodes.forEach(node => {
@@ -94,10 +99,10 @@
                         nodeElement.classList.add("unlocked");
                     }
                 }
-            });
-        }
+        });
+}
     
         // Call updateNodes initially
         updateNodes();
     </script>
-    
+{% endblock %}
