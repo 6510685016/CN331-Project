@@ -168,6 +168,10 @@ class Mission(models.Model):
         money = Decimal(money)
         self.curAmount = self.curAmount + money
         self.save()
+    
+    def is_successful(self):
+        # ตรวจสอบว่า Mission สำเร็จหรือไม่
+        return self.curAmount >= self.amount
 
     def delete_mission(self):
         self.delete()
