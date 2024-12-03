@@ -1,146 +1,196 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Main Page - CatchCASH
+Dashboard - CatchCASH
 {% endblock %}
 
+<!-- bootstrap5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
+
 {% block content %}
-    <div class="container-fluid p-4 main-content" style="max-width: 100vw; padding-right: 0;">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="p-3" id="background">
-                    <!-- ปุ่มสร้าง wallet ใหม่ และ ปุ่มเลือก wallet -->
-                    <div class="d-flex justify-content-end button-group ">
-                        <button type="button" class="btn btn-primary ml-2 text-truncate" id="create_wallet"
-                            data-toggle="modal" data-target="#createWalletModal" style="max-width: 200px;">
-                            สร้าง wallet ใหม่
+<div class="container-fluid p-1">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1> Statements </h1>
+            
+            <form method="GET" class="d-flex">
+                <select id="wallet-select" name="wallet" class="form-control mr-2" onchange="this.form.submit()">
+                    {% for w in form.wallet.field.queryset %}
+                        <option value="{{ w.id }}" {% if wallet and w == wallet %}selected{% endif %}>
+                            {{ w.wName }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="date" name="date" class="form-control mr-2" 
+                       value="{{ form.cleaned_data.date|date:'Y-m-d' }}" onchange="this.form.submit()">
+            </form>
+        </div>
+    </div>
+
+    <!-- Wallet Selector and Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4>
+                    {{ wallet.wName }}, {{ date }} 
+                    {% if date != "แสดงทั้งหมด (default)" %} <a href="/main">[ล้างการค้นหาตามวัน คลิก]</a> {% endif %}
+                </h4>
+                <button class="btn btn-success" data-toggle="modal" data-target="#createWalletModal">+ สร้าง Wallet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Overview -->
+    <div class="row">
+        <div class="col-md-6 col-12">
+            <div class="p-3 bg-light bg-gradient border border-dark text-black rounded">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3>ประมานการณ์ของเดือน {{ mAndY }}</h3>
+                        <a href="#" data-toggle="modal" data-target="#editScope" class="text-warning mr-4">
+                            แก้ไข คลิก
+                        </a>
+                    </div>
+                    
+                    {% if status.income_diff is not None %}
+                        <div>{{ status.income_message }}</div>
+                        <div>{{ status.expense_message }}</div>
+                    {% else %}
+                        <h5>ไม่พบเป้าหมายสำหรับเดือนนี้</h5>
+                        <a href="#" data-toggle="modal" data-target="#addScope" class="text-primary">
+                            เพิ่มเลย คลิก
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-12 mb-3">
+            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
+                <h3>เงินสุทธิ</h3>
+                <h5>{{ summary.net|floatformat:2 }} {{ wallet.currency }}</h5>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
+                <h3>รายรับ</h3>
+                <h5>{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
+            </div>
+        </div>
+        <div class="col-md-2 col-6">
+            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
+                <h3>รายจ่าย</h3>
+                <h5>{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Add Scope -->
+    <div class="modal fade" id="addScope" tabindex="-1" aria-labelledby="addScopeLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'create_scope' %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addScopeLabel">เพิ่มเป้าหมายรายเดือน</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- ฟอร์มตั้งค่าเป้าหมาย -->
+                        <div class="form-group">
+                            <label for="income-goal">เป้าหมายรายรับ</label>
+                            <input type="number" step="0.01" class="form-control" id="income-goal" name="income_goal" placeholder="ระบุเป้าหมายรายรับ" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-goal">เป้าหมายรายจ่าย</label>
+                            <input type="number" step="0.01" class="form-control" id="expense-goal" name="expense_goal" placeholder="ระบุเป้าหมายรายจ่าย" required>
+                        </div>
+                        <input type="hidden" name="wallet" value="{{ wallet.id }}">
+                        <input type="hidden" name="month" value="{{ M }}">
+                        <input type="hidden" name="year" value="{{ Y }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึก</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if scopes %}
+    <!-- Popup Edit Scope -->
+    <div class="modal fade" id="editScope" tabindex="-1" aria-labelledby="editScopeLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="{% url 'edit_scope' scopes.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editScopeLabel">แก้ไขเป้าหมายรายเดือน</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- ฟอร์มแก้ไขเป้าหมาย -->
+                        <div class="form-group">
+                            <label for="edit-income-goal">เป้าหมายรายรับ</label>
+                            <input type="number" step="0.01" class="form-control" id="edit-income-goal" name="income_goal" value="{{ scopes.income_goal }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-expense-goal">เป้าหมายรายจ่าย</label>
+                            <input type="number" step="0.01" class="form-control" id="edit-expense-goal" name="expense_goal" value="{{ scopes.expense_goal }}" required>
+                        </div>
+                        <input type="hidden" name="wallet" value="{{ wallet.id }}">
+                        <input type="hidden" name="month" value="{{ M }}">
+                        <input type="hidden" name="year" value="{{ Y }}">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Contrainer Section -->
+    <div class="row">
+
+        <!-- Statements Section -->
+        <div class="mt-4">
+            <div class="bg-light rounded border border-dark" style="height: 500px; overflow-y: auto;">
+                <!-- ส่วนหัว -->
+                <div class="m-3 sticky-top bg-light d-flex justify-content-between align-items-center">
+                    <h3 class="bg-white p-2">
+                        Statements
+                    </h3>
+                    <div class="d-flex">
+                        <!-- ปุ่มใช้เพิ่ทม Statement -->
+                        <button type="button" class="btn btn-primary mr-2" id="toggleFormButton">
+                            เพิ่มรายการใหม่
                         </button>
 
-                        <!-- Popup สำหรับกรอกข้อมูลโปรไฟล์ใหม่ -->
-                        <div class="modal fade" id="createWalletModal" tabindex="-1"
-                            aria-labelledby="createWalletModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="createWalletModalLabel">สร้างโปรไฟล์ Wallet ใหม่
-                                        </h5>
-                                    </div>
-                                    <form method="POST" action="{% url 'create_wallet' %}">
-                                        {% csrf_token %}
-                                        <!-- ฟอร์มกรอกข้อมูล -->
-                                        <div class="modal-body">
-                                            <!-- ชื่อ wallet -->
-                                            <div class="form-group">
-                                                <label for="walletName">ชื่อ Wallet</label>
-                                                <input type="text" class="form-control" id="wName" name="wName"
-                                                    required>
-                                            </div>
-                                            <!-- ตัวเลือกหน่วยเงิน -->
-                                            <div class="form-group">
-                                                <label for="currency">หน่วยเงิน</label>
-                                                <select class="form-control" id="currency" name="currency" required>
-                                                    <option value="THB">THB - บาท</option>
-                                                    <option value="USD">USD - ดอลลาร์</option>
-                                                    <option value="EUR">EUR - ยูโร</option>
-                                                    <option value="JPY">JPY - เยน</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- ปุ่มตกลง ยกเลิก -->
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">ยกเลิก</button>
-                                            <button type="submit" class="btn btn-primary">บันทึก</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
+                        <div class="btn-group">
+                            <a class="btn btn-primary" id="create_preset" data-toggle="modal" data-target="#selectModal">
+                                เพิ่มจาก preset
+                            </a>
+                            <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">
+                                ตั้งค่า preset
+                            </a>
                         </div>
-                        <form class="mt-2 mr-2 justify-content-end " id="filter-form" method="GET" action="">
-                            <div class="row ">
-                                <div class="col-12 mb-3 justify-content-end text-end">
-                                    <label for="wallet-select" class="visually-hidden">Select Wallet</label>
-                                    <select id="wallet-select" name="wallet" class="WalletFilterForm btn btn-primary" onchange="applyFilter()">
-                                        {% if form.wallet.field.queryset.exists %}
-                                            {% for wallet in form.wallet.field.queryset %}
-                                            <option value="{{ wallet.id }}" {% if wallet == form.cleaned_data.wallet %}selected{% endif %}>
-                                                {{ wallet }}
-                                            </option>
-                                            {% endfor %}
-                                        {% else %}
-                                            <option value="" disabled selected>No Wallets Available</option>
-                                        {% endif %}
-                                    </select>
-                                </div>
-                            </div> 
-                        </form>
                     </div>
                 </div>
-                <div class="d-flex justify-content-end align-items-center user-info">
-                    <label for="date-filter">{{ form.date.label }}</label>
-                    <input type="date" id="date-filter" name="date" class="WalletFilterForm" 
-                           value="{{ form.cleaned_data.date|date:'Y-m-d' }}" onchange="applyFilter()">
-                </div>
-            </div>
-        </div>
 
-        <!-- Financial Overview Section -->
-        <div class="row mb-4">
-            <!-- Total Income -->
-            <div class="col-md-4">
-                <div class="p-3" style="background-color: #E6FAFF; border: 1px solid #E6FAFF;">
-                    <h2>รายได้ทั้งหมด</h2>
-                    <p>{{ data.in }} {{ wallet.currency }}</p>
-                </div>
-            </div>
-
-            <!-- รายจ่ายทั้งหมด -->
-            <div class="col-md-4">
-                <div class="p-3" style="background-color: #F7EFFF; border: 1px solid #F7EFFF;">
-                    <h2>รายจ่ายทั้งหมด</h2>
-                    <p>{{data.out}} {{wallet.currency}}</p>
-                </div>
-            </div>
-            <!-- วงเงิน -->
-            <div class="col-md-4">
-                <div class="p-3" style="background-color: #E8F9F5; border: 1px solid #E8F9F5;">
-                    <h2>เงินสุทธิ</h2>
-                    <p>{{wallet.balance}} {{wallet.currency}}</p>
-                </div>
-            </div>
-        </div>
-    <!-- Container หลัก -->
-    <div class="row">
-        <!-- Statement ด้านซ้าย -->
-        <div class="col-md-6">
-            <div class="p-3 d-flex flex-column" id="statement_container"
-                style="height: 624px; background-color: #00ffd51a; border: 1px solid #ddd; overflow-y: auto;">
-                <!-- ส่วนหัว -->
-                <div class="container-fluid">
-                    <div class="row">
-                        <h2 class="col-4 mb-4">
-                            Statements
-                        </h2>
-                        {% if wallet %}
-                            <div class="col-2">
-                                <button type="button" class="btn btn-outline-dark" id="toggleFormButton">เพิ่ม</button>
-                            </div>    
-                            <div class="col-3">
-                                <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
-                                <button type="button" class="btn btn-primary" id="create_preset" data-toggle="modal"
-                                    data-target="#selectModal">ใช้ preset</button>
-                            </div>
-                            <div class="col-3">
-                                <!-- ปุ่มตั้งค่า preset -->
-                                <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">ตั้งค่า preset</a>
-                            </div>
-                        {% endif %} 
-                    </div>
-                </div>
                 {% include "statement_container.html" %}
             </div>
         </div>
+
         <!-- Modal ใช้ Preset -->
         <div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -168,86 +218,74 @@ Main Page - CatchCASH
                 </div>
             </div>
         </div>
-      
-    <!-- Goal และ Objective ด้านขวา -->
-        <div class="col-md-6">
-            <div class="row">
-                <!-- Goal -->
-                <div class="col-12 mb-4">
-                    <div id="goal" style="height: 300px; overflow-y: auto;">
-                        <div class="container-fluid m-2">
-                            <div class="row">
-                                <h2 class="col-8 mb-4">
-                                    Goal
-                                </h2>
-                                <!-- ปุ่มตั้งค่า Goal -->
-                                <a href="{% url 'goal' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Goal</a>
-                            </div>        
-                            {% for m in missions %}
-                            <div class="row">
-                                {% if not m.isOutdate and m.amountToGo > 0 %}
-                                <div class="col-6">{{ m.status_text }}</div>
-                                <div class="col-6">
-                                    <form action="{% url 'donate_to_mission' m.id %}" method="post">
-                                        {% csrf_token %}
-                                        <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
-                                        <button type="submit" class="btn btn-success">Donate</button>
-                                    </form>
-                                </div>
-                                {% elif m.isOutdate %}
-                                <div class="col-8">{{ m.status_text }}</div>
-                                <div class="col-4">
-                                    <p class="text-danger">Outdated.</p>
-                                </div>
-                                {% else %}
-                                <div class="col-8">{{ m.status_text }}</div>
-                                <div class="col-4">
-                                    <p class="text-success">Completed!</p>
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% empty %}
-                            <div class="row">
-                                <p>No missions available.</p>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+    </div>
+</div>
 
-                <!-- Scope -->
-                <div class="col-12">
-                    <div class="p-2" id="objective" style="height: 300px; overflow-y: auto;">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <h2 class="col-8 mb-4">
-                                    Scope
-                                </h2>
-                                <!-- ปุ่มตั้งค่า scope -->
-                                <a href="{% url 'scope' wallet.id%}" class="col-4 btn btn-primary" id="create_preset">ตั้งค่า Scope</a>
-                            </div>  
-                            {% for s in scopes %}
-                                <div class="row">
-                                {% if s.statusToText == "On target." %}
-                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
-                                    <p class="text-success col-2">OK</p>
-                                {% else %}
-                                    <p class="col-10">[{{ s.category }}, {{ s.range }}] {{ s.statusToText }}</p>
-                                    <p class="text-danger col-2">X</p>
-                                {% endif %}
-                                </div>
-                            {% empty %}
-                                <div class="row">
-                                    <p>No scopes available.</p>
-                                </div>
-                            {% endfor %}
-                        </div>
+<!-- Modal: Create Wallet -->
+<div class="modal fade" id="createWalletModal" tabindex="-1" aria-labelledby="createWalletModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'create_wallet' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">เพิ่ม Wallet</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="wallet-name">ชื่อ Wallet</label>
+                        <input type="text" class="form-control" id="wallet-name" name="wName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">หน่วยเงิน</label>
+                        <select id="currency" name="currency" class="form-control" required>
+                            <option value="THB">บาท</option>
+                            <option value="USD">ดอลลาร์</option>
+                            <option value="EUR">ยูโร</option>
+                            <option value="JPY">เยน</option>
+                        </select>
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
         </div>
     </div>
-              
+</div>
+
+<!-- Modal: Add Statement -->
+<div class="modal fade" id="addStatementModal" tabindex="-1" aria-labelledby="addStatementModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'add_statement' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">เพิ่ม Statement</h5> 
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="statement-type">ประเภท</label>
+                        <select id="statement-type" name="type" class="form-control" required>
+                            <option value="in">รายรับ</option>
+                            <option value="out">รายจ่าย</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">จำนวนเงิน</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <!-- สร้าง wallet-->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -265,14 +303,13 @@ Main Page - CatchCASH
         // อัปเดต URL และโหลดหน้าใหม่
         window.location.href = '?' + params.toString();
     }
-    
 </script>
 
-<script>
+<script> // ใช้ Preset
     document.querySelectorAll('.use-preset-btn').forEach(button => {
         button.addEventListener('click', function () {
             const presetId = this.getAttribute('data-preset-id');
-            
+
             // ส่งคำขอ AJAX
             fetch(`/use-preset/${presetId}/`, {
                 method: 'POST',

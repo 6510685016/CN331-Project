@@ -19,23 +19,21 @@ def setting(request):
 def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
-    
+
+    # ตรวจสอบและสร้าง Wallet เริ่มต้นหากไม่มี
     if not account.wallets.exists():
-        # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
-        default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
+        Wallet.objects.create(account=account, wName="Default Wallet", currency="THB")
         return redirect('main')
-    
-    wallet = None
-    presets = Preset.objects.filter(wallet__in=account.wallets.all())
+
     form = WalletFilterForm(request.GET or None, account=account)
-    statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
-    wallet = Wallet.objects.none()
-    sData = {}
-    missions = Mission.objects.none()
-    scopes = Scope.objects.none()
-    status = "ไม่พบการจำกัดวงเงิน"
-    sList_gByD = []
+    wallet = account.wallets.first()  # ค่าเริ่มต้นเป็น Wallet แรก
     date = now().date()
+    dateText = "แสดงทั้งหมด (default)"
+    statements = Statement.objects.none()
+    presets = Preset.objects.filter(wallet__in=account.wallets.all())
+    scopes = Scope.objects.none()
+    summary = {"income": 0, "expense": 0, "net": 0}
+    status = {}
 
     if form.is_valid():
         wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
@@ -43,7 +41,6 @@ def main(request):
         wallet = account.wallets.first()
     if wallet:
         presets = Preset.objects.filter(wallet=wallet)
-
     if request.method == 'GET':
         if form.is_valid():
             wallet = form.cleaned_data.get('wallet') or account.wallets.first()
@@ -52,19 +49,21 @@ def main(request):
 
             if date:
                 statements = statements.filter(addDate=date)
+                dateText = "วันที่ " + date.strftime("%d %b %Y")
+            else:
+                date = now().date()
+                dateText = "แสดงทั้งหมด (default)"
             statements = statements.order_by('type')
         else:
             wallet = account.wallets.first()
             statements = Statement.objects.filter(wallet=wallet).order_by('type')
 
-        income, out = 0, 0
         for s in statements:
             if s.type == "in":
-                income += s.amount
+                summary['income'] += s.amount
             else:
-                out += s.amount
-
-        sData = {"in": income, "out": out}
+                summary['expense'] += s.amount
+        summary['net'] = summary['income'] - summary['expense']
 
         unique_add_dates_list = list(set(statements.values_list('addDate', flat=True)))
         sorted_unique_add_dates_list = sorted(unique_add_dates_list, reverse=True)
@@ -82,8 +81,8 @@ def main(request):
                 "in": f"{in_D:.2f}",
                 "out": f"{out_D:.2f}"
             })
-
-        choices = [ ("รายรับ", "รายรับ"),
+        
+    choices = [ ("รายรับ", "รายรับ"),
                     ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
                     ("ค่าเดินทาง", "ค่าเดินทาง"), 
                     ("จิปาถะ", "จิปาถะ"), 
@@ -93,27 +92,66 @@ def main(request):
                     ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
                     ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
                     ]
-        categories = wallet.get_categories() if wallet else []
-        choices += [(category, category) for category in categories]
 
-        if wallet and wallet.scopes.exists():
-            scopes = Scope.objects.filter(wallet=wallet)
+    # ข้อมูล Goal และ Scope
+    if wallet.scopes:
+        scopes = wallet.scopes.filter(month=date.month, year=date.year).first()
+    if scopes:
+        status = scopes.calculate_status(date=date)
 
-        if wallet and wallet.missions.exists():
-            missions = Mission.objects.filter(wallet=wallet)
-            
-    return render(request, 'main.html', {
-        'form': form,
-        'statements': sList_gByD,
+    context = {
+        "form": form,
+        "wallet": wallet,
         'choices': choices,
-        'wallet': wallet,
-        'theme': theme,
-        "data": sData,
-        "scopes": scopes,
-        "missions": missions,
+        "statements": sList_gByD,
+        "presets": presets,
         "status": status,
-        'presets': presets,
-    })
+        "summary": summary,
+        "theme": theme,
+        "date": dateText, #for Header
+        "mAndY": f"""{date.strftime("%b, %Y")}""", #for Scope Header
+        "Y" : date.year, 
+        "M" : date.month, #for Scope Query
+        "scopes": scopes,
+    }
+    return render(request, 'main.html', context)
+
+def goal(request):
+    account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
+    theme = account.appTheme
+
+    # ตรวจสอบและสร้าง Wallet เริ่มต้นหากไม่มี
+    if not account.wallets.exists():
+        Wallet.objects.create(account=account, wName="Default Wallet", currency="THB")
+        return redirect('main')
+
+    form = WalletFilterForm(request.GET or None, account=account)
+    wallet = account.wallets.first()  # ค่าเริ่มต้นเป็น Wallet แรก
+    date = now().date()
+    goals = Mission.objects.none()
+
+    if form.is_valid():
+        wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
+    if not wallet:
+        wallet = account.wallets.first()
+        
+    if request.method == 'GET':
+        if form.is_valid():
+            wallet = form.cleaned_data.get('wallet') or account.wallets.first()
+        else:
+            wallet = account.wallets.first()
+        
+    if wallet:
+        goals = wallet.missions.all()
+            
+    context = {
+        "form": form,
+        "wallet": wallet,
+        "goals": goals,
+        "theme": theme,
+        "date": date,
+    }
+    return render(request, 'goal.html', context)
 
 
 def analysis(request):
@@ -170,12 +208,6 @@ def analysis(request):
             'data': data,
             'labels': labels
         })
-
-
-
-
-
-
 
 def add_statement(request):
     if request.method == 'POST':
@@ -245,8 +277,6 @@ def delete_statement(request, id):
     statement.delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
 
-
-
 def create_wallet(request):
     if request.method == 'POST':
         # รับข้อมูลจากฟอร์ม
@@ -263,36 +293,44 @@ def create_wallet(request):
     return HttpResponse("ERROR, Can't create_wallet")
 
 def create_scope(request):
+
     if request.method == 'POST':
-        # รับค่าจากฟอร์ม
-        wallet_id = request.POST.get('wallet')  # ดึงค่า wallet ที่ถูกส่งมาจากฟอร์ม
-        amount = request.POST.get('amount')
-        type = request.POST.get('type')
-        range_value = request.POST.get('range')
+        wallet = Wallet.objects.get(id=request.POST.get('wallet')) 
+        month = int(request.POST.get('month'))
+        year = int(request.POST.get('year'))
+        income_goal = float(request.POST.get('income_goal'))
+        expense_goal = float(request.POST.get('expense_goal'))
 
-        try:
-            # ดึง wallet ที่เลือก
-            wallet = Wallet.objects.get(id=wallet_id)
+        # ตรวจสอบว่าเป้าหมายเดือน/ปีนี้มีอยู่แล้วหรือไม่
+        if Scope.objects.filter(wallet=wallet, month=month, year=year).exists():
+            # เพิ่มข้อความแจ้งเตือน (หากมีอยู่แล้ว)
+            HttpResponse("ERROR, Can't create 2 scope with same month")
 
-            # สร้าง Scope ใหม่
-            new_scope = Scope(
-                wallet=wallet,
-                amount=amount,
-                type=type,
-                range=range_value
-            )
-            new_scope.save()
+        # สร้างเป้าหมายใหม่
+        scope = Scope(
+            wallet=wallet,
+            month=month,
+            year=year,
+            income_goal=income_goal,
+            expense_goal=expense_goal
+        )
+        
+        scope.save()
 
-            messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
-            return redirect('main')  # เปลี่ยนเป็น URL ที่ต้องการ
-
-        except Wallet.DoesNotExist:
-            messages.error(request, 'ไม่พบกระเป๋าเงินที่เลือก')
-            return redirect('main')  # หรือ URL ที่ต้องการให้กลับไป
+        return redirect(request.META.get('HTTP_REFERER', '/'))
     else:
         # ถ้าเป็น GET ก็แสดงแบบฟอร์ม
         return HttpResponse("ERROR, Can't create_scope")
 
+def edit_scope(request, scope_id):
+    if request.method == 'POST':
+        scope = get_object_or_404(Scope, id=scope_id)
+        scope.income_goal = request.POST.get('income_goal')
+        scope.expense_goal = request.POST.get('expense_goal')
+        scope.save()
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return HttpResponse("ERROR, Can't edit_scope")
 
 def delete_scope(request, scope_id):
     scope = get_object_or_404(Scope, id=scope_id)
@@ -306,7 +344,6 @@ def create_mission(request):
         mName = request.POST['mName']
         amount = request.POST['amount']
         dueDate = request.POST['dueDate']
-        pic = request.FILES.get('pic', None)
 
         wallet = Wallet.objects.get(id=wallet_id)
 
@@ -315,7 +352,6 @@ def create_mission(request):
             mName=mName,
             amount=amount,
             dueDate=dueDate,
-            pic=pic
         )
         new_mission.save()
         messages.success(request, 'Goal ถูกสร้างสำเร็จแล้ว')
@@ -361,39 +397,6 @@ def create_preset(request):
 
     wallets = Wallet.objects.all()
     return HttpResponse("ERROR, Can't create_preset")
-
-def scope(request, wallet_id):
-    wallet = get_object_or_404(Wallet, id=wallet_id)
-    scopes = Scope.objects.filter(wallet=wallet)
-
-    if request.method == 'POST':
-        form = ScopeForm(request.POST)
-        if form.is_valid():
-            scope = form.save(commit=False)
-            scope.wallet = wallet
-            scope.save()
-            return redirect('scope', wallet_id=wallet.id)
-    else:
-        form = ScopeForm()
-
-    return render(request, 'scope.html', {
-        'wallet': wallet,
-        'scopes': scopes,
-        'form': form,
-    })
-
-def edit_scope(request, scope_id):
-    scope = get_object_or_404(Scope, id=scope_id)
-
-    if request.method == 'POST':
-        form = ScopeForm(request.POST, instance=scope)
-        if form.is_valid():
-            form.save()
-            return redirect('scope', wallet_id=scope.wallet.id)
-    else:
-        form = ScopeForm(instance=scope)
-
-    return render(request, 'edit_scope.html', {'form': form, 'scope': scope})
 
 def wallet_detail(request, id):
     return HttpResponse("This view is not yet implemented.")
@@ -451,7 +454,6 @@ def mission(request, wallet_id):
         'missions': missions,
         'form': form,
     })
-
 
 def donate_to_mission(request, mission_id):
     if request.method == "POST":
@@ -516,8 +518,10 @@ def delete_preset(request, preset_id):
 
 
 def use_preset(request, preset_id):
+    print("TEstttt")
     if request.method == 'POST':  # ใช้ POST เพื่อรับค่า
         preset = get_object_or_404(Preset, id=preset_id)
+        
         
         # ดึงข้อมูลจาก JSONField `statement`
         statement_data = preset.statement
