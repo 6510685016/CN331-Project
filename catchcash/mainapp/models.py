@@ -175,6 +175,15 @@ class Mission(models.Model):
 
     def delete_mission(self):
         self.delete()
+        
+    def isOutdate(self):
+        return timezone.now().date() > self.dueDate
+    
+    def status_text(self):
+        if self.isOutdate() or self.amountToGo() == 0:
+            return f"[{self.mName}] {self.curAmount}/{self.amount}{self.wallet.currency} ({self.curAmount/self.amount*100:.2f}%)"
+        else:
+            return f"[{self.mName}] {self.amountToGo()}{self.wallet.currency} more!"
 
 class ProgressionNode(models.Model):
     name = models.CharField(max_length=100, unique=True)  # ชื่อของโหนด
@@ -186,13 +195,3 @@ class ProgressionNode(models.Model):
 
     def __str__(self):
         return self.name
-        return self.curAmount
-    
-    def isOutdate(self):
-        return timezone.now().date() > self.dueDate
-    
-    def status_text(self):
-        if self.isOutdate() or self.amountToGo() == 0:
-            return f"[{self.mName}] {self.curAmount}/{self.amount}{self.wallet.currency} ({self.curAmount/self.amount*100:.2f}%)"
-        else:
-            return f"[{self.mName}] {self.amountToGo()}{self.wallet.currency} more!"

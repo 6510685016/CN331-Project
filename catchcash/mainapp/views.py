@@ -43,8 +43,6 @@ def main(request):
         wallet = account.wallets.first()
     if wallet:
         presets = Preset.objects.filter(wallet=wallet)
-    # else:
-    #     presets = Preset.objects.none() # edit in future
 
     if request.method == 'GET':
         if form.is_valid():
