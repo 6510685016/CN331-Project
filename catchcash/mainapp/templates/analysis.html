@@ -1,115 +1,73 @@
 {% extends "base.html" %}
 
 {% block title %}
-Analysis CatchCASH
+CatchCASH
 {% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-</head>
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+    .button-css {
+        border-radius: 25px;
+        width: 12vw;
+        height: 7vh;
+        background-color: #95afc4;
+        border: none;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        line-height: 7vh;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+
     }
 
-    .d-flex {
-        display: flex;
-        flex-wrap: nowrap;
-        height: 100%;
-        overflow: hidden;
+    .button-css:hover {
+        background-color: #6b7e8f;
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
     }
 
-    .flex-grow-1 {
-        flex-grow: 1;
+    .button-css:active {
+        background-color: #6b7e8f;
+        transform: scale(0.98);
+
     }
 
-    .incomeExpenses-Box,
-    .incomeVsExpenses-box,
-    .summary-Box {
-        box-sizing: border-box;
-        overflow-y: auto; /* Allow scrolling inside individual charts if content overflows */
+    .chart {
+        background-color: #ABC9E8;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-color: #95afc4;
     }
 
-    .incomeExpenses-Box {
-        height: 40vh;
-        width: 70%;
-        border-radius: 15px;
-        background-color: #e6f7ff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 10px auto;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    .form-control {
+        border-radius: 25px;
+        border-color: #95afc4;
     }
 
-    .incomeVsExpenses-box {
-        height: 60vh;
-        border-radius: 15px;
-        background-color: #e6f7ff;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    .toDeafault {
+        color: #000000;
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: underline;
     }
 
-    .summary-Box {
-        height: 60vh;
-        width: 90%;
-        border-radius: 15px;
-        background-color: #e6f7ff;
-        margin: 20px auto;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .main-content {
-        overflow-y: auto;
-        height: calc(100vh - 80px); /* Adjust based on your header/footer height */
-    }
-
-    canvas {
-        max-width: 100%;
-        max-height: 100%;
+    .toDeafault:hover {
+        color: #000000;
     }
 </style>
 
-<body class="m-0 p-0 vh-100 d-flex flex-column">
-    <div class="d-flex flex-grow-1 overflow-hidden">
-        <!-- Left Section: Charts -->
-        <div class="d-flex flex-column w-75 overflow-auto px-4">
-            <!-- Income Chart -->
-            <div class="d-flex flex-column align-items-center mt-3">
-                <h4 class="fw-bold">Income</h4>
-                <div class="incomeExpenses-Box border">
-                    <canvas id="IncomeChart"></canvas>
-                    <div id="no-data-message1" class="text-center" style="display: none;">
-                        <h5 class="mt-3 text-muted fw-bold">No Income Data Available</h5>
-                    </div>
-                </div>
+<body>
+    <div>
+        <div class="d-flex justify-content-end align-items-center">
+            <!-- ปฎิทิน -->
+            <div class="p-1 w-25">
+                <input type="date" id="date-select" class="form-control" onchange="applyFilter()">
             </div>
-
-            <!-- Expenses Chart -->
-            <div class="d-flex flex-column align-items-center mt-4">
-                <h4 class="fw-bold">Expenses</h4>
-                <div class="incomeExpenses-Box border">
-                    <canvas id="ExpensesChart"></canvas>
-                    <div id="no-data-message2" class="text-center" style="display: none;">
-                        <h5 class="mt-3 text-muted fw-bold">No Expense Data Available</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Section: Filter & Income vs Expense -->
-        <div class="d-flex flex-column w-25 p-3">
-            <div class="text-end mb-3">
-                <select id="wallet-select" class="form-select mb-2" onchange="applyFilter()">
+            <!-- ปุ่มเลือก wallet -->
+            <div class="p-1">
+                <select id="wallet-select" class="form-select button-css" onchange="applyFilter()">
                     {% if wallets %}
                     {% for wallet in wallets %}
                     <option value="{{ wallet.id }}">{{ wallet.wName }}</option>
@@ -118,57 +76,98 @@ Analysis CatchCASH
                     <option value="" disabled>No Wallets Available</option>
                     {% endif %}
                 </select>
-                <input type="date" id="date-select" class="form-control" onchange="applyFilter()">
             </div>
-            <div class="incomeVsExpenses-box border">
-                <h5 class="text-center fw-bold mt-3">Income Vs Expenses</h5>
-                <canvas id="IncomeVsExpensesChart"></canvas>
-                <div id="no-data-message3" class="text-center" style="display: none;">
-                    <h5 class="mt-3 text-muted fw-bold">No Income or Expense</h5>
-                </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <a href="#" onclick="resetFilters()" class="pe-auto toDeafault">คืนค่าการกรองเริ่มต้น</a>
+        </div>
+    </div>
+    <div class="h-100">
+        <div class="d-flex p-2 justify-content-center">
+            <button class="button-css m-1"
+                onclick="applyFilter('IncomeVsExpensesChart')">อัตราส่วนรายรับรายจ่าย</button>
+            <button class="button-css m-1" onclick="applyFilter('IncomeChart')">รายรับแสดงตามหมวดหมู่</button>
+            <button class="button-css m-1" onclick="applyFilter('ExpensesChart')">รายจ่ายแสดงตามหมวดหมู่</button>
+            <button class="button-css m-1" onclick="applyFilter('sevenDaysChart')">เงินสุทธิก่อนหน้า 7
+                วัน</button>
+        </div>
+
+        <div class="chart h-75 d-flex justify-content-center align-items-center" style="border-radius: 30px;">
+            <div id="no-data-message" class="text-center" style="display: none;">
+                <h5 class="mt-3 fw-bold">No data</h5>
             </div>
+            <canvas id="IncomeVsExpensesChart" class="h-100 w-75"></canvas>
+            <canvas id="IncomeChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
+            <canvas id="ExpensesChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
+            <canvas id="sevenDaysChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
+
         </div>
     </div>
 
-    <!-- Summary Section -->
-    <div class="summary-Box mx-auto mt-4">
-        <h4 class="text-center">Balance Last 7 Days</h4>
-        <canvas id="sevenDaysChart"></canvas>
-    </div>
+
+
 </body>
 
 <script>
-
     window.onload = function () {
+        resetForm();
+        applyFilter();
+    };
+
+    function showChart(chartId) {
+        const charts = document.querySelectorAll('canvas');
+        charts.forEach(chart => {
+            chart.style.display = 'none';
+        });
+
+        const selectedChart = document.getElementById(chartId);
+        if (selectedChart) {
+            selectedChart.style.display = 'block';
+        } else {
+            document.getElementById('IncomeVsExpensesChart').style.display = 'block';
+        }
+    }
+
+    function resetForm() {
         const defaultDate = new Date();
         const year = defaultDate.getFullYear();
         const month = String(defaultDate.getMonth() + 1).padStart(2, '0');
         const day = String(defaultDate.getDate()).padStart(2, '0');
         const formattedDate = `${year}-${month}-${day}`;
-
-        console.log(formattedDate);
         document.getElementById("date-select").value = formattedDate;
+        document.getElementById("wallet-select").selectedIndex = 0;  // รีเซ็ต wallet-select
+    }
+
+    function resetFilters() {
+        resetForm();
+        applyFilter('IncomeVsExpensesChart');
+    }
 
 
-        applyFilter();
-    };
+    function showChart(chartId) {
+        const charts = document.querySelectorAll('canvas');
+        charts.forEach(chart => {
+            chart.style.display = 'none';
+        });
 
+        const selectedChart = document.getElementById(chartId);
+        if (selectedChart) {
+            selectedChart.style.display = 'block';
+        } else {
+            document.getElementById('IncomeVsExpensesChart').style.display = 'block';
+        }
+    }
 
     function loadDataForLastSevenDays(selectedDate) {
         const walletId = document.getElementById("wallet-select").value;
-        console.log("Selected Date:", selectedDate, "Wallet ID:", walletId);
-
-
         if (!walletId) {
             console.error("No wallet selected.");
             return;
         }
 
-
         const balanceList = new Array(7);
         const dateList = [];
-
-
         const dayList = [];
         for (let i = 0; i < 7; i++) {
             const date = new Date(selectedDate);
@@ -176,10 +175,8 @@ Analysis CatchCASH
             dayList.push(date.toISOString().split('T')[0]);
         }
 
-
         const fetchPromises = dayList.map((date, index) => {
             const params = new URLSearchParams({ wallet_id: walletId, date: date });
-
             return fetch(`/analysis/?${params.toString()}`, { method: 'GET' })
                 .then(response => response.ok ? response.json() : Promise.reject('Error'))
                 .then(data => {
@@ -194,18 +191,14 @@ Analysis CatchCASH
                 });
         });
 
-
         Promise.all(fetchPromises)
             .then(() => {
-                dateList.reverse()
-                balanceList.reverse()
-                console.log("Date List:", dateList);
-                console.log("Balance List:", balanceList);
+                dateList.reverse();
+                balanceList.reverse();
                 createLineChart(balanceList, dateList);
             })
             .catch(error => console.error("Error in fetching data:", error));
     }
-
 
     function calculateBalance(statement) {
         let income = 0, outcome = 0;
@@ -219,6 +212,172 @@ Analysis CatchCASH
         return 0;
     }
 
+
+    function applyFilter(chartId) {
+        const walletId = document.getElementById("wallet-select").value;
+        const selectedDate = document.getElementById("date-select").value || document.getElementById("date-select").defaultValue;
+
+        if (walletId || selectedDate) {
+            const params = new URLSearchParams();
+            if (walletId) params.append('wallet_id', walletId);
+            if (selectedDate) params.append('date', selectedDate);
+            fetch(`/analysis/?${params.toString()}`, { method: 'GET' })
+                .then(response => response.json())
+                .then(data => {
+                    const charts = ['IncomeVsExpensesChart', 'IncomeChart', 'ExpensesChart', 'sevenDaysChart'];
+                    let hasData = false;
+
+                    if (data.statement && data.statement.length > 0) {
+                        let income = 0, outcome = 0;
+                        let incomeCategories = {}, expenseCategories = {};
+
+                        data.statement.forEach(statement => {
+                            if (statement.type === 'in') {
+                                income += parseFloat(statement.amount);
+                                incomeCategories[statement.category] = (incomeCategories[statement.category] || 0) + parseFloat(statement.amount);
+                            } else if (statement.type === 'out') {
+                                outcome += parseFloat(statement.amount);
+                                expenseCategories[statement.category] = (expenseCategories[statement.category] || 0) + parseFloat(statement.amount);
+                            }
+                        });
+
+                        updateIncomeVsExpensesChart(income, outcome);
+                        updateIncomeChart(incomeCategories);
+                        updateExpensesChart(expenseCategories);
+                        loadDataForLastSevenDays(selectedDate);
+
+                        hasData = true;
+                    }
+
+                    if (!hasData) {
+                        document.getElementById('no-data-message').style.display = 'block';
+                        charts.forEach(chartId => {
+                            document.getElementById(chartId).style.display = 'none';
+                        });
+                    } else {
+                        document.getElementById('no-data-message').style.display = 'none';
+                        showChart(chartId);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error in applying filter:", error);
+                });
+        }
+    }
+
+
+
+    function updateIncomeVsExpensesChart(income, outcome) {
+        const ctx = document.getElementById('IncomeVsExpensesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Outcome'],
+                datasets: [{
+                    label: 'Income vs Outcome',
+                    data: [income, outcome],
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    labels: {
+                        fontSize: 30, // ขนาดฟอนต์ใน legend
+                        fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
+                        fontColor: 'black' // สีฟอนต์
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                            fontSize: 20, // ขนาดฟอนต์ในแกน x
+                            fontStyle: 'bold', // ฟอนต์หนาในแกน x
+                            fontColor: 'black' // สีฟอนต์ในแกน x
+                        },
+                        ticks: {
+                            fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน x
+                            fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน x
+                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน x
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            fontSize: 20, // ขนาดฟอนต์ในแกน y
+                            fontStyle: 'bold', // ฟอนต์หนาในแกน y
+                            fontColor: 'black' // สีฟอนต์ในแกน y
+                        },
+                        ticks: {
+                            fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน y
+                            fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน y
+                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน y
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+
+
+    function updateIncomeChart(incomeCategories) {
+        const ctx = document.getElementById('IncomeChart').getContext('2d');
+        const labels = Object.keys(incomeCategories);
+        const data = Object.values(incomeCategories);
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    labels: {
+                        fontSize: 30, // ขนาดฟอนต์ใน legend
+                        fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
+                        fontColor: 'black' // สีฟอนต์
+                    }
+                },
+            }
+        });
+    }
+
+    function updateExpensesChart(expenseCategories) {
+        const ctx = document.getElementById('ExpensesChart').getContext('2d');
+        const labels = Object.keys(expenseCategories);
+        const data = Object.values(expenseCategories);
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    labels: {
+                        fontSize: 30, // ขนาดฟอนต์ใน legend
+                        fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
+                        fontColor: 'black' // สีฟอนต์
+                    }
+                },
+            }
+        });
+    }
 
     function createLineChart(balanceList, dateList) {
         const ctx = document.getElementById('sevenDaysChart').getContext('2d');
@@ -239,135 +398,45 @@ Analysis CatchCASH
                 scales: {
                     x: { title: { display: true, text: 'Date' } },
                     y: { title: { display: true, text: 'Balance' } }
-                }
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-
-    function applyFilter() {
-        const walletId = document.getElementById("wallet-select").value;
-        const selectedDate = document.getElementById("date-select").value || document.getElementById("date-select").defaultValue;
-
-
-        if (walletId || selectedDate) {
-            loadDataForLastSevenDays(selectedDate);
-
-            const params = new URLSearchParams();
-            if (walletId) params.append('wallet_id', walletId);
-            if (selectedDate) params.append('date', selectedDate);
-
-            fetch(`/analysis/?${params.toString()}`, { method: 'GET' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.statement && data.statement.length > 0) {
-                        let income = 0, outcome = 0;
-                        let incomeCategories = {}, expenseCategories = {};
-
-                        data.statement.forEach(statement => {
-                            if (statement.type === 'in') {
-                                income += parseFloat(statement.amount);
-                                incomeCategories[statement.category] = (incomeCategories[statement.category] || 0) + parseFloat(statement.amount);
-                            } else if (statement.type === 'out') {
-                                outcome += parseFloat(statement.amount);
-                                expenseCategories[statement.category] = (expenseCategories[statement.category] || 0) + parseFloat(statement.amount);
-                            }
-                        });
-
-
-                        updateIncomeVsExpensesChart(income, outcome);
-                        updateIncomeChart(incomeCategories);
-                        updateExpensesChart(expenseCategories);
-
-                        document.getElementById('no-data-message1').style.display = 'none';
-                        document.getElementById('no-data-message2').style.display = 'none';
-                        document.getElementById('no-data-message3').style.display = 'none';
-                        document.getElementById('IncomeVsExpensesChart').style.display = 'block';
-                        document.getElementById('IncomeChart').style.display = 'block';
-                        document.getElementById('ExpensesChart').style.display = 'block';
-                    } else {
-                        document.getElementById('no-data-message1').style.display = 'block';
-                        document.getElementById('no-data-message2').style.display = 'block';
-                        document.getElementById('no-data-message3').style.display = 'block';
-                        document.getElementById('IncomeVsExpensesChart').style.display = 'none';
-                        document.getElementById('IncomeChart').style.display = 'none';
-                        document.getElementById('ExpensesChart').style.display = 'none';
+                },
+                legend: {
+                    labels: {
+                        fontSize: 30, // ขนาดฟอนต์ใน legend
+                        fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
+                        fontColor: 'black' // สีฟอนต์
                     }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    }
-
-    // Update Income vs Expenses Doughnut Chart
-    function updateIncomeVsExpensesChart(income, outcome) {
-        const ctx = document.getElementById('IncomeVsExpensesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Income', 'Expenses'],
-                datasets: [{
-                    data: [income, outcome],
-                    backgroundColor: ['#4CAF50', '#F44336'],
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
-
-    // Update Income Bar Chart
-    function updateIncomeChart(incomeCategories) {
-        const ctx = document.getElementById('IncomeChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(incomeCategories),
-                datasets: [{
-                    label: 'Income by Category',
-                    data: Object.values(incomeCategories),
-                    backgroundColor: '#4CAF50',
-                    borderColor: '#388E3C',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-            }
-        });
-    }
-
-    // Update Expenses Bar Chart
-    function updateExpensesChart(expenseCategories) {
-        const ctx = document.getElementById('ExpensesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(expenseCategories),
-                datasets: [{
-                    label: 'Expenses by Category',
-                    data: Object.values(expenseCategories),
-                    backgroundColor: '#F44336',
-                    borderColor: '#D32F2F',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+                },
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                            fontSize: 20, // ขนาดฟอนต์ในแกน x
+                            fontStyle: 'bold', // ฟอนต์หนาในแกน x
+                            fontColor: 'black' // สีฟอนต์ในแกน x
+                        },
+                        ticks: {
+                            fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน x
+                            fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน x
+                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน x
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            fontSize: 20, // ขนาดฟอนต์ในแกน y
+                            fontStyle: 'bold', // ฟอนต์หนาในแกน y
+                            fontColor: 'black' // สีฟอนต์ในแกน y
+                        },
+                        ticks: {
+                            fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน y
+                            fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน y
+                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน y
+                        }
+                    }]
+                }
             }
         });
     }
 
 </script>
 
-
-
 {% endblock %}
-
