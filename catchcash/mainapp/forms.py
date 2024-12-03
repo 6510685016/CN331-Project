@@ -68,10 +68,10 @@ class StatementForm(forms.ModelForm):
 
     def clean_category(self):
         category = self.cleaned_data.get('category')
-        custom_category = self.cleaned_data.get('custom_category')  # ค่าจากฟิลด์ custom_category ที่กรอกเอง
+        # custom_category = self.cleaned_data.get('custom_category')  # ค่าจากฟิลด์ custom_category ที่กรอกเอง
 
-        if category == 'other' and custom_category:
-            return custom_category  # ถ้าเลือก "other" และกรอกหมวดหมู่เอง ให้ใช้ค่าจาก custom_category
+        # if category == 'other' and custom_category:
+        #     return custom_category  # ถ้าเลือก "other" และกรอกหมวดหมู่เอง ให้ใช้ค่าจาก custom_category
 
         return category  # ถ้าไม่เลือก "other" ก็ใช้ค่า category ที่เลือก
     

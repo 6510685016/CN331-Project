@@ -3,11 +3,11 @@ import datetime
 from decimal import Decimal
 import json
 from django.forms import ValidationError
-from datetime import date
+from datetime import date, datetime 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Account, Wallet, Statement, Scope, Mission, Preset
+from .models import Account, Wallet, Statement, Scope, Mission, Preset, ProgressionNode
 from django.utils import timezone
 from .forms import WalletFilterForm, StatementForm, ScopeForm
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -32,10 +32,13 @@ class ScopeModel_and_Mission_Test(TestCase):
         )
         
         # Create some statements to be used in the tests
+        current_date = timezone.now()
+        specific_date = datetime(current_date.year, current_date.month,1)
+        
         Statement.objects.create(wallet=self.wallet, amount=Decimal('100.00'), type='in', addDate=timezone.now())
         Statement.objects.create(wallet=self.wallet, amount=Decimal('50.00'), type='out', addDate=timezone.now())
-        Statement.objects.create(wallet=self.wallet, amount=Decimal('200.00'), type='in', addDate=timezone.now() - timedelta(weeks=2))
-        Statement.objects.create(wallet=self.wallet, amount=Decimal('70.00'), type='out', addDate=timezone.now() - timedelta(weeks=2))
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('200.00'), type='in', addDate=specific_date)
+        Statement.objects.create(wallet=self.wallet, amount=Decimal('70.00'), type='out', addDate=specific_date)
     
     def test_scope_str_representation(self):
         # Create a scope
@@ -58,7 +61,7 @@ class ScopeModel_and_Mission_Test(TestCase):
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
-        self.assertEqual(scope.status(date), Decimal('100.00'))  # The target was 200, 100 is already in, so 200-100=100 remains
+        self.assertEqual(scope.status(date), Decimal('100.00'))
 
     def test_status_out_1d(self):
         scope = Scope.objects.create(
@@ -68,7 +71,7 @@ class ScopeModel_and_Mission_Test(TestCase):
             range='1D'
         )
         date = timezone.now().date()  # Use current date for testing
-        self.assertEqual(scope.status(date), Decimal('0.00'))  # The target was 50, but already 50 is out, so 50-50=0
+        self.assertEqual(scope.status(date), Decimal('0.00'))
 
     def test_status_in_1w(self):
         scope = Scope.objects.create(
@@ -79,7 +82,7 @@ class ScopeModel_and_Mission_Test(TestCase):
         )
         # Assuming the current date is within the same week as the statement's
         date = timezone.now().date()  # Use current date for testing
-        self.assertEqual(scope.status(date), Decimal('200.00'))  # Target is 300, but already 200 in, so 300-200=100 remains
+        self.assertEqual(scope.status(date), Decimal('200.00'))
 
     def test_status_out_1m(self):
         scope = Scope.objects.create(
@@ -90,7 +93,7 @@ class ScopeModel_and_Mission_Test(TestCase):
         )
         # Assuming the current date is within the month of the statements
         date = timezone.now().date()  # Use current date for testing
-        self.assertEqual(scope.status(date), Decimal('-30.00'))  # Target is 150, but already 100 out, so 150-100=50 remains
+        self.assertEqual(scope.status(date), Decimal('-30.00'))
     
     def test_status_in_1y(self):
         # Create a scope with the '1Y' range and an 'in' type target
@@ -108,8 +111,7 @@ class ScopeModel_and_Mission_Test(TestCase):
         # We are using the current date for the test
         date = timezone.now().date()
         
-        # We expect the sum of income in this year to be 150.00
-        self.assertEqual(scope.status(date), Decimal('-50.00'))  # Target is 500, already 150 in, so 500 - 150 = 350 remains
+        self.assertEqual(scope.status(date), Decimal('-50.00'))
 
     def test_status_out_1y(self):
         # Create a scope with the '1Y' range and an 'out' type target
@@ -128,7 +130,7 @@ class ScopeModel_and_Mission_Test(TestCase):
         date = timezone.now().date()
         
         # We expect the sum of expenses this year to be 100.00
-        self.assertEqual(scope.status(date), Decimal('-80.00'))  # Target is 300, already 100 out, so 300 - 100 = 200 remains
+        self.assertEqual(scope.status(date), Decimal('-80.00'))
     
     def test_status_to_text_in_1d(self):
         scope = Scope.objects.create(
@@ -189,7 +191,7 @@ class ScopeModel_and_Mission_Test(TestCase):
             curAmount=Decimal("100.00"),
             amount=Decimal("100.00")
         )
-
+        
         self.assertEqual(mission.status_text(), "[Completed Mission] 100.00/100.00USD (100.00%)")
         
     def test_mission_str_representation(self):
@@ -225,6 +227,7 @@ class ScopeModel_and_Mission_Test(TestCase):
         self.assertContains(response, str(self.scope.amount))
         self.assertContains(response, self.scope.type)
         self.assertContains(response, self.scope.range)
+        
     def test_edit_scope_post_valid_data(self):
         self.scope = Scope.objects.create(
             wallet=self.wallet,
@@ -361,9 +364,11 @@ class ScopeModel_and_Mission_Test(TestCase):
 
         # Check if the mission is created in the database
         mission = Mission.objects.filter(wallet=self.wallet, mName='Test Mission').first()
+        
         self.assertIsNotNone(mission)
         self.assertEqual(mission.mName, 'Test Mission')
-        self.assertEqual(mission.dueDate, datetime.date(2024, 12, 31))
+
+        self.assertEqual(mission.dueDate, date(2024, 12, 31))
         self.assertEqual(mission.amount, Decimal('500.00'))
 
         # Ensure the user is redirected to the correct page (goal page for this wallet)
@@ -520,6 +525,14 @@ class ViewsTestCase(TestCase):
         self.assertIn('form', response.context)
         self.assertIn('statements', response.context)
         self.assertIn('wallet', response.context)
+        
+    def test_main_form_no_wallet(self):
+        self.client.login(username="testuser", password="testpassword")
+        self.wallet.delete()
+        form = WalletFilterForm(account=self.account)
+        
+        # Check the empty label of the wallet field
+        self.assertEqual(form.fields['wallet'].empty_label, "ไม่พบ Wallet")
         
     def test_add_statement_view(self):
         statement_data1 = {
@@ -732,6 +745,10 @@ class ViewsTestCase(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'Preset ถูกสร้างสำเร็จแล้ว')
         
+    def test_delete_mission(self):
+        self.mission.delete_mission()
+        self.assertEqual(Mission.objects.count(), 0)
+        
     def test_create_preset_get(self):
         # Send a GET request to the view
         response = self.client.get(reverse('create_preset'))
@@ -794,11 +811,6 @@ class ViewsTestCase(TestCase):
 
         # Get the form from the context
         form = response.context['form']
-
-        # Check that the form contains errors for the required fields
-        # self.assertFormError(response, 'form', 'field1', 'This field is required.')
-        # self.assertFormError(response, 'form', 'field2', 'This field is required.')
-        # self.assertFormError(response, 'form', 'field3', 'This field is required.')
 
     def test_edit_preset_form_valid_data(self):
         # Prepare valid data
@@ -894,11 +906,6 @@ class ViewsTestCase(TestCase):
         # Test the __str__ method of Preset
         preset = Preset.objects.create(wallet=self.wallet, name="Sample Preset")
         self.assertEqual(str(preset), "Sample Preset")
-    
-    def test_progression_view(self):
-        response = self.client.get(reverse('progression'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'progression.html')
         
     def test_trophy_view(self):
         response = self.client.get(reverse('trophy'))
@@ -1211,3 +1218,83 @@ class AnalysisViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.wallet1.wName)
         self.assertNotContains(response, 'amount')  # No statement found for the given date
+        
+class ProgressionViewTest(TestCase):
+    
+    def setUp(self):
+        """Set up test data."""
+        # Create a test user and account
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.account = Account.objects.create(user=self.user, name="Test Account", appTheme="light")
+        
+        # Create wallets for the user
+        self.wallet1 = Wallet.objects.create(account=self.account, wName="Wallet 1", currency="USD", listCategory=["Food", "Transport"])
+        self.wallet2 = Wallet.objects.create(account=self.account, wName="Wallet 2", currency="USD", listCategory=["Food", "Shopping"])
+        
+        # Create statements for the wallets
+        Statement.objects.create(wallet=self.wallet1, amount=Decimal('100.00'), type='in', addDate=timezone.now() - timedelta(days=1))
+        Statement.objects.create(wallet=self.wallet1, amount=Decimal('50.00'), type='out', addDate=timezone.now() - timedelta(days=2))
+        Statement.objects.create(wallet=self.wallet2, amount=Decimal('200.00'), type='in', addDate=timezone.now() - timedelta(days=3))
+        Statement.objects.create(wallet=self.wallet2, amount=Decimal('100.00'), type='out', addDate=timezone.now() - timedelta(days=4))
+
+        # Create some scopes (just to check if they are counted)
+        Scope.objects.create(wallet=self.wallet1, range="1M", amount=Decimal('1000.00'), type='in')
+        Scope.objects.create(wallet=self.wallet2, range="1M", amount=Decimal('500.00'), type='out')
+
+        # Create missions for the wallets
+        self.mission1 = Mission.objects.create(wallet=self.wallet1, mName="Mission 1", amount=Decimal('500.00'), dueDate=timezone.now() + timedelta(days=10))
+        self.mission2 = Mission.objects.create(wallet=self.wallet2, mName="Mission 2", amount=Decimal('200.00'), dueDate=timezone.now() + timedelta(days=20))
+        
+        # Set up a successful mission for testing (curAmount >= amount)
+        self.mission1.curAmount = Decimal('500.00')
+        self.mission1.save()
+        
+        # Set URL for the progression view
+        self.url = reverse('progression')
+        self.client.login(username='testuser', password='password')
+
+    def test_progression_view_successful_mission(self):
+        """Test progression view when there is at least one successful mission."""
+        response = self.client.get(self.url)
+        
+        # Assert that the response contains the correct context
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['has_successful_mission'])  # We expect a successful mission
+
+    def test_progression_view_no_successful_mission(self):
+        """Test progression view when no mission is successful."""
+        # Make the mission unsuccessful (curAmount < amount)
+        self.mission1.curAmount = Decimal('0.00')
+        self.mission1.save()
+
+        # Also make mission2 unsuccessful
+        self.mission2.curAmount = Decimal('0.00')
+        self.mission2.save()
+
+        response = self.client.get(self.url)
+        
+        # Assert that the response contains the correct context
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['has_successful_mission'])  # No successful mission now
+
+    def test_progression_view_context_data(self):
+        """Test if the context values are correct."""
+        response = self.client.get(self.url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['wallet_count'], 2)  # Two wallets
+        self.assertEqual(response.context['preset_count'], 0)  # No presets created in this test
+        self.assertEqual(response.context['mission_count'], 2)  # Two missions
+        self.assertEqual(response.context['scope_count'], 2)  # Two scopes
+        self.assertEqual(response.context['total_income'], Decimal('300.00'))  # Total income from wallets
+        
+class ProgressionNodeModelTest(TestCase):
+
+    def setUp(self):
+        """Set up test data."""
+        # Create a ProgressionNode instance
+        self.node = ProgressionNode.objects.create(name="Node 1", description="This is a test node.")
+
+    def test_str_method(self):
+        """Test the __str__ method of the ProgressionNode model."""
+        self.assertEqual(str(self.node), "Node 1")  # Check if the string representation is the same as the name
