@@ -1,10 +1,15 @@
+from django.utils import timezone
+from django.db import models
 from django.contrib import messages
+from django.forms import ValidationError
+from django.http import HttpResponse
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils.timezone import now
 
-from .models import Account, FixStatement, Mission, Preset, Scope, Wallet, Statement
-from .forms import PresetForm, WalletFilterForm, StatementForm
+from .models import Account, Mission, Preset, Scope, Wallet, Statement
+from .forms import MissionForm, PresetForm, ScopeForm, WalletFilterForm, StatementForm
 
 # Create your views here.
 
@@ -14,13 +19,32 @@ def setting(request):
 def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
     theme = account.appTheme
-
+    
+    if not account.wallets.exists():
+        # ถ้าไม่มี Wallet ให้สร้าง Wallet เริ่มต้น
+        default_wallet = Wallet.objects.create(account=account, wName="Default Wallet")
+        return redirect('main')
+    
+    wallet = None
+    presets = Preset.objects.filter(wallet__in=account.wallets.all())
     form = WalletFilterForm(request.GET or None, account=account)
     statements = Statement.objects.none()  # เริ่มต้นด้วยการไม่มีข้อมูล
     wallet = Wallet.objects.none()
     sData = {}
+    missions = Mission.objects.none()
+    scopes = Scope.objects.none()
     status = "ไม่พบการจำกัดวงเงิน"
     sList_gByD = []
+    date = now().date()
+
+    if form.is_valid():
+        wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
+    if not wallet:
+        wallet = account.wallets.first()
+    if wallet:
+        presets = Preset.objects.filter(wallet=wallet)
+    # else:
+    #     presets = Preset.objects.none() # edit in future
 
     if request.method == 'GET':
         if form.is_valid():
@@ -45,8 +69,9 @@ def main(request):
         sData = {"in": income, "out": out}
 
         unique_add_dates_list = list(set(statements.values_list('addDate', flat=True)))
+        sorted_unique_add_dates_list = sorted(unique_add_dates_list, reverse=True)
         sList_gByD = []
-        for d in unique_add_dates_list:
+        for d in sorted_unique_add_dates_list:
             sList_D = statements.filter(addDate=d)
             in_D, out_D = 0, 0
             for s in sList_D:
@@ -60,13 +85,25 @@ def main(request):
                 "out": f"{out_D:.2f}"
             })
 
-        choices = [("other", "Other")]
+        choices = [ ("รายรับ", "รายรับ"),
+                    ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                    ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                    ("จิปาถะ", "จิปาถะ"), 
+                    ("บันเทิง", "บันเทิง"), 
+                    ("ครอบครัว", "ครอบครัว"), 
+                    ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                    ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                    ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                    ]
         categories = wallet.get_categories() if wallet else []
         choices += [(category, category) for category in categories]
 
         if wallet and wallet.scopes.exists():
-            status = "scopes-exists"
+            scopes = Scope.objects.filter(wallet=wallet)
 
+        if wallet and wallet.missions.exists():
+            missions = Mission.objects.filter(wallet=wallet)
+            
     return render(request, 'main.html', {
         'form': form,
         'statements': sList_gByD,
@@ -74,12 +111,12 @@ def main(request):
         'wallet': wallet,
         'theme': theme,
         "data": sData,
-        "status": status
+        "scopes": scopes,
+        "missions": missions,
+        "status": status,
+        'presets': presets,
     })
 
-
-def about(request):
-    return render(request, 'about.html')
 
 def analysis(request):
     # ดึงข้อมูลผู้ใช้ที่เข้าสู่ระบบในปัจจุบัน
@@ -227,55 +264,43 @@ def create_wallet(request):
         return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main หลังบันทึก
     return HttpResponse("ERROR, Can't create_wallet")
 
-
-
-def create_fixstatement(request):
-    if request.method == 'POST':
-        wallet_id = request.POST['wallet']
-        amount = request.POST['amount']
-        type = request.POST['type']
-        category = request.POST['category']
-        frequency = request.POST['frequency']
-
-        wallet = Wallet.objects.get(id=wallet_id)
-
-        new_fixstatement = FixStatement(
-            wallet=wallet,
-            amount=amount,
-            type=type,
-            category=category,
-            frequency=frequency
-        )
-        new_fixstatement.save()
-        messages.success(request, 'FixStatement ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
-
-    wallets = Wallet.objects.all()
-    return HttpResponse("ERROR, Can't create_fixstatement")
-
 def create_scope(request):
     if request.method == 'POST':
-        wallet_id = request.POST['wallet']
-        amount = request.POST['amount']
-        type = request.POST['type']
-        category = request.POST['category']
-        range = request.POST['range']
+        # รับค่าจากฟอร์ม
+        wallet_id = request.POST.get('wallet')  # ดึงค่า wallet ที่ถูกส่งมาจากฟอร์ม
+        amount = request.POST.get('amount')
+        type = request.POST.get('type')
+        range_value = request.POST.get('range')
 
-        wallet = Wallet.objects.get(id=wallet_id)
+        try:
+            # ดึง wallet ที่เลือก
+            wallet = Wallet.objects.get(id=wallet_id)
 
-        new_scope = Scope(
-            wallet=wallet,
-            amount=amount,
-            type=type,
-            category=category,
-            range=range
-        )
-        new_scope.save()
-        messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
+            # สร้าง Scope ใหม่
+            new_scope = Scope(
+                wallet=wallet,
+                amount=amount,
+                type=type,
+                range=range_value
+            )
+            new_scope.save()
 
-    wallets = Wallet.objects.all()
-    return HttpResponse("ERROR, Can't create_scope")
+            messages.success(request, 'Scope ถูกสร้างสำเร็จแล้ว')
+            return redirect('main')  # เปลี่ยนเป็น URL ที่ต้องการ
+
+        except Wallet.DoesNotExist:
+            messages.error(request, 'ไม่พบกระเป๋าเงินที่เลือก')
+            return redirect('main')  # หรือ URL ที่ต้องการให้กลับไป
+    else:
+        # ถ้าเป็น GET ก็แสดงแบบฟอร์ม
+        return HttpResponse("ERROR, Can't create_scope")
+
+
+def delete_scope(request, scope_id):
+    scope = get_object_or_404(Scope, id=scope_id)
+    wallet_id = scope.wallet.id  # เก็บ wallet_id ก่อนลบ scope
+    scope.delete()
+    return redirect('scope', wallet_id=wallet_id)
 
 def create_mission(request):
     if request.method == 'POST':
@@ -295,11 +320,31 @@ def create_mission(request):
             pic=pic
         )
         new_mission.save()
-        messages.success(request, 'Mission ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
+        messages.success(request, 'Goal ถูกสร้างสำเร็จแล้ว')
+        return redirect('goal', wallet_id=new_mission.wallet.id)
 
     wallets = Wallet.objects.all()
     return HttpResponse("ERROR, Can't create_mission")
+
+def edit_mission(request, mission_id):
+    mission = get_object_or_404(Mission, id=mission_id)
+
+    if request.method == 'POST':
+        form = MissionForm(request.POST, request.FILES, instance=mission)
+        if form.is_valid():
+            form.save()
+            return redirect('goal', wallet_id=mission.wallet.id)
+    else:
+        form = MissionForm(instance=mission)
+
+    return render(request, 'edit_mission.html', {'form': form, 'mission': mission})
+
+def delete_mission(request, mission_id):
+    mission = get_object_or_404(Mission, id=mission_id)
+    wallet_id = mission.wallet.id  # เก็บ wallet_id ก่อนลบ mission
+    mission.delete()
+    return redirect('goal', wallet_id=wallet_id)
+
 
 def create_preset(request):
     if request.method == 'POST':
@@ -314,58 +359,115 @@ def create_preset(request):
         )
         new_preset.save()
         messages.success(request, 'Preset ถูกสร้างสำเร็จแล้ว')
-        return redirect(reverse('wallet_detail', args=[wallet_id]))
+        return redirect('main')
 
     wallets = Wallet.objects.all()
     return HttpResponse("ERROR, Can't create_preset")
 
-def scope(request):
-    account = request.user.account
-    if request.method == 'GET':
-        
-        form = WalletFilterForm(request.GET or None, account=account)
-        choices = [("other", "Other")]
-        
-        if account.wallets.exists():
-            if form.is_valid():
-                wallet = form.cleaned_data.get('wallet') if form.is_valid() else account.wallets.first()
-                date = form.cleaned_data.get('date')
+def scope(request, wallet_id):
+    wallet = get_object_or_404(Wallet, id=wallet_id)
+    scopes = Scope.objects.filter(wallet=wallet)
 
-                statements = Statement.objects.filter(wallet=wallet)
-
-                if date:
-                    statements = statements.filter(addDate=date)
-                    
-            else:
-                wallet = account.wallets.first()
-                statements = Statement.objects.filter(wallet=wallet)
-
-            income = 0
-            out = 0
-            for s in statements:
-                if s.type == "in":
-                    income += s.amount
-                else:
-                    out += s.amount
-                    
-            sData = {"in":income, "out":out}
-                
-            categories = wallet.get_categories()  # ดึง categories จาก wallet
-            choices += [(category, category) for category in categories]
+    if request.method == 'POST':
+        form = ScopeForm(request.POST)
+        if form.is_valid():
+            scope = form.save(commit=False)
+            scope.wallet = wallet
+            scope.save()
+            return redirect('scope', wallet_id=wallet.id)
+    else:
+        form = ScopeForm()
 
     return render(request, 'scope.html', {
-        'sData' : sData,
-        'statements': statements
-        }) #ขอใส่เพื่อให้รัน  test ได้
+        'wallet': wallet,
+        'scopes': scopes,
+        'form': form,
+    })
+
+def edit_scope(request, scope_id):
+    scope = get_object_or_404(Scope, id=scope_id)
+
+    if request.method == 'POST':
+        form = ScopeForm(request.POST, instance=scope)
+        if form.is_valid():
+            form.save()
+            return redirect('scope', wallet_id=scope.wallet.id)
+    else:
+        form = ScopeForm(instance=scope)
+
+    return render(request, 'edit_scope.html', {'form': form, 'scope': scope})
 
 def wallet_detail(request, id):
     return HttpResponse("This view is not yet implemented.")
 
 def progression(request):
-    return render(request, 'progression.html')
+    account = request.user.account  # ดึง Account ของผู้ใช้ปัจจุบัน
+    wallets = account.wallets.all()  # ดึงทุก wallet ที่ผู้ใช้งานมี
+    
+    # ดึงข้อมูลจำนวน Wallet, Statement, Preset สำหรับทุก wallet
+    wallet_count = wallets.count()
+    preset_count = sum(wallet.presets.count() for wallet in wallets)
+    mission_count = sum(wallet.missions.count() for wallet in wallets)
+    scope_count = sum(wallet.scopes.count() for wallet in wallets)
+    mission_count = sum(wallet.missions.count() for wallet in wallets)
+
+    total_income = sum(wallet.statements.filter(type='in').aggregate(total_income=models.Sum('amount'))['total_income'] or 0 for wallet in wallets)
+
+    has_successful_mission = any(
+        mission.is_successful() for wallet in wallets for mission in wallet.missions.all()
+    )
+
+    return render(request, 'progression.html', {
+        'wallet_count': wallet_count,
+        'preset_count': preset_count,
+        'mission_count': mission_count,
+        'scope_count': scope_count,
+        'total_income': total_income,
+        'has_successful_mission': has_successful_mission,
+    })
+
+
 
 def trophy(request):
     return render(request, 'trophy.html')
+
+def about(request):
+    return render(request, 'about.html')
+
+def mission(request, wallet_id):
+    wallet = get_object_or_404(Wallet, id=wallet_id)
+    missions = Mission.objects.filter(wallet=wallet)
+
+    if request.method == 'POST':
+        form = MissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            mission = form.save(commit=False)
+            mission.wallet = wallet
+            mission.save()
+            return redirect('goal', wallet_id=wallet.id)
+    else:
+        form = MissionForm()
+
+    return render(request, 'mission.html', {
+        'wallet': wallet,
+        'missions': missions,
+        'form': form,
+    })
+
+
+def donate_to_mission(request, mission_id):
+    if request.method == "POST":
+        mission = get_object_or_404(Mission, id=mission_id)
+        try:
+            donate_amount = float(request.POST.get('donate_amount', 0))
+            mission.donate(donate_amount)  
+            messages.success(request, f"Donated {donate_amount} successfully!")
+        except ValidationError as e:
+            messages.error(request, e.message)
+        except ValueError:
+            messages.error(request, "Invalid donation amount.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponse("ERROR, Can't donate_to_mission")
 
 def preset(request, wallet_id):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
@@ -394,7 +496,7 @@ def preset(request, wallet_id):
         'theme': theme,
         })
 
-from django.shortcuts import get_object_or_404, redirect
+
 
 def edit_preset(request, preset_id):
     preset = get_object_or_404(Preset, id=preset_id)
@@ -402,7 +504,8 @@ def edit_preset(request, preset_id):
         form = PresetForm(request.POST, instance=preset)
         if form.is_valid():
             form.save()
-            return redirect('preset', wallet_id=preset.wallet.id)
+            if preset.wallet and preset.wallet.id:
+                return redirect('preset', wallet_id=preset.wallet.id)
     else:
         form = PresetForm(instance=preset)
     return render(request, 'edit_preset.html', {'form': form})
@@ -414,57 +517,37 @@ def delete_preset(request, preset_id):
     return redirect('preset', wallet_id=wallet_id)
 
 
+def use_preset(request, preset_id):
+    if request.method == 'POST':  # ใช้ POST เพื่อรับค่า
+        preset = get_object_or_404(Preset, id=preset_id)
+        
+        # ดึงข้อมูลจาก JSONField `statement`
+        statement_data = preset.statement
+        
+        # ตรวจสอบข้อมูลใน JSONField และสร้าง Statement ใหม่
+        category = statement_data.get('field1', 'อื่นๆ')  # Default 'อื่นๆ' หากไม่มีข้อมูล
+        amount = statement_data.get('field2', 0.0)
+        type_text = statement_data.get('field3', 'out')  # Default 'out' หากไม่มีข้อมูล
+
+         # แปลงค่า `field3` เป็น `type` ของ Statement
+        if type_text == 'รายรับ':
+            type_ = 'in'  # ใช้ 'in' สำหรับรายรับ
+        elif type_text == 'รายจ่าย':
+            type_ = 'out'  # ใช้ 'out' สำหรับรายจ่าย
+        
+        # สร้าง Statement ใหม่
+        statement = Statement.objects.create(
+            wallet=preset.wallet,  # ใช้ Wallet เดียวกับที่ Preset อ้างอิง
+            category=category,
+            amount=amount,
+            type=type_
+        )
+        statement.save()
+        
+        # ส่ง JSON Response กลับมา (กรณีใช้ AJAX)
+        return JsonResponse({'success': True, 'message': 'Statement created successfully.'})
+    
+    # หากไม่ใช่ POST ให้ส่งสถานะไม่อนุญาต
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def add_preset(request):
-#     if request.method == 'POST':
-#         wallet_id = request.POST.get('wallet_id')  # รับ wallet_id จาก POST
-#         wallet = Wallet.objects.get(id=wallet_id)  # ดึง wallet จาก id ที่ได้รับ
-#         form = StatementForm(request.POST)
-
-#         if form.is_valid():
-#             category = form.cleaned_data.get('category')
-
-#             if category == 'other':  # ถ้าผู้ใช้เลือก "other"
-#                 custom_category = request.POST.get('custom_category')
-#                 if custom_category:  # ถ้ามีการกรอกหมวดหมู่เอง
-#                     category = custom_category  # ใช้ค่าที่กรอก
-
-#             # ตรวจสอบหมวดหมู่ที่ได้รับ
-#             if category:
-#                 # ถ้าหมวดหมู่ไม่ใช่ "None" ก็เพิ่มหมวดหมู่ใหม่
-#                 wallet.add_category(category)
-
-#             statement = form.save(commit=False)  # สร้าง instance ของ statement โดยไม่บันทึก
-#             if(request.POST.get('addDate')!=""):
-#                 statement.addDate = request.POST.get('addDate')
-#             statement.wallet = wallet  # กำหนด wallet ให้กับ statement
-#             statement.category = category  # กำหนด category ให้กับ statement
-#             statement.save()  # บันทึก statement ลงฐานข้อมูล
-
-#             return redirect(request.META.get('HTTP_REFERER', '/'))  # กลับไปที่หน้า main
-#     else:
-#         wallet_id = request.GET.get('wallet_id')
-#         wallet = Wallet.objects.get(id=wallet_id)
-#         choices = [(category, category) for category in wallet.get_categories()]
-#         choices.append(("other", "Other"))  # เพิ่มตัวเลือก "other"
-
-#         form = StatementForm(wallet=wallet)
-
-#     return HttpResponse("ERROR, Can't add_statement")

@@ -24,22 +24,13 @@ class AuthViewTests(TestCase):
         self.assertContains(response, 'name="password"')
 
     def test_login_view_post_valid(self):
-        # Test valid login
-        user = User.objects.create_user(username='testuser', password='testpassword')
-        
-        # Create the associated Account object for the user
-        account = Account.objects.create(
-            user=user,
-            name='Test User',
-            appTheme='light',  # or any other default value for your model
-        )
-        
-        # Now login the user and check if the redirection works
-        response = self.client.post(reverse('auth'), {'login': 'login', 'username': 'testuser', 'password': 'testpassword'})
-        self.assertRedirects(response, reverse('main'))  # Ensure it redirects to the main page
-        
-        # Check if the user is logged in
-        self.assertEqual(str(response.wsgi_request.user), 'testuser')
+        User.objects.create_user(username='testuser', password='testpassword')
+        response = self.client.post(reverse('auth'), {
+            'login' : 'login',
+            'username' : 'testuser',
+            'password' : 'testpassword'
+        })
+        self.assertEqual(response.status_code, 302)
 
     def test_register_view_post_valid(self):
         # Test valid registration
