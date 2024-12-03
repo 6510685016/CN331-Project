@@ -1,7 +1,9 @@
 # forms.py
-from django import forms
-from .models import Wallet, Statement
+from django import forms 
+from .models import Mission, Scope, Wallet, Statement
 from .models import Preset
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 class WalletFilterForm(forms.Form):
     wallet = forms.ModelChoiceField(
@@ -26,6 +28,7 @@ class WalletFilterForm(forms.Form):
                 self.fields['wallet'].queryset = Wallet.objects.filter(account=account)
             else:
                 self.fields['wallet'].empty_label = "ไม่พบ Wallet"
+                
 class StatementForm(forms.ModelForm):
     category = forms.CharField(label='Category', required=False)
 
@@ -46,7 +49,18 @@ class StatementForm(forms.ModelForm):
             selected_category = self.instance.category if self.instance else None
 
             self.fields['category'] = forms.ChoiceField(
-                choices=choices + [("other", "Other")],  # เพิ่มตัวเลือกสำหรับกรอกเอง
+                choices=choices + [("อื่นๆ", "อื่นๆ"), 
+                                   ("รายรับ", "รายรับ"),
+                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                                   ("จิปาถะ", "จิปาถะ"), 
+                                   ("บันเทิง", "บันเทิง"), 
+                                   ("ครอบครัว", "ครอบครัว"), 
+                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                                   ("แบ่งจ่ายรายการใหญ่", "แบ่งจ่ายรายการใหญ่"),
+                                   ],  # เพิ่มตัวเลือกสำหรับกรอกเอง
                 label='Category',
                 required=False,
                 initial=selected_category  # กำหนด category เดิมให้เป็นค่าเริ่มต้น
@@ -62,17 +76,80 @@ class StatementForm(forms.ModelForm):
         return category  # ถ้าไม่เลือก "other" ก็ใช้ค่า category ที่เลือก
     
 class PresetForm(forms.ModelForm):
+    # ฟิลด์ย่อยสำหรับ statement
+    field1 = forms.ChoiceField(
+        required=True,
+        label="Field 1",
+        choices=[("รายรับ", "รายรับ"),
+                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                                   ("จิปาถะ", "จิปาถะ"), 
+                                   ("บันเทิง", "บันเทิง"), 
+                                   ("ครอบครัว", "ครอบครัว"), 
+                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                                    ("อื่นๆ","อื่นๆ")],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    field2 = forms.IntegerField(
+        required=True,
+        label="Field 2",
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter Amount'})
+    )
+    field3 = forms.ChoiceField(
+        required=True,
+        label="Field 3",
+        choices=[("รายรับ", "รายรับ"), ("รายจ่าย", "รายจ่าย")],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = Preset
-        fields = ['name', 'statement']  # ใช้เฉพาะฟิลด์ที่ต้องการ
+        fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        # รับ instance จาก Preset (object ที่แก้ไข)
+        instance = kwargs.get('instance')
+        if instance and instance.statement:
+            initial = kwargs.setdefault('initial', {})
+            # ดึงค่าจาก statement เพื่อใส่ในฟิลด์ย่อย
+            initial['field1'] = instance.statement.get('field1', '')
+            initial['field2'] = instance.statement.get('field2', '')
+            initial['field3'] = instance.statement.get('field3', '')
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        # รวมค่าจากฟิลด์ย่อยเป็น statement
+        instance.statement = {
+            "field1": self.cleaned_data.get('field1'),
+            "field2": self.cleaned_data.get('field2'),
+            "field3": self.cleaned_data.get('field3')
+        }
+        if commit:
+            instance.save()
+        return instance
+    
+class ScopeForm(forms.ModelForm):
+    class Meta:
+        model = Scope
+        fields = ['amount', 'type', 'range']
+
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Enter Preset Name'
-            }),
-            'statement': forms.Textarea(attrs={
-                'class': 'form-control', 
-                'placeholder': 'Enter Statement as JSON',
-                'rows': 3
-            }),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
+            'type': forms.Select(attrs={'class': 'form-control'}),
+            'range': forms.Select(attrs={'class': 'form-control'}),
+        }
+        
+class MissionForm(forms.ModelForm):
+    class Meta:
+        model = Mission
+        fields = ['mName', 'dueDate', 'amount']
+
+        widgets = {
+            'mName': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Goal Name'}),
+            'dueDate': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target Amount'}),
+            #'pic': forms.FileInput(attrs={'class': 'form-control'}),
         }
