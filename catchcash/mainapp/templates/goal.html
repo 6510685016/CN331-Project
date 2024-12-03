@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Mission - CatchCASH
+{% endblock %}
+
+
+{% block content %}
+
+{% if theme == 'dark' %}
+    <link href="/static/dark.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% else %}
+    <link href="/static/light.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% endif %}
+
+<!-- bootstrap5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
+
+<div class="container-fluid p-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1> Mission </h1>
+            
+            <form method="GET" class="d-flex">
+                <select id="wallet-select" name="wallet" class="form-control mr-2" onchange="this.form.submit()">
+                    {% for w in form.wallet.field.queryset %}
+                        <option value="{{ w.id }}" {% if wallet and w == wallet %}selected{% endif %}>
+                            {{ w.wName }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contrainer Section -->
+    <div class="row">
+
+        <!-- Goals Section -->
+        <div class="mt-4">
+            <div class="p-3 bg-light rounded border border-dark" style="height: 400px; overflow-y: auto;">
+                <div class="col-12 d-flex justify-content-between align-items-center">
+                    <h3>Mission การออม</h3>
+                    <a href="{% url 'goal' wallet.id%}" class="ml-3 mr-3 btn btn-primary" id="create_preset">แก้ไขหรือเพิ่ม Mission</a>
+                </div>
+
+                <div class="ml-3">
+                    Mission คือรายการค่าใช้จ่ายขนาดใหญ่และต้องใช้ระยะเวลาออมนาน Mission จะช่วยคุณบันทึก กำหนดระยะเวลาและแบ่งจ่ายหรือออมเงินเพื่อรายการดังกล่าวได้ 
+                </div>
+                    
+                <!-- Goal -->
+                <div class="container-fluid m-2 mt-3 p-2">
+                    {% for m in goals %}
+                    <div class="row">
+                        {% if not m.isOutdate and m.amountToGo > 0 %}
+                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-7">
+                            <form action="{% url 'donate_to_mission' m.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="number" name="donate_amount" id="donate_amount_{{ m.id }}" step="0.01" min="1" max="{{ m.amountToGo }}" placeholder="amount">
+                                <button type="submit" class="btn btn-success">Donate</button>
+                            </form>
+                        </div>
+                        {% elif m.isOutdate %}
+                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-7">
+                            <p class="text-danger">Outdated.</p>
+                        </div>
+                        {% else %}
+                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-7">
+                            <p class="text-success">Completed!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="row">
+                        <p>No missions available.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- filter-->
+<script>
+    function applyFilter() {
+        const wallet = document.getElementById('wallet-select').value;
+    
+        const params = new URLSearchParams();
+        if (wallet) params.append('wallet', wallet);
+    
+        // อัปเดต URL และโหลดหน้าใหม่
+        window.location.href = '?' + params.toString();
+    }
+</script>
+{% endblock %}

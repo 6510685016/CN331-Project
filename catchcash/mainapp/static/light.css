@@ -140,26 +140,7 @@
   overflow-y: auto;
 }
 
-#create_preset {
-  width: 150px; 
-  height: 75px; 
-  background-color: rgb(3, 39, 53); 
-  border: 0;
-  margin-right: 5px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-#create_goal {
-  width: 150px; 
-  height: 75px; 
-  background-color: rgb(3, 39, 53); 
-  border: 0cm;
-  margin-top: 50px;
-  margin-right: 5px;
-}
 
 #all_goal {
   width: 150px; 
@@ -172,24 +153,4 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-#create_scope {
-  width: 150px; 
-  height: 75px; 
-  background-color: rgb(3, 39, 53); 
-  border: 0cm;
-  margin-top: 50px;
-  margin-right: 5px;
-}
-
-
-#toggleFormButton{
-  width: 100px; 
-  height: 50px; 
-  background-color: rgb(3, 39, 53); 
-  border: 0cm;
-  margin-bottom: 10px;
-  margin-right: 10px;
-  color: white;
 }
