@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.db import models
 from django.contrib import messages
 from django.forms import ValidationError
 from django.http import HttpResponse
@@ -40,7 +41,6 @@ def main(request):
         wallet = account.wallets.first()
     if wallet:
         presets = Preset.objects.filter(wallet=wallet)
-        
     if request.method == 'GET':
         if form.is_valid():
             wallet = form.cleaned_data.get('wallet') or account.wallets.first()
@@ -402,7 +402,32 @@ def wallet_detail(request, id):
     return HttpResponse("This view is not yet implemented.")
 
 def progression(request):
-    return render(request, 'progression.html')
+    account = request.user.account  # ดึง Account ของผู้ใช้ปัจจุบัน
+    wallets = account.wallets.all()  # ดึงทุก wallet ที่ผู้ใช้งานมี
+    
+    # ดึงข้อมูลจำนวน Wallet, Statement, Preset สำหรับทุก wallet
+    wallet_count = wallets.count()
+    preset_count = sum(wallet.presets.count() for wallet in wallets)
+    mission_count = sum(wallet.missions.count() for wallet in wallets)
+    scope_count = sum(wallet.scopes.count() for wallet in wallets)
+    mission_count = sum(wallet.missions.count() for wallet in wallets)
+
+    total_income = sum(wallet.statements.filter(type='in').aggregate(total_income=models.Sum('amount'))['total_income'] or 0 for wallet in wallets)
+
+    has_successful_mission = any(
+        mission.is_successful() for wallet in wallets for mission in wallet.missions.all()
+    )
+
+    return render(request, 'progression.html', {
+        'wallet_count': wallet_count,
+        'preset_count': preset_count,
+        'mission_count': mission_count,
+        'scope_count': scope_count,
+        'total_income': total_income,
+        'has_successful_mission': has_successful_mission,
+    })
+
+
 
 def trophy(request):
     return render(request, 'trophy.html')
@@ -471,7 +496,7 @@ def preset(request, wallet_id):
         'theme': theme,
         })
 
-from django.shortcuts import get_object_or_404, redirect
+
 
 def edit_preset(request, preset_id):
     preset = get_object_or_404(Preset, id=preset_id)
@@ -526,3 +551,5 @@ def use_preset(request, preset_id):
     
     # หากไม่ใช่ POST ให้ส่งสถานะไม่อนุญาต
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+

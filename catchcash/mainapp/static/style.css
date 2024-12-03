@@ -85,6 +85,29 @@ p {
     font-size: 14px;  /* ลดขนาดของข้อความ */
 }
 
+.node {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 120px;
+    background-color: lightgray;
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.node:hover {
+    transform: scale(1.1);
+}
+.node.unlocked {
+    background-color: lightgreen;
+}
+.connection {
+    position: absolute;
+    background-color: black;
+    height: 2px;
+    transform-origin: 0 0;
+}
 /* เพิ่มระยะห่างระหว่างกล่อง */
 .col-md-6 {
     margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่อง */

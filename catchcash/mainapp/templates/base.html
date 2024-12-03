@@ -19,16 +19,18 @@
             <div class="p-3">
                 <!-- User Info -->
                 <div class="text-center mb-3">
-                    <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3" style="width: 80px; height: 80px;">
+                    <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
+                        style="width: 80px; height: 80px;">
                     <h5 class="text-black">{{ user.account.name }}</h5>
                 </div>
-                
+
                 <!-- Navigation Links -->
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'main' %}">Home</a></li>
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'goal' %}">Mission</a></li>
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'analysis' %}">Analysis</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'progression' %}">Progression</a></li>
+                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'progression' %}">Progression</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'trophy' %}">Trophy</a></li>
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'setting' %}">Setting</a></li>
                     <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'about' %}">About us</a></li>
@@ -58,7 +60,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 

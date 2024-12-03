@@ -1,6 +1,7 @@
 from django.urls import path
 from mainapp import views
 
+
 urlpatterns = [
     path('', views.about, name='about'),
     path('main', views.main, name='main'),
@@ -35,4 +36,5 @@ urlpatterns = [
     path('preset/edit/<int:preset_id>/', views.edit_preset, name='edit_preset'),
     path('preset/delete/<int:preset_id>/', views.delete_preset, name='delete_preset'),
     path('use-preset/<int:preset_id>/', views.use_preset, name='use_preset'),
+
 ] 
