@@ -7,6 +7,7 @@ from django.forms import ValidationError
 from django.db.models import Sum
 from django.utils.timezone import now
 
+
 # ACCOUNTS model
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -167,6 +168,24 @@ class Mission(models.Model):
         money = Decimal(money)
         self.curAmount = self.curAmount + money
         self.save()
+    
+    def is_successful(self):
+        # ตรวจสอบว่า Mission สำเร็จหรือไม่
+        return self.curAmount >= self.amount
+
+    def delete_mission(self):
+        self.delete()
+
+class ProgressionNode(models.Model):
+    name = models.CharField(max_length=100, unique=True)  # ชื่อของโหนด
+    description = models.TextField(blank=True, null=True)  # รายละเอียดเกี่ยวกับโหนด
+    unlocked = models.BooleanField(default=False)  # สถานะว่าปลดล็อคแล้วหรือยัง
+    parent = models.ForeignKey(
+        'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children'
+    )  # โหนดต้นแบบ (เชื่อมโยงกัน)
+
+    def __str__(self):
+        return self.name
         return self.curAmount
     
     def isOutdate(self):
