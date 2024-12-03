@@ -17,23 +17,29 @@
         <form method="POST" action="{% url 'add_statement' %}">
             <div class="card mb-3 shadow-sm">
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    เพิ่มรายการใหม่
+                    <div class="">
+                        กรุณากรอกข้อมูลของรายการใหม่
+                    </div>
+                    <div class="col text-right"> 
+                        <button type="submit" class="btn btn-outline-dark w-20">ยืนยัน</button>
+                    </div>
                 </div>
+                
                 <div class="card-body row">
                     {% csrf_token %}
-                    <div class="col-md-7">
+                    <div class="col-md-2">
+                        <label>ประเภท</label>
+                        <select name="type" class="form-control 1" required>
+                            <option value="in">รายรับ (+)</option>
+                            <option value="out" selected>รายจ่าย (-)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label>ระบุจำนวนเงิน ({{wallet.currency}})</label>
                         <input placeholder="ระบุจำนวนเงิน ({{wallet.currency}})" type="number" class="form-control mr-1" step="1.00" name="amount" required>
                     </div>
-                    <div class="col-md-4">
-                        <label>ประเภท</label>
-                        <select name="type" class="form-control mr-1" required>
-                            <option value="in">รายรับ</option>
-                            <option value="out" selected>รายจ่าย</option>
-                        </select>
-                    </div>
-                    <div class="col-md-11">
-                        <label>หมวดหมู่และวันที่ (วันนี้หากไม่ระบุ)</label>
+                    <div class="col-md-4 col-5">
+                        <label for="category-select">หมวดหมู่</label>
                         <select id="category-select" class="form-control mr-1" name="category" required>
                             {% for choice in choices %}
                                 <option value="{{ choice.0 }}" {% if choice.0 == form.category.value %}selected{% endif %}>
@@ -41,14 +47,11 @@
                                 </option>
                             {% endfor %}
                         </select>
-                        <input type="text" id="custom_category" name="custom_category" class="form-control mr-1" placeholder="Enter new category" style="display:none;">
                     </div>
                     <div class="col-md-7">
+                        <label for="category-select">วันที่ (วันนี้หากไม่ระบุ)</label>
                         <input type="date" class="form-control mr-1" name="addDate">
                     </div>
-                    <div class="col-2">
-                        <button type="submit" class="btn btn-outline-dark">เพิ่ม</button>
-                    </div> 
                     <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
                 </div>
             </div>
@@ -68,7 +71,7 @@
             <div class="card-body">
                 {% for statement in statements_Each_day.statements %}
                     <div id="statement-{{statement.id}}" class="row mb-3 align-items-center">
-                        <div class="col-md-1">
+                        <div class="col-md-1 col-2">
                             {% if statement.type == "in" %}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
@@ -79,13 +82,13 @@
                                 </svg>
                             {% endif %}
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3 col-10">
                             <span>{{ statement.amount }} {{wallet.currency}}</span>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4 col-7">
                             <span>{{ statement.category }}</span>
                         </div>
-                        <div class="col-md-4 text-end">
+                        <div class="col-md-3 col-5 text-end">
                             <a href="javascript:void(0)" onclick="toggleEdit({{ statement.id }})" class="btn btn-sm btn-outline-primary me-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
