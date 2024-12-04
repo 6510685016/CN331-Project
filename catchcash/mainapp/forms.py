@@ -1,6 +1,6 @@
 # forms.py
 from django import forms 
-from .models import Mission, Scope, Wallet, Statement
+from .models import Mission, Scope, Wallet, Statement, Account
 from .models import Preset
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -149,3 +149,44 @@ class MissionForm(forms.ModelForm):
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target Amount'}),
             #'pic': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+class SettingForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Password'
+        }),
+        required=False
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Confirm Password'
+        }),
+        required=False
+    )
+
+    class Meta:
+        LIGHT = 'light'
+        DARK = 'dark'
+        THEME_CHOICES = [(LIGHT, 'Light'), (DARK, 'Dark')]
+
+        model = Account
+        fields = ['profile_pic', 'appTheme', 'name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Name'}),
+            'profile_pic': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'appTheme': forms.Select(choices=THEME_CHOICES, attrs={'class': 'form-control'})
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        
+        if password and confirm_password:
+            if password != confirm_password:
+                self.add_error('confirm_password', 'Passwords do not match.')
+
+        return cleaned_data
