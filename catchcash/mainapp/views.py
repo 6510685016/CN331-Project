@@ -37,8 +37,6 @@ def main(request):
 
     if form.is_valid():
         wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
-    if not wallet:
-        wallet = account.wallets.first()
     if wallet:
         presets = Preset.objects.filter(wallet=wallet)
     if request.method == 'GET':
@@ -132,9 +130,6 @@ def goal(request):
 
     if form.is_valid():
         wallet = form.cleaned_data.get('wallet') or wallet  # ดึง wallet ที่ผู้ใช้เลือก
-    if not wallet:
-        wallet = account.wallets.first()
-        
     if request.method == 'GET':
         if form.is_valid():
             wallet = form.cleaned_data.get('wallet') or account.wallets.first()
@@ -304,7 +299,7 @@ def create_scope(request):
         # ตรวจสอบว่าเป้าหมายเดือน/ปีนี้มีอยู่แล้วหรือไม่
         if Scope.objects.filter(wallet=wallet, month=month, year=year).exists():
             # เพิ่มข้อความแจ้งเตือน (หากมีอยู่แล้ว)
-            HttpResponse("ERROR, Can't create 2 scope with same month")
+            return HttpResponse("ERROR, Can't create 2 scope with same month")
 
         # สร้างเป้าหมายใหม่
         scope = Scope(
@@ -336,7 +331,7 @@ def delete_scope(request, scope_id):
     scope = get_object_or_404(Scope, id=scope_id)
     wallet_id = scope.wallet.id  # เก็บ wallet_id ก่อนลบ scope
     scope.delete()
-    return redirect('scope', wallet_id=wallet_id)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def create_mission(request):
     if request.method == 'POST':
@@ -518,7 +513,6 @@ def delete_preset(request, preset_id):
 
 
 def use_preset(request, preset_id):
-    print("TEstttt")
     if request.method == 'POST':  # ใช้ POST เพื่อรับค่า
         preset = get_object_or_404(Preset, id=preset_id)
         
