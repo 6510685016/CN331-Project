@@ -41,26 +41,23 @@ class StatementForm(forms.ModelForm):
         super(StatementForm, self).__init__(*args, **kwargs)
 
         if wallet:
-            # ดึง category จาก wallet และสร้างเป็นตัวเลือกให้กับผู้ใช้
-            categories = wallet.get_categories()
-            choices = [(category, category) for category in categories]
 
             # กำหนดค่าเริ่มต้นสำหรับ category จาก instance (ค่าเดิม)
             selected_category = self.instance.category if self.instance else None
 
             self.fields['category'] = forms.ChoiceField(
-                choices=choices + [("อื่นๆ", "อื่นๆ"), 
-                                   ("รายรับ", "รายรับ"),
-                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
-                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
-                                   ("จิปาถะ", "จิปาถะ"), 
-                                   ("บันเทิง", "บันเทิง"), 
-                                   ("ครอบครัว", "ครอบครัว"), 
-                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
-                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
-                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
-                                   ("แบ่งจ่ายรายการใหญ่", "แบ่งจ่ายรายการใหญ่"),
-                                   ],  # เพิ่มตัวเลือกสำหรับกรอกเอง
+                choices=[("อื่นๆ", "อื่นๆ"), 
+                        ("รายรับ", "รายรับ"),
+                        ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                        ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                        ("จิปาถะ", "จิปาถะ"), 
+                        ("บันเทิง", "บันเทิง"), 
+                        ("ครอบครัว", "ครอบครัว"), 
+                        ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                        ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                        ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                        ("แบ่งจ่ายรายการใหญ่", "แบ่งจ่ายรายการใหญ่"),
+                        ], 
                 label='Category',
                 required=False,
                 initial=selected_category  # กำหนด category เดิมให้เป็นค่าเริ่มต้น
@@ -68,11 +65,6 @@ class StatementForm(forms.ModelForm):
 
     def clean_category(self):
         category = self.cleaned_data.get('category')
-        custom_category = self.cleaned_data.get('custom_category')  # ค่าจากฟิลด์ custom_category ที่กรอกเอง
-
-        if category == 'other' and custom_category:
-            return custom_category  # ถ้าเลือก "other" และกรอกหมวดหมู่เอง ให้ใช้ค่าจาก custom_category
-
         return category  # ถ้าไม่เลือก "other" ก็ใช้ค่า category ที่เลือก
     
 class PresetForm(forms.ModelForm):
@@ -81,15 +73,15 @@ class PresetForm(forms.ModelForm):
         required=True,
         label="Field 1",
         choices=[("รายรับ", "รายรับ"),
-                                   ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
-                                   ("ค่าเดินทาง", "ค่าเดินทาง"), 
-                                   ("จิปาถะ", "จิปาถะ"), 
-                                   ("บันเทิง", "บันเทิง"), 
-                                   ("ครอบครัว", "ครอบครัว"), 
-                                   ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
-                                   ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
-                                   ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
-                                    ("อื่นๆ","อื่นๆ")],
+                ("อาหารและเครื่องดื่ม", "อาหารและเครื่องดื่ม"), 
+                ("ค่าเดินทาง", "ค่าเดินทาง"), 
+                ("จิปาถะ", "จิปาถะ"), 
+                ("บันเทิง", "บันเทิง"), 
+                ("ครอบครัว", "ครอบครัว"), 
+                ("ของใช้ส่วนตัว", "ของใช้ส่วนตัว"), 
+                ("ค่าใช้จ่ายประจำ", "ค่าใช้จ่ายประจำ"), 
+                ("ช็อปปิ้ง", "ช็อปปิ้ง"), 
+                ("อื่นๆ","อื่นๆ")],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     field2 = forms.IntegerField(
@@ -134,12 +126,16 @@ class PresetForm(forms.ModelForm):
 class ScopeForm(forms.ModelForm):
     class Meta:
         model = Scope
-        fields = ['amount', 'type', 'range']
-
+        fields = ['month', 'year', 'income_goal', 'expense_goal']
         widgets = {
-            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}),
-            'type': forms.Select(attrs={'class': 'form-control'}),
-            'range': forms.Select(attrs={'class': 'form-control'}),
+            'month': forms.Select(choices=[(i, i) for i in range(1, 13)]),  # ตัวเลือกเดือน (1-12)
+            'year': forms.NumberInput(attrs={'min': 2000, 'max': 2100}),  # ตัวเลือกปี
+        }
+        labels = {
+            'month': 'เดือน',
+            'year': 'ปี',
+            'income_goal': 'เป้าหมายรายรับ',
+            'expense_goal': 'เป้าหมายรายจ่าย',
         }
         
 class MissionForm(forms.ModelForm):
