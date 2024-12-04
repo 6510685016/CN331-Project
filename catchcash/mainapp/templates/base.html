@@ -19,8 +19,10 @@
             <div class="p-3">
                 <!-- User Info -->
                 <div class="text-center mb-3">
-                    <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
-                        style="width: 80px; height: 80px;">
+                    <a href="{% url 'setting' %}">
+                        <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
+                            style="width: 80px; height: 80px;">
+                    </a>
                     <h5 class="text-black">{{ user.account.name }}</h5>
                 </div>
 

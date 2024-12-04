@@ -1,13 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}
-Setting Page
-{% endblock %}
 
 {% block content %}
-<div class="row h-100">
-    <div class="col-md-8">
-        <h2>Setting Page</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <h3 class="text-center mb-4">Update Profile</h3>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+
+                <div class="text-center mb-4">
+                    <img id="current-profile-pic" src="{{ account.profile_pic.url }}" alt="Current Profile Picture"
+                        class="rounded-circle mb-3" style="width: 200px; height: 200px;">
+                    <div>
+                        <label for="id_profile_pic" class="btn btn-secondary">Change Profile Picture</label>
+                        <input type="file" name="profile_pic" id="id_profile_pic" class="d-none" />
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="id_name" class="form-label">Name</label>
+                    {{ setting_form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_appTheme" class="form-label">App Theme</label>
+                    {{ setting_form.appTheme }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_password" class="form-label">New Password</label>
+                    {{ setting_form.password }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_confirm_password" class="form-label">Confirm Password</label>
+                    {{ setting_form.confirm_password }}
+                    {% if setting_form.confirm_password.errors %}
+                    <div class="text-danger">
+                        {% for error in setting_form.confirm_password.errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+
+
+<script>
+    document.getElementById("id_profile_pic").addEventListener("change", function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var previewImage = document.getElementById("current-profile-pic");
+            previewImage.src = reader.result;  // อัปเดต src ของ img เป็นรูปใหม่
+        };
+        reader.readAsDataURL(event.target.files[0]);  // อ่านไฟล์ที่เลือก
+    });
+</script>
+
 {% endblock %}
