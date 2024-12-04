@@ -8,10 +8,10 @@ urlpatterns = [
     path('about', views.about, name='about'),
     path('analysis/', views.analysis, name='analysis'),
     path('setting', views.setting, name='setting'),
-    path('scope', views.scope, name='scope'),
     path('progression', views.progression, name='progression'),
     path('trophy', views.trophy, name='trophy'),
-    path('scope/<int:wallet_id>', views.scope, name='scope'),
+    path('goal', views.goal, name='goal'),
+    
     path('goal/<int:wallet_id>', views.mission, name='goal'),
     path('preset/<int:wallet_id>/', views.preset, name='preset'),
         
