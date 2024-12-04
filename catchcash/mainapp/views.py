@@ -7,14 +7,40 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils.timezone import now
+from django.contrib.auth import update_session_auth_hash
 
 from .models import Account, Mission, Preset, Scope, Wallet, Statement
-from .forms import MissionForm, PresetForm, ScopeForm, WalletFilterForm, StatementForm
+from .forms import MissionForm, PresetForm, ScopeForm, WalletFilterForm, StatementForm, SettingForm
 
 # Create your views here.
 
 def setting(request):
-    return render(request, 'setting.html')
+    user = request.user  # รับข้อมูลผู้ใช้ปัจจุบัน
+    account = request.user.account  # รับข้อมูลบัญชีผู้ใช้ปัจจุบัน
+
+    # สร้างฟอร์มและผูกข้อมูลกับบัญชีของผู้ใช้
+    setting_form = SettingForm(request.POST or None, request.FILES or None, instance=account)
+
+    if request.method == 'POST':  # เมื่อฟอร์มถูกส่ง (POST)
+        if setting_form.is_valid():  # ตรวจสอบว่าฟอร์มที่ส่งมาถูกต้องหรือไม่
+            for field in setting_form.changed_data:  # ตรวจสอบข้อมูลที่มีการเปลี่ยนแปลงในฟอร์ม
+                if field == 'password':  # ถ้าเป็นฟิลด์รหัสผ่าน
+                    # ทดสอบการเปลี่ยนรหัสผ่าน
+                    user.set_password(setting_form.cleaned_data['password'])  # เปลี่ยนรหัสผ่านของผู้ใช้
+                else:
+                    setattr(account, field, setting_form.cleaned_data[field])  # อัปเดตข้อมูลอื่น ๆ ที่เปลี่ยนแปลง
+            account.save()  # บันทึกการเปลี่ยนแปลงในบัญชีผู้ใช้
+            user.save()  # บันทึกการเปลี่ยนแปลงในข้อมูลผู้ใช้
+
+            # ทดสอบการอัปเดต session หลังจากเปลี่ยนรหัสผ่าน
+            update_session_auth_hash(request, user)  # อัปเดต session ของผู้ใช้หลังจากเปลี่ยนรหัสผ่าน
+
+            # ทดสอบการเปลี่ยนเส้นทางหลังจากบันทึกข้อมูลสำเร็จ
+            return redirect('main')  # เปลี่ยนเส้นทางไปที่หน้าหลัก (main)
+
+    context = {'setting_form': setting_form, 'account': account}  # ส่งข้อมูลฟอร์มและบัญชีผู้ใช้ไปยังเทมเพลต
+
+    return render(request, 'setting.html', context)  # แสดงฟอร์มในหน้า setting.html
 
 def main(request):
     account = request.user.account  # Account ของผู้ใช้ปัจจุบัน
