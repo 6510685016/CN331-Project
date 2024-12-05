@@ -14,6 +14,9 @@ from .forms import MissionForm, PresetForm, ScopeForm, WalletFilterForm, Stateme
 
 # Create your views here.
 
+def welcome(request):
+    return render(request,'welcome.html')
+
 def setting(request):
     user = request.user  # รับข้อมูลผู้ใช้ปัจจุบัน
     account = request.user.account  # รับข้อมูลบัญชีผู้ใช้ปัจจุบัน
