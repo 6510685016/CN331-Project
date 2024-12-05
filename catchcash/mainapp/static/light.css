@@ -8,7 +8,7 @@
   min-height: 7vh;
 }
 
-.fixW{
+.fixW {
   width: 100vw;
   display: contents;
 }
@@ -22,18 +22,18 @@
 }
 
 .bg-bar {
-  background-color:   #C9D6FF;
+  background-color: #C9D6FF;
 }
 
 .abouttop {
   height: 70vh;
-  overflow-y:auto;
+  overflow-y: auto;
 }
 
 .aboutbot {
   width: 100vw;
   height: 30vh;
-  overflow-y:hidden;
+  overflow-y: hidden;
 }
 
 #id_wallet {
@@ -51,91 +51,101 @@
   font-size: 1rem;
   line-height: 1.5;
   border-radius: .25rem;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
   color: #fff;
   background-color: #007bff;
   border-color: #007bff
 }
 
-#id_wallet.focus,#id_wallet:focus {
+#id_wallet.focus,
+#id_wallet:focus {
   color: #fff;
   background-color: #007bff;
   border-color: #0062cc;
-  box-shadow: 0 0 0 .2rem rgba(38,143,255,.5)
+  box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .5)
 }
 
-#id_wallet.disabled,#id_wallet:disabled {
+#id_wallet.disabled,
+#id_wallet:disabled {
   color: #fff;
   background-color: #007bff;
   border-color: #007bff
 }
 
-#id_wallet:not(:disabled):not(.disabled).active,#id_wallet:not(:disabled):not(.disabled):active,.show>#id_wallet.dropdown-toggle {
+#id_wallet:not(:disabled):not(.disabled).active,
+#id_wallet:not(:disabled):not(.disabled):active,
+.show>#id_wallet.dropdown-toggle {
   color: #fff;
   background-color: #0062cc;
   border-color: #005cbf
 }
 
-#id_wallet:not(:disabled):not(.disabled).active:focus,#id_wallet:not(:disabled):not(.disabled):active:focus,.show>#id_wallet.dropdown-toggle:focus {
-  box-shadow: 0 0 0 .2rem rgba(38,143,255,.5)
+#id_wallet:not(:disabled):not(.disabled).active:focus,
+#id_wallet:not(:disabled):not(.disabled):active:focus,
+.show>#id_wallet.dropdown-toggle:focus {
+  box-shadow: 0 0 0 .2rem rgba(38, 143, 255, .5)
 }
 
-#id_wallet option{
-  background-color: white; /* สีพื้นหลัง */
-  color: black; /* สีข้อความ */
+#id_wallet option {
+  background-color: white;
+  /* สีพื้นหลัง */
+  color: black;
+  /* สีข้อความ */
 }
 
-#id_wallet option:checked{
-  background-color: #0069d9; /* สีน้ำเงิน */
-  color: white; /* สีข้อความขาว */
+#id_wallet option:checked {
+  background-color: #0069d9;
+  /* สีน้ำเงิน */
+  color: white;
+  /* สีข้อความขาว */
 }
 
-.background{
+.background {
   background-color: #ffffff;
 }
 
-#logoutbutton{
-  background-color: rgb(3, 39, 53); 
+#logoutbutton {
+  background-color: rgb(3, 39, 53);
   border: 0cm;
 }
 
-#totalin{
+#totalin {
   background-color: #E6FAFF;
   border: 1px solid #E6FAFF;
 }
 
-#totalout{
+#totalout {
 
-  background-color: #F7EFFF; 
+  background-color: #F7EFFF;
   border: 1px solid #F7EFFF;
 }
 
-#scope{
-  background-color: #E8F9F5; 
+#scope {
+  background-color: #E8F9F5;
   border: 1px solid #E8F9F5;
 }
 
-#statement_container{
-  background-color: #00ffd51a; 
-  border: 1px solid #ddd; 
-  min-height: 524px; 
+#statement_container {
+  background-color: #00ffd51a;
+  border: 1px solid #ddd;
+  min-height: 524px;
   overflow: auto;
   overflow-y: auto;
 }
 
-#goal{
-  background-color: #00ffd51a; 
-  border: 1px solid #ddd; 
-  min-height: 250px; 
+#goal {
+  background-color: #00ffd51a;
+  border: 1px solid #ddd;
+  min-height: 250px;
   overflow: auto;
   overflow-y: auto;
 }
 
-#objective{
-  background-color: #00ffd51a; 
-  border: 1px solid #ddd; 
-  min-height: 250px; 
+#objective {
+  background-color: #00ffd51a;
+  border: 1px solid #ddd;
+  min-height: 250px;
   overflow: auto;
   overflow-y: auto;
 }
@@ -143,9 +153,9 @@
 
 
 #all_goal {
-  width: 150px; 
-  height: 75px; 
-  background-color: rgb(3, 39, 53); 
+  width: 150px;
+  height: 75px;
+  background-color: rgb(3, 39, 53);
   border: 0cm;
   margin-top: 50px;
   margin-right: 5px;
@@ -153,4 +163,57 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+
+/* analysis page */
+.button-css {
+  border-radius: 25px;
+  width: 12vw;
+  height: 7vh;
+  background-color: #95afc4;
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 7vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+}
+
+.button-css:hover {
+  background-color: #6b7e8f;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.button-css:active {
+  background-color: #6b7e8f;
+  transform: scale(0.98);
+
+}
+
+.chart {
+  background-color: #ABC9E8;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #95afc4;
+}
+
+.form-control {
+  border-radius: 25px;
+  border-color: #95afc4;
+}
+
+.toDeafault {
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.toDeafault:hover {
+  color: #000000;
 }

@@ -15,6 +15,8 @@ from .forms import MissionForm, PresetForm, ScopeForm, WalletFilterForm, Stateme
 # Create your views here.
 
 def welcome(request):
+    if request.user.is_authenticated:
+        return redirect('main')  # เปลี่ยน 'main' เป็นชื่อ URL name ของ view ที่ต้องการส่งไป
     return render(request,'welcome.html')
 
 def setting(request):
