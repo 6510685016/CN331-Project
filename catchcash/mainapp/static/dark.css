@@ -39,10 +39,6 @@ body {
 .aboutbot {
     width: 100vw;
     height: 30vh;
-<<<<<<< Updated upstream
-    overflow-y:hidden;
-}
-=======
     overflow-y: hidden;
 }
 
@@ -107,4 +103,3 @@ body {
     color:#ffffff;
     text-align: center;
   }
->>>>>>> Stashed changes
