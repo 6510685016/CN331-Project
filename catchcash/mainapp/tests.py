@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Account, Wallet, Statement, Scope, Mission, Preset, ProgressionNode
 from django.utils import timezone
-from .forms import WalletFilterForm, StatementForm, ScopeForm
+from .forms import WalletFilterForm, StatementForm, ScopeForm, SettingForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages import get_messages
 
@@ -286,10 +286,6 @@ class ViewsTestCase(TestCase):
         # Test the __str__ method
         self.assertEqual(str(self.wallet), "Wallet: Test Wallet")
         
-    def test_setting_view(self):
-        response = self.client.get(reverse('setting'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'setting.html')
 
     def test_change_password(self):
         self.account.change_password('newpassword')
@@ -1464,3 +1460,90 @@ class GoalViewTestCase(TestCase):
         
         # Check the default wallet in context
         self.assertEqual(response.context['wallet'], self.wallet)
+        
+class SettingViewTest(TestCase):
+    def setUp(self):
+        # Create a test user and associated account
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.account = Account.objects.create(user=self.user, name='Test User', appTheme='light')
+
+        # Log in the test user
+        self.client.login(username='testuser', password='testpassword')
+        self.url = reverse('setting')
+
+    def test_setting_view_get(self):
+        """Test if the setting page renders correctly on GET request."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'setting.html')
+        self.assertIn('setting_form', response.context)
+        self.assertIn('account', response.context)
+
+    def test_setting_view_post_valid_data(self):
+        """Test if valid POST data updates the account and redirects."""
+        valid_data = {
+            'name': 'Updated Name',
+            'appTheme': 'dark',
+            'password': 'newpassword123',
+            'confirm_password': 'newpassword123',
+            'profile_pic': '',  # Assuming no new file upload
+        }
+        response = self.client.post(self.url, valid_data)
+
+        # Check if the account was updated
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.name, 'Updated Name')
+        self.assertEqual(self.account.appTheme, 'dark')
+
+        # Ensure the password was updated
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('newpassword123'))
+
+        # Check the redirect
+        self.assertEqual(response.status_code, 302)  # Ensure it's a redirect
+        self.assertEqual(response.url, reverse('main'))  # Check the redirection URL
+
+    def test_setting_view_post_invalid_password(self):
+        """Test if mismatched passwords result in an error."""
+        invalid_data = {
+            'name': 'Another Name',
+            'appTheme': 'light',
+            'password': 'newpassword123',
+            'confirm_password': 'differentpassword',
+            'profile_pic': '',
+        }
+        response = self.client.post(self.url, invalid_data)
+
+        # Ensure the response status code is 200 (form re-rendered with errors)
+        self.assertEqual(response.status_code, 200)
+
+        # Retrieve the form from the response context
+        form = response.context['setting_form']
+
+        # Check if the form contains the expected error
+        self.assertIn('Passwords do not match.', form.errors['confirm_password'])
+
+    def test_setting_view_post_no_password_change(self):
+        """Test if other fields update without changing the password."""
+        partial_data = {
+            'name': 'Partial Update',
+            'appTheme': 'dark',
+            'password': '',
+            'confirm_password': '',
+            'profile_pic': '',
+        }
+        response = self.client.post(self.url, partial_data)
+
+        # Reload the account from the database
+        self.account.refresh_from_db()
+
+        # Check if the fields were updated
+        self.assertEqual(self.account.name, 'Partial Update')
+        self.assertEqual(self.account.appTheme, 'dark')
+
+        # Ensure the password remains unchanged
+        self.assertTrue(self.user.check_password('testpassword'))
+
+        # Check the redirect
+        self.assertEqual(response.status_code, 302)  # Ensure it's a redirect
+        self.assertEqual(response.url, reverse('main'))  # Check the redirection URL
