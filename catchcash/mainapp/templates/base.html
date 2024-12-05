@@ -1,5 +1,12 @@
 {% load static %}
 
+
+{% if user.account.appTheme == 'dark' %}
+<link href="/static/dark.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% else %}
+<link href="/static/light.css?v={{ STATIC_VERSION }}" rel="stylesheet" type="text/css" />
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 

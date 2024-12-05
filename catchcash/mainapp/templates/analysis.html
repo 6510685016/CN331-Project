@@ -1,62 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}
-CatchCASH
-{% endblock %}
-
 {% block content %}
-
-<style>
-    .button-css {
-        border-radius: 25px;
-        width: 12vw;
-        height: 7vh;
-        background-color: #95afc4;
-        border: none;
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-        line-height: 7vh;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-
-    }
-
-    .button-css:hover {
-        background-color: #6b7e8f;
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        transform: scale(1.05);
-    }
-
-    .button-css:active {
-        background-color: #6b7e8f;
-        transform: scale(0.98);
-
-    }
-
-    .chart {
-        background-color: #ABC9E8;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-color: #95afc4;
-    }
-
-    .form-control {
-        border-radius: 25px;
-        border-color: #95afc4;
-    }
-
-    .toDeafault {
-        color: #000000;
-        font-size: 16px;
-        font-weight: bold;
-        text-decoration: underline;
-    }
-
-    .toDeafault:hover {
-        color: #000000;
-    }
-</style>
 
 <body>
     <div>
@@ -80,7 +24,7 @@ CatchCASH
         </div>
 
         <div class="d-flex justify-content-end">
-            <a href="#" onclick="resetFilters()" class="pe-auto toDeafault">คืนค่าการกรองเริ่มต้น</a>
+            <a href="#" onclick="resetFilters()" class="pe-auto toDeafault global_text">คืนค่าการกรองเริ่มต้น</a>
         </div>
     </div>
     <div class="h-100">
@@ -95,7 +39,7 @@ CatchCASH
 
         <div class="chart h-75 d-flex justify-content-center align-items-center" style="border-radius: 30px;">
             <div id="no-data-message" class="text-center" style="display: none;">
-                <h5 class="mt-3 fw-bold">No data</h5>
+                <h5 class="mt-3 fw-bold global_text">No data</h5>
             </div>
             <canvas id="IncomeVsExpensesChart" class="h-100 w-75"></canvas>
             <canvas id="IncomeChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>

@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(160deg, #2f2e30, #2f2e31, #2f2e33, #2f2e34,#2f2e33, #2f2e31);
+    background: linear-gradient(160deg, #2f2e30, #2f2e31, #2f2e33, #2f2e34, #2f2e33, #2f2e31);
     font-family: verdana;
     font-size: medium;
 }
@@ -8,36 +8,93 @@ body {
     display: flex;
     height: 93vh;
 }
-  
+
 .navbar {
     display: contents;
     min-height: 7vh;
 }
-  
-.fixW{
+
+.fixW {
     width: 100vw;
     display: contents;
 }
-  
+
 .text-normal {
     color: #eff2f7;
 }
-  
+
 .text-header {
     color: #a6b5d0;
 }
-  
+
 .bg-bar {
-    background-color:   #29282b;
+    background-color: #29282b;
 }
 
 .abouttop {
     height: 70vh;
-    overflow-y:auto;
+    overflow-y: auto;
 }
 
 .aboutbot {
     width: 100vw;
     height: 30vh;
-    overflow-y:hidden;
+    overflow-y: hidden;
+}
+
+
+/* analysis page */
+.button-css {
+    border-radius: 25px;
+    width: 12vw;
+    height: 7vh;
+    background-color: #3b464f;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 7vh;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+}
+
+.button-css:hover {
+    background-color: #181d21;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.button-css:active {
+    background-color: #2c3339;
+    transform: scale(0.98);
+
+}
+
+.chart {
+    background-color: #485767;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-color: #21272c;
+}
+
+.form-control {
+    border-radius: 25px;
+    border-color: #485767;
+}
+
+.toDeafault {
+    color: #000000;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.toDeafault:hover {
+    color: #000000;
+}
+
+
+.global_text {
+    color: white;
 }

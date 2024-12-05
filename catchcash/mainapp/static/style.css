@@ -35,7 +35,8 @@
 /* ปุ่ม logout ที่ด้านล่าง sidebar */
 .logout-btn {
     position: absolute;
-    bottom: 40px;  /* เพิ่มระยะห่างจากขอบล่าง */
+    bottom: 40px;
+    /* เพิ่มระยะห่างจากขอบล่าง */
     left: 50%;
     transform: translateX(-50%);
 }
@@ -60,12 +61,14 @@
 
 /* ปรับระยะห่างของชื่อผู้ใช้ */
 .user-info h5 {
-    margin-right: 15px !important; /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
+    margin-right: 15px !important;
+    /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
 }
 
 /* ปรับระยะห่างของปุ่ม */
 .user-info a {
-    margin-left: 15px !important; /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
+    margin-left: 15px !important;
+    /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
 /* ปรับสไตล์ของปุ่ม create_wallet */
@@ -78,11 +81,13 @@
 
 /* ปรับขนาดของตัวอักษร */
 h2 {
-    font-size: 18px;  /* ลดขนาดของหัวข้อ */
+    font-size: 18px;
+    /* ลดขนาดของหัวข้อ */
 }
 
 p {
-    font-size: 14px;  /* ลดขนาดของข้อความ */
+    font-size: 14px;
+    /* ลดขนาดของข้อความ */
 }
 
 .node {
@@ -96,21 +101,26 @@ p {
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
 }
+
 .node:hover {
     transform: scale(1.1);
 }
+
 .node.unlocked {
     background-color: lightgreen;
 }
+
 .connection {
     position: absolute;
     background-color: black;
     height: 2px;
     transform-origin: 0 0;
 }
+
 /* เพิ่มระยะห่างระหว่างกล่อง */
 .col-md-6 {
-    margin-bottom: 20px;  /* เพิ่มระยะห่างระหว่างกล่อง */
+    margin-bottom: 20px;
+    /* เพิ่มระยะห่างระหว่างกล่อง */
 }
 
 /* about page */
