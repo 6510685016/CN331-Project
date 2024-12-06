@@ -9,7 +9,7 @@ CatchCASH
 <style>
     .button-css {
         border-radius: 25px;
-        width: 12vw;
+        width: 100%; /* ทำให้ปุ่มเต็มความกว้างในอุปกรณ์ที่หน้าจอเล็ก */
         height: 7vh;
         background-color: #95afc4;
         border: none;
@@ -20,7 +20,6 @@ CatchCASH
         line-height: 7vh;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
-
     }
 
     .button-css:hover {
@@ -32,7 +31,6 @@ CatchCASH
     .button-css:active {
         background-color: #6b7e8f;
         transform: scale(0.98);
-
     }
 
     .chart {
@@ -41,6 +39,7 @@ CatchCASH
         border-color: #95afc4;
     }
 
+    /* ปรับให้แสดงผลได้ดีในมือถือ */
     .form-control {
         border-radius: 25px;
         border-color: #95afc4;
@@ -56,6 +55,50 @@ CatchCASH
     .toDeafault:hover {
         color: #000000;
     }
+    /* ปรับ layout สำหรับมือถือ */
+@media (max-width: 768px) {
+    /* ปรับขนาดของ container สำหรับกราฟ */
+    .chart {
+        width: 100%; /* ให้เต็มความกว้าง */
+        height: 35% !important; /* ให้ความสูงปรับตามขนาดกราฟ */
+        display: flex;
+        flex-direction: column; /* วางกราฟในแนวตั้ง */
+        justify-content: space-between; /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
+        padding: 10px;
+    }
+
+    /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
+    canvas {
+        width: 100% !important; /* กำหนดให้กราฟเต็มความกว้าง */
+        height: 35vh !important; /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
+        margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างกราฟ */
+    }
+    .toDeafault {
+        color: #000000;
+        text-align: center !important;
+    }
+
+    /* ปรับให้แสดงข้อความ "No data" อยู่กลางหน้าจอ */
+    #no-data-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+    .d-flex {
+        flex-direction: column; /* จัดให้ปุ่มแสดงในแนวตั้ง */
+        align-items: stretch; /* ทำให้ปุ่มเต็มความกว้าง */
+    }
+
+    .button-css {
+        width: 100%; /* ปรับให้ปุ่มเต็มความกว้าง */
+        margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+        height: 8vh; /* ปรับความสูงของปุ่มให้เหมาะสม */
+    }
+}
+
 </style>
 
 <body>
@@ -83,14 +126,13 @@ CatchCASH
             <a href="#" onclick="resetFilters()" class="pe-auto toDeafault">คืนค่าการกรองเริ่มต้น</a>
         </div>
     </div>
+    
     <div class="h-100">
         <div class="d-flex p-2 justify-content-center">
-            <button class="button-css m-1"
-                onclick="applyFilter('IncomeVsExpensesChart')">อัตราส่วนรายรับรายจ่าย</button>
+            <button class="button-css m-1" onclick="applyFilter('IncomeVsExpensesChart')">อัตราส่วนรายรับรายจ่าย</button>
             <button class="button-css m-1" onclick="applyFilter('IncomeChart')">รายรับแสดงตามหมวดหมู่</button>
             <button class="button-css m-1" onclick="applyFilter('ExpensesChart')">รายจ่ายแสดงตามหมวดหมู่</button>
-            <button class="button-css m-1" onclick="applyFilter('sevenDaysChart')">เงินสุทธิก่อนหน้า 7
-                วัน</button>
+            <button class="button-css m-1" onclick="applyFilter('sevenDaysChart')">เงินสุทธิก่อนหน้า 7 วัน</button>
         </div>
 
         <div class="chart h-75 d-flex justify-content-center align-items-center" style="border-radius: 30px;">
@@ -101,15 +143,10 @@ CatchCASH
             <canvas id="IncomeChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
             <canvas id="ExpensesChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
             <canvas id="sevenDaysChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
-
         </div>
-
-
     </div>
-
-
-
 </body>
+
 
 <script>
     window.onload = function () {

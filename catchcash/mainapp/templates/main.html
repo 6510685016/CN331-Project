@@ -14,16 +14,15 @@ Dashboard - CatchCASH
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h1> Statements </h1>
-            
-            <form method="GET" class="d-flex">
-                <select id="wallet-select" name="wallet" class="form-control mr-2" onchange="this.form.submit()">
+            <form method="GET" class="d-flex flex-column flex-md-row">
+                <select id="wallet-select" name="wallet" class="form-control mr-2 mb-2 mb-md-0" onchange="this.form.submit()">
                     {% for w in form.wallet.field.queryset %}
                         <option value="{{ w.id }}" {% if wallet and w == wallet %}selected{% endif %}>
                             {{ w.wName }}
                         </option>
                     {% endfor %}
                 </select>
-                <input type="date" name="date" class="form-control mr-2" 
+                <input type="date" name="date" class="form-control mr-2 mb-2 mb-md-0" 
                        value="{{ form.cleaned_data.date|date:'Y-m-d' }}" onchange="this.form.submit()">
             </form>
         </div>
@@ -171,22 +170,23 @@ Dashboard - CatchCASH
                     <h3 class="bg-white p-2">
                         Statements
                     </h3>
-                    <div class="d-flex">
-                        <!-- ปุ่มใช้เพิ่ทม Statement -->
-                        <button type="button" class="btn btn-primary mr-2" id="toggleFormButton">
+                    <div class="d-flex flex-column flex-md-row">
+                        <!-- ปุ่มเพิ่ม Statement -->
+                        <button type="button" class="btn btn-primary mb-2 mb-md-0 mr-2" id="toggleFormButton">
                             เพิ่มรายการใหม่
                         </button>
-
+                    
                         <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
                         <div class="btn-group">
-                            <a class="btn btn-primary" id="create_preset" data-toggle="modal" data-target="#selectModal">
+                            <a class="btn btn-primary mr-2" id="create_preset" data-toggle="modal" data-target="#selectModal">
                                 เพิ่มจาก preset
                             </a>
-                            <a href="{% url 'preset' wallet.id%}" class="btn btn-primary" id="create_preset">
+                            <a href="{% url 'preset' wallet.id %}" class="btn btn-primary">
                                 ตั้งค่า preset
                             </a>
                         </div>
                     </div>
+                    
                 </div>
 
                 {% include "statement_container.html" %}

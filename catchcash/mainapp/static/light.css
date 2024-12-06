@@ -154,3 +154,64 @@
   align-items: center;
   justify-content: center;
 }
+<<<<<<< Updated upstream
+=======
+
+
+
+/* analysis page */
+.button-css {
+  border-radius: 25px;
+  width: 12vw;
+  height: 7vh;
+  background-color: #95afc4;
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 7vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+}
+
+.button-css:hover {
+  background-color: #6b7e8f;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.button-css:active {
+  background-color: #6b7e8f;
+  transform: scale(0.98);
+
+}
+
+.chart {
+  background-color: #ABC9E8;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #95afc4;
+}
+
+.form-control {
+  border-radius: 25px;
+  border-color: #95afc4;
+}
+
+.toDeafault {
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.toDeafault:hover {
+  color: #000000;
+}
+
+.progression-head{
+  color:#000000;
+  text-align: center;
+}
+>>>>>>> Stashed changes

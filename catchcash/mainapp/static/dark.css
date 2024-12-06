@@ -39,5 +39,72 @@ body {
 .aboutbot {
     width: 100vw;
     height: 30vh;
+<<<<<<< Updated upstream
     overflow-y:hidden;
 }
+=======
+    overflow-y: hidden;
+}
+
+
+/* analysis page */
+.button-css {
+    border-radius: 25px;
+    width: 12vw;
+    height: 7vh;
+    background-color: #3b464f;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 7vh;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+}
+
+.button-css:hover {
+    background-color: #181d21;
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.button-css:active {
+    background-color: #2c3339;
+    transform: scale(0.98);
+
+}
+
+.chart {
+    background-color: #485767;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-color: #21272c;
+}
+
+.form-control {
+    border-radius: 25px;
+    border-color: #485767;
+}
+
+.toDeafault {
+    color: #000000;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.toDeafault:hover {
+    color: #000000;
+}
+
+
+.global_text {
+    color: white;
+}
+
+.progression-head{
+    color:#ffffff;
+    text-align: center;
+  }
+>>>>>>> Stashed changes
