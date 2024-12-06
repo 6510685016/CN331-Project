@@ -97,13 +97,26 @@ CatchCASH
         margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
         height: 8vh; /* ปรับความสูงของปุ่มให้เหมาะสม */
     }
+
+    .w-50 {
+        width: 48%; /* ให้แต่ละส่วนมีความกว้าง 48% ของหน้าจอ */
+        margin-right: 4%; /* เพิ่มระยะห่างระหว่างสองส่วน */
+    }
+
+    .w-50:last-child {
+        margin-right: 0; /* เอาระยะห่างออกจากช่องสุดท้าย */
+    }
+
+    .form-control, .form-select {
+        width: 100%; /* ปรับให้ช่องเลือกและปฏิทินมีความกว้างเต็มพื้นที่ */
+    }
 }
 
 </style>
 
 <body>
     <div>
-        <div class="d-flex justify-content-end align-items-center">
+        <div class="d-flex justify-content-end align-items-center" style = "flex-direction: row; align-items: start;">
             <!-- ปฎิทิน -->
             <div class="p-1 w-25">
                 <input type="date" id="date-select" class="form-control" onchange="applyFilter()">
