@@ -9,7 +9,6 @@ urlpatterns = [
     path('analysis/', views.analysis, name='analysis'),
     path('setting', views.setting, name='setting'),
     path('progression', views.progression, name='progression'),
-    path('trophy', views.trophy, name='trophy'),
     path('goal', views.goal, name='goal'),
     
     path('goal/<int:wallet_id>', views.mission, name='goal'),

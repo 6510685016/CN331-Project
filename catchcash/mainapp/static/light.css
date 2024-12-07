@@ -165,8 +165,6 @@
   justify-content: center;
 }
 
-
-
 /* analysis page */
 .button-css {
   border-radius: 25px;
@@ -216,4 +214,9 @@
 
 .toDeafault:hover {
   color: #000000;
+}
+
+.progression-head{
+  color:#000000;
+  text-align: center;
 }

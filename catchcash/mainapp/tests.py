@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Account, Wallet, Statement, Scope, Mission, Preset, ProgressionNode
 from django.utils import timezone
-from .forms import WalletFilterForm, StatementForm, ScopeForm
+from .forms import WalletFilterForm, StatementForm, ScopeForm, SettingForm
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages import get_messages
 
@@ -198,6 +198,24 @@ class ViewsTestCase(TestCase):
         Statement.objects.create(wallet=self.wallet, amount=50.00, type="out", category="Food", addDate=date(2024, 1, 15))
         Statement.objects.create(wallet=self.wallet, amount=20.00, type="out", category="Transport", addDate=date(2024, 1, 20))
     
+    def test_welcome_view_redirects_authenticated_user(self):
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword')
+
+        # Send a GET request to the welcome view
+        response = self.client.get(reverse('welcome'))
+
+        # Assert that it redirects to the 'main' page
+        self.assertRedirects(response, reverse('main'))
+        
+    def test_welcome_view_renders_for_unauthenticated_user(self):
+        # Send a GET request to the welcome view without logging in
+        response = self.client.get(reverse('welcome'))
+
+        # Assert that the welcome.html template is rendered
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'welcome.html')
+    
     def test_wallet_balance(self):
         # Calculate expected balance
         total_in = Decimal('100.00')  # Sum of 'in' type statements
@@ -286,10 +304,6 @@ class ViewsTestCase(TestCase):
         # Test the __str__ method
         self.assertEqual(str(self.wallet), "Wallet: Test Wallet")
         
-    def test_setting_view(self):
-        response = self.client.get(reverse('setting'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'setting.html')
 
     def test_change_password(self):
         self.account.change_password('newpassword')
@@ -810,11 +824,7 @@ class ViewsTestCase(TestCase):
         # Test the __str__ method of Preset
         preset = Preset.objects.create(wallet=self.wallet, name="Sample Preset")
         self.assertEqual(str(preset), "Sample Preset")
-        
-    def test_trophy_view(self):
-        response = self.client.get(reverse('trophy'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'trophy.html')
+
     
     def test_wallet_detail_view_for_nonexistent_wallet(self):
         response = self.client.get(reverse('wallet_detail', args=[9999]))
@@ -1087,7 +1097,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(scope.expense_goal, data['expense_goal'])
 
         # Check the redirect behavior
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
 
     def test_create_scope_duplicate_scope(self):
         self.scope_url = reverse('create_scope')
@@ -1147,7 +1157,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(self.scope.income_goal, updated_data['income_goal'])
         self.assertEqual(self.scope.expense_goal, updated_data['expense_goal'])
         # Check if the user is redirected to the 'scope' page for the wallet
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
         
     def test_delete_scope(self):
         # Confirm that the scope instance is created
@@ -1160,7 +1170,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(Scope.objects.count(), 0)
 
         # Check that the response redirects to the correct URL (redirect to 'scope' view with wallet_id)
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
         
 class AnalysisTest(TestCase):
     def setUp(self):
@@ -1464,3 +1474,90 @@ class GoalViewTestCase(TestCase):
         
         # Check the default wallet in context
         self.assertEqual(response.context['wallet'], self.wallet)
+        
+class SettingViewTest(TestCase):
+    def setUp(self):
+        # Create a test user and associated account
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.account = Account.objects.create(user=self.user, name='Test User', appTheme='light')
+
+        # Log in the test user
+        self.client.login(username='testuser', password='testpassword')
+        self.url = reverse('setting')
+
+    def test_setting_view_get(self):
+        """Test if the setting page renders correctly on GET request."""
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'setting.html')
+        self.assertIn('setting_form', response.context)
+        self.assertIn('account', response.context)
+
+    def test_setting_view_post_valid_data(self):
+        """Test if valid POST data updates the account and redirects."""
+        valid_data = {
+            'name': 'Updated Name',
+            'appTheme': 'dark',
+            'password': 'newpassword123',
+            'confirm_password': 'newpassword123',
+            'profile_pic': '',  # Assuming no new file upload
+        }
+        response = self.client.post(self.url, valid_data)
+
+        # Check if the account was updated
+        self.account.refresh_from_db()
+        self.assertEqual(self.account.name, 'Updated Name')
+        self.assertEqual(self.account.appTheme, 'dark')
+
+        # Ensure the password was updated
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('newpassword123'))
+
+        # Check the redirect
+        self.assertEqual(response.status_code, 302)  # Ensure it's a redirect
+        self.assertEqual(response.url, reverse('main'))  # Check the redirection URL
+
+    def test_setting_view_post_invalid_password(self):
+        """Test if mismatched passwords result in an error."""
+        invalid_data = {
+            'name': 'Another Name',
+            'appTheme': 'light',
+            'password': 'newpassword123',
+            'confirm_password': 'differentpassword',
+            'profile_pic': '',
+        }
+        response = self.client.post(self.url, invalid_data)
+
+        # Ensure the response status code is 200 (form re-rendered with errors)
+        self.assertEqual(response.status_code, 200)
+
+        # Retrieve the form from the response context
+        form = response.context['setting_form']
+
+        # Check if the form contains the expected error
+        self.assertIn('Passwords do not match.', form.errors['confirm_password'])
+
+    def test_setting_view_post_no_password_change(self):
+        """Test if other fields update without changing the password."""
+        partial_data = {
+            'name': 'Partial Update',
+            'appTheme': 'dark',
+            'password': '',
+            'confirm_password': '',
+            'profile_pic': '',
+        }
+        response = self.client.post(self.url, partial_data)
+
+        # Reload the account from the database
+        self.account.refresh_from_db()
+
+        # Check if the fields were updated
+        self.assertEqual(self.account.name, 'Partial Update')
+        self.assertEqual(self.account.appTheme, 'dark')
+
+        # Ensure the password remains unchanged
+        self.assertTrue(self.user.check_password('testpassword'))
+
+        # Check the redirect
+        self.assertEqual(response.status_code, 302)  # Ensure it's a redirect
+        self.assertEqual(response.url, reverse('main'))  # Check the redirection URL
