@@ -27,24 +27,32 @@
 <body>
     <div class="d-flex vh-100 flex-column flex-md-row">
         <!-- Sidebar for large screen -->
-        <nav class="col-md-3 col-lg-2 bg-light d-md-flex flex-column d-none"
-            style="background-color: #C9D6FF !important" id="sidebar">
+        <nav class="col-md-3 col-lg-2 bg-light d-md-flex flex-column d-none" id="sidebar">
             <div class="p-3">
                 <div class="text-center mb-3">
                     <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
                         style="width: 150px; height: 150px;">
-                    <h4 class="text-dark">{{ user.account.name }}</h4>
+                    <h4 class="global_text">{{ user.account.name }}</h4>
                 </div>
-                <div class="border border-dark"></div>
+                <hr class="line"></hr>
                 <ul class="nav flex-column mt-4">
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'main' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'goal' %}">Mission</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'analysis' %}">Analysis</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'progression' %}">Progression</a>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
+                            href="{% url 'main' %}">Home</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'setting' %}">Setting</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'about' %}">About us</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
+                            href="{% url 'goal' %}">Mission</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
+                            href="{% url 'analysis' %}">Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
+                            href="{% url 'progression' %}">Progression</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
+                            href="{% url 'setting' %}">Setting</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar" href="{% url 'about' %}">About
+                            us</a></li>
                 </ul>
+
+
                 <div class="text-center mt-4">
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
@@ -53,32 +61,33 @@
                 </div>
             </div>
             <div class="mt-auto text-center mb-3">
-                <h3 class="text-black">CatchCASH</h3>
+                <h3 class="global_text">CatchCASH</h3>
             </div>
         </nav>
 
         <!-- Dropdown Sidebar for mobile screens -->
         <div class="offcanvas offcanvas-top bg-light" tabindex="-1" id="mobileSidebar"
-            style="background-color: #C9D6FF !important" aria-labelledby="mobileSidebarLabel">
+            aria-labelledby="mobileSidebarLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="mobileSidebarLabel">CatchCASH</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="offcanvas-body "
-                style="min-height: 70vh; padding: 20px; background-color: #C9D6FF; box-sizing: border-box;">
+            <div class="offcanvas-body">
                 <div class="text-center mb-3">
                     <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
                         style="width: 80px; height: 80px;">
-                    <h5 class="text-black">{{ user.account.name }}</h5>
+                    <h5 class="global_text">{{ user.account.name }}</h5>
                 </div>
                 <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'main' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'goal' %}">Mission</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'analysis' %}">Analysis</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'progression' %}">Progression</a>
+                    <li class="nav-item"><a class="nav-link h4 global_text" href="{% url 'main' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text" href="{% url 'goal' %}">Mission</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text" href="{% url 'analysis' %}">Analysis</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'setting' %}">Setting</a></li>
-                    <li class="nav-item"><a class="nav-link h4 text-dark" href="{% url 'about' %}">About us</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text"
+                            href="{% url 'progression' %}">Progression</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link h4 global_text" href="{% url 'setting' %}">Setting</a></li>
+                    <li class="nav-item"><a class="nav-link h4 global_text" href="{% url 'about' %}">About us</a></li>
                 </ul>
                 <div class="text-center mt-4">
                     <form method="post" action="{% url 'logout' %}">

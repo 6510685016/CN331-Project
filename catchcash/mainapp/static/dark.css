@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(160deg, #2f2e30, #2f2e31, #2f2e33, #2f2e34, #2f2e33, #2f2e31);
+    background-color: #2C2F33 !important;
     font-family: "Kanit", serif !important;
     font-weight: 400 !important;
     font-style: normal !important;
@@ -7,16 +7,49 @@ body {
 
 
 /* base styles สำหรับ sidebar */
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #C9D6FF;
-    z-index: 100;
-    overflow-y: auto;
+#sidebar {
+    background-color: #23272A !important;
 }
+
+#mobileSidebar {
+    background-color: #23272A !important;
+}
+
+hr {
+    background-color: white !important;
+    height: 3px !important;
+}
+
+.offcanvas-body {
+    min-height: 70vh;
+    padding: 20px;
+    background-color: #23272A;
+    box-sizing: border-box;
+}
+
+
+.nav-link.hover-bar {
+    position: relative;
+    padding-left: 30px;
+    transition: all 0.3s ease-in-out;
+}
+
+
+.nav-link.hover-bar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10%;
+    height: 80%;
+    width: 20px;
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-link.hover-bar:hover::before {
+    background-color: #F7CAC9;
+}
+
 
 
 /* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
@@ -172,42 +205,42 @@ p {
 
 /* analysis page */
 .button-css {
-    border-radius: 25px;
-    width: 12vw;
-    height: 7vh;
-    background-color: #3b464f;
-    border: none;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
-    line-height: 7vh;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-
+    border-radius: 300px !important;
+    width: 100% !important;
+    height: 7vh !important;
+    background-color: #40444b !important;
+    border: none !important;
+    color: white !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    line-height: 7vh !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
 }
 
+
 .button-css:hover {
-    background-color: #181d21;
+    background-color: #2f3136;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
 
 .button-css:active {
-    background-color: #2c3339;
+    background-color: #2f3136;
     transform: scale(0.98);
-
 }
 
 .chart {
-    background-color: #485767;
+    background-color: #40444b;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-color: #21272c;
+
 }
 
+/* ปรับให้แสดงผลได้ดีในมือถือ */
 .form-control {
     border-radius: 25px;
-    border-color: #485767;
+    border-color: #95afc4;
 }
 
 .toDeafault {
@@ -221,9 +254,86 @@ p {
     color: #000000;
 }
 
+/* ปรับ layout สำหรับมือถือ */
+@media (max-width: 768px) {
+
+    /* ปรับขนาดของ container สำหรับกราฟ */
+    .chart {
+        width: 100%;
+        /* ให้เต็มความกว้าง */
+        height: 35% !important;
+        /* ให้ความสูงปรับตามขนาดกราฟ */
+        display: flex;
+        flex-direction: column;
+        /* วางกราฟในแนวตั้ง */
+        justify-content: space-between;
+        /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
+        padding: 10px;
+    }
+
+    /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
+    canvas {
+        width: 100% !important;
+        /* กำหนดให้กราฟเต็มความกว้าง */
+        height: 35vh !important;
+        /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
+        margin-bottom: 10px;
+        /* เพิ่มระยะห่างระหว่างกราฟ */
+    }
+
+    .toDeafault {
+        color: #000000;
+        text-align: center !important;
+    }
+
+    /* ปรับให้แสดงข้อความ "No data" อยู่กลางหน้าจอ */
+    #no-data-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    .d-flex {
+        flex-direction: column;
+        /* จัดให้ปุ่มแสดงในแนวตั้ง */
+        align-items: stretch;
+        /* ทำให้ปุ่มเต็มความกว้าง */
+    }
+
+    .button-css {
+        width: 100%;
+        /* ปรับให้ปุ่มเต็มความกว้าง */
+        margin-bottom: 10px;
+        /* เพิ่มระยะห่างระหว่างปุ่ม */
+        height: 8vh;
+        /* ปรับความสูงของปุ่มให้เหมาะสม */
+    }
+
+    .w-50 {
+        width: 48%;
+        /* ให้แต่ละส่วนมีความกว้าง 48% ของหน้าจอ */
+        margin-right: 4%;
+        /* เพิ่มระยะห่างระหว่างสองส่วน */
+    }
+
+    .w-50:last-child {
+        margin-right: 0;
+        /* เอาระยะห่างออกจากช่องสุดท้าย */
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        /* ปรับให้ช่องเลือกและปฏิทินมีความกว้างเต็มพื้นที่ */
+    }
+}
+
 
 .global_text {
-    color: white;
+    color: white !important;
 }
 
 .progression-head {
@@ -234,16 +344,7 @@ p {
 
 /* about page */
 
-.col-md-8 p {
-    font-size: 18px;
-    line-height: 1.6;
-}
-
-.button-container {
-    margin-top: 20px;
-}
-
-.button-container a {
+.col-md-8 a {
     display: inline-block;
     padding: 10px 20px;
     background-color: #4b6cb7;
@@ -251,10 +352,68 @@ p {
     text-decoration: none;
     border-radius: 5px;
     transition: 0.3s ease;
-    margin-right: 10px;
+}
+
+.col-md-8 a:hover {
+    background-color: #182848;
+}
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 90%;
+    /* margin: 100px auto; */
+    padding: 20px;
+}
+
+.profile-card {
+    width: 275px;
+    background-color: #40444b;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    text-align: center;
+    padding: 20px;
+    transition: 0.4s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-10px);
+}
+
+.profile-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.profile-info h2 {
+    font-size: 22px;
+    color: #fff;
     margin-bottom: 10px;
 }
 
-.button-container a:hover {
-    background-color: #182848;
+.profile-info .title {
+    font-size: 19px;
+    color: #fff;
+}
+
+
+/* mission page */
+.section {
+    background-color: #40444b !important;
+}
+
+
+/* progression page */
+
+.connection {
+    height: 2px;
+    background-color: white;
+    /* Thinner lines for smaller screens */
 }

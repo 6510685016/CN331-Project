@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}
-About CatchCASH
-{% endblock %}
-
 {% block content %}
 
 <link rel="stylesheet" href="css/style.css">
@@ -20,88 +16,30 @@ About CatchCASH
         /* background: linear-gradient(135deg, #2e3745, #898e96); */
     }
 
-    .col-md-8 a {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #4b6cb7;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: 0.3s ease;
-    }
-
-    .col-md-8 a:hover {
-        background-color: #182848;
-    }
-
-    .profile-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        width: 90%;
-        /* margin: 100px auto; */
-        padding: 20px;
-    }
-
-    .profile-card {
-        width: 275px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        text-align: center;
-        padding: 20px;
-        transition: 0.4s ease;
-    }
-
-    .profile-card:hover {
-        transform: translateY(-10px);
-    }
-
-    .profile-image img {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 15px;
-    }
-
-    .profile-info h2 {
-        font-size: 22px;
-        color: #000;
-        margin-bottom: 10px;
-    }
-
-    .profile-info .title {
-        font-size: 19px;
-        color: #333;
-    }
 </style>
 
 <body>
     <div class="row align-items-center justify-content-center ">
         <div class="col-md-8">
-            <h3>About CatchCASH</h3>
-            <p>
+            <h3 class="global_text">About CatchCASH</h3>
+            <p class="global_text">
                 CatchCASH, เว็บไซต์นี้เป็นเครื่องมือสำหรับช่วยให้ผู้ใช้งานสามารถบันทึกรายรับและรายจ่ายในชีวิตประจำวัน
                 เพื่อติดตาม วิเคราะห์ และควบคุมการใช้เงินของคุณ เว็บไซต์นี้ให้ความสำคัญกับความใช้งานง่าย
                 รวดเร็ว และเพิ่มแรงจูงใจในการเก็บเงินของผู้ใช้
             </p>
 
-            <h3>Features</h3>
+            <h3 class="global_text">Features</h3>
             <ul>
-                <li>บันทึกรายรับ-รายจ่าย 💵: แบ่งหมวดหมู่ เพิ่มรายการประจำอัตโนมัติ</li>
-                <li>วิเคราะห์การใช้เงิน 💡: ดูสรุปรายรับ-รายจ่าย พร้อมกราฟ</li>
-                <li>เป้าหมายทางการเงิน ❗: ตั้งเป้าหมายพร้อมทำภารกิจและรับรางวัล</li>
+                <li class="global_text">บันทึกรายรับ-รายจ่าย 💵: แบ่งหมวดหมู่ เพิ่มรายการประจำอัตโนมัติ</li>
+                <li class="global_text">วิเคราะห์การใช้เงิน 💡: ดูสรุปรายรับ-รายจ่าย พร้อมกราฟ</li>
+                <li class="global_text">เป้าหมายทางการเงิน ❗: ตั้งเป้าหมายพร้อมทำภารกิจและรับรางวัล</li>
             </ul>
 
             <div class="button-container">
-                <a href="#">ไฟล์ข้อเสนอ</a>
-                <a href="#">Tracker: Jira</a>
-                <a href="https://github.com/6510685016/CN331-Project">Github Repo</a>
-                <a href="https://youtu.be/dQw4w9WgXcQ?si=zjLRMfjuKvX-TJyf">Youtube</a>
+                <a href="#" class="global_text">ไฟล์ข้อเสนอ</a>
+                <a href="#" class="global_text">Tracker: Jira</a>
+                <a href="https://github.com/6510685016/CN331-Project" class="global_text">Github Repo</a>
+                <a href="https://youtu.be/dQw4w9WgXcQ?si=zjLRMfjuKvX-TJyf" class="global_text">Youtube</a>
             </div>
         </div>
     </div>
@@ -114,7 +52,7 @@ About CatchCASH
             <div class="profile-info">
                 <h2>Chayutpong Phonyiam</h2>
                 <p class="title">Frontend Developer</p>
-                <p>Student ID: 6510525022</p>
+                <p class="global_text">Student ID: 6510525022</p>
             </div>
         </div>
 
@@ -125,7 +63,7 @@ About CatchCASH
             <div class="profile-info">
                 <h2>Kawin Sangsivarit</h2>
                 <p class="title">Tester</p>
-                <p>Student ID: 6510615021</p>
+                <p class="global_text">Student ID: 6510615021</p>
             </div>
         </div>
 
@@ -136,7 +74,7 @@ About CatchCASH
             <div class="profile-info">
                 <h2>Peerapol Pocharoen</h2>
                 <p class="title">Web Designer</p>
-                <p>Student ID: 6510615252</p>
+                <p class="global_text">Student ID: 6510615252</p>
             </div>
         </div>
 
@@ -147,7 +85,7 @@ About CatchCASH
             <div class="profile-info">
                 <h2>Wanchart Suparviree</h2>
                 <p class="title">UI/UX Designer</p>
-                <p>Student ID: 6510615294</p>
+                <p class="global_text">Student ID: 6510615294</p>
             </div>
         </div>
 
@@ -158,7 +96,7 @@ About CatchCASH
             <div class="profile-info">
                 <h2>Kasidit Kornsang</h2>
                 <p class="title">Backend Developer</p>
-                <p>Student ID: 6510685016</p>
+                <p class="global_text">Student ID: 6510685016</p>
             </div>
         </div>
     </div>
