@@ -1,3 +1,135 @@
+body {
+  font-family: "Kanit", serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+
+/* base styles สำหรับ sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #C9D6FF;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+
+/* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
+.main-content {
+  width: 100%;
+  margin-left: 0;
+  padding-right: 0;
+}
+
+
+/* ปรับขนาดฟอนต์สำหรับ sidebar */
+.sidebar .user-info h5 {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* ปรับขนาดรูปโปรไฟล์ */
+.sidebar .profile-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+/* ปุ่ม logout ที่ด้านล่าง sidebar */
+.logout-btn {
+  position: absolute;
+  bottom: 40px;
+  /* เพิ่มระยะห่างจากขอบล่าง */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.logout-btn a {
+  display: block;
+  padding: 10px;
+  background-color: #f8d7da;
+  color: #721c24;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* ปรับรูปแบบของ user-info */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* ปรับระยะห่างของชื่อผู้ใช้ */
+.user-info h5 {
+  margin-right: 15px !important;
+  /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
+}
+
+/* ปรับระยะห่างของปุ่ม */
+.user-info a {
+  margin-left: 15px !important;
+  /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
+}
+
+/* ปรับสไตล์ของปุ่ม create_wallet */
+#create_wallet {
+  margin-right: 15px !important;
+  margin-top: 6px !important;
+  height: 39px !important;
+  justify-content: end !important;
+}
+
+/* ปรับขนาดของตัวอักษร */
+h2 {
+  font-size: 18px;
+  /* ลดขนาดของหัวข้อ */
+}
+
+p {
+  font-size: 14px;
+  /* ลดขนาดของข้อความ */
+}
+
+.node {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 120px;
+  background-color: lightgray;
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.node:hover {
+  transform: scale(1.1);
+}
+
+.node.unlocked {
+  background-color: lightgreen;
+}
+
+.connection {
+  position: absolute;
+  background-color: black;
+  height: 2px;
+  transform-origin: 0 0;
+}
+
+/* เพิ่มระยะห่างระหว่างกล่อง */
+.col-md-6 {
+  margin-bottom: 20px;
+  /* เพิ่มระยะห่างระหว่างกล่อง */
+}
+
+
 .content {
   display: flex;
   height: 93vh;
@@ -216,7 +348,35 @@
   color: #000000;
 }
 
-.progression-head{
-  color:#000000;
+.progression-head {
+  color: #000000;
   text-align: center;
+}
+
+
+/* about page */
+
+.col-md-8 p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+.button-container a {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4b6cb7;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: 0.3s ease;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.button-container a:hover {
+  background-color: #182848;
 }
