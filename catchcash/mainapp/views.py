@@ -343,7 +343,7 @@ def create_scope(request):
         
         scope.save()
 
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+        return redirect(request.META.get('HTTP_REFERER', 'main'))
     else:
         # ถ้าเป็น GET ก็แสดงแบบฟอร์ม
         return HttpResponse("ERROR, Can't create_scope")
@@ -354,7 +354,7 @@ def edit_scope(request, scope_id):
         scope.income_goal = request.POST.get('income_goal')
         scope.expense_goal = request.POST.get('expense_goal')
         scope.save()
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+        return redirect(request.META.get('HTTP_REFERER', 'main'))
 
     return HttpResponse("ERROR, Can't edit_scope")
 
@@ -362,7 +362,7 @@ def delete_scope(request, scope_id):
     scope = get_object_or_404(Scope, id=scope_id)
     wallet_id = scope.wallet.id  # เก็บ wallet_id ก่อนลบ scope
     scope.delete()
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    return redirect(request.META.get('HTTP_REFERER', 'main'))
 
 def create_mission(request):
     if request.method == 'POST':
@@ -452,11 +452,6 @@ def progression(request):
         'total_income': total_income,
         'has_successful_mission': has_successful_mission,
     })
-
-
-
-def trophy(request):
-    return render(request, 'trophy.html')
 
 def about(request):
     return render(request, 'about.html')
