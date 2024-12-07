@@ -4,14 +4,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CatchCASH</title>
+    <title>CatchCASH - Income Tracking Made Easy</title>
+    <style> 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-image: url('./static/welcome.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        
+        /* Header Bar */
+        .header {
+            background: #537fe7;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .header nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        
+        .header nav a:hover {
+            color: #d9e8fc;
+        }
+        
+        /* Hero Section */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            background: #e3edfd;
+            border-radius: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            color: #2b4970;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #4c6a96;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+        
+        .cta-button {
+            background-color: #537fe7;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .cta-button:hover {
+            background-color: #7ba4f9;
+            transform: scale(1.05);
+        }
+        
+        /* Features Section */
+        .features {
+            margin-top: 3rem;
+            text-align: left;
+            padding: 0 20px;
+            max-width: 800px;
+            margin: 3rem auto;
+            background: #e3edfd;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .features h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #2b4970;
+        }
+        
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .features li {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #4c6a96;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+            padding: 10px 0;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Welcome to CatchCASH</h1>
-    <a href="{% url 'auth' %}">
-        <button>Click here to use CashCASH</button>
-    </a>
+    <!-- Header Bar -->
+    <header class="header">
+        <div class="logo">CatchCASH</div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Welcome to CatchCASH</h1>
+        <p>Track your income, manage expenses, and achieve your financial goals effortlessly with CatchCASH.</p>
+        <a href="{% url 'auth' %}" class="cta-button">Start Tracking Now</a>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why CatchCASH?</h2>
+        <ul>
+            <li>💵 Track income and expenses with ease.</li>
+            <li>📊 Visualize your finances with beautiful charts.</li>
+            <li>🎯 Set and achieve your financial goals.</li>
+        </ul>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        &copy; 2024 CatchCASH. All Rights Reserved.
+    </footer>
 </body>
 
 </html>
