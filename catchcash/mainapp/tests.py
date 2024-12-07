@@ -198,6 +198,24 @@ class ViewsTestCase(TestCase):
         Statement.objects.create(wallet=self.wallet, amount=50.00, type="out", category="Food", addDate=date(2024, 1, 15))
         Statement.objects.create(wallet=self.wallet, amount=20.00, type="out", category="Transport", addDate=date(2024, 1, 20))
     
+    def test_welcome_view_redirects_authenticated_user(self):
+        # Log in the user
+        self.client.login(username='testuser', password='testpassword')
+
+        # Send a GET request to the welcome view
+        response = self.client.get(reverse('welcome'))
+
+        # Assert that it redirects to the 'main' page
+        self.assertRedirects(response, reverse('main'))
+        
+    def test_welcome_view_renders_for_unauthenticated_user(self):
+        # Send a GET request to the welcome view without logging in
+        response = self.client.get(reverse('welcome'))
+
+        # Assert that the welcome.html template is rendered
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'welcome.html')
+    
     def test_wallet_balance(self):
         # Calculate expected balance
         total_in = Decimal('100.00')  # Sum of 'in' type statements
@@ -806,11 +824,7 @@ class ViewsTestCase(TestCase):
         # Test the __str__ method of Preset
         preset = Preset.objects.create(wallet=self.wallet, name="Sample Preset")
         self.assertEqual(str(preset), "Sample Preset")
-        
-    def test_trophy_view(self):
-        response = self.client.get(reverse('trophy'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'trophy.html')
+
     
     def test_wallet_detail_view_for_nonexistent_wallet(self):
         response = self.client.get(reverse('wallet_detail', args=[9999]))
@@ -1083,7 +1097,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(scope.expense_goal, data['expense_goal'])
 
         # Check the redirect behavior
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
 
     def test_create_scope_duplicate_scope(self):
         self.scope_url = reverse('create_scope')
@@ -1143,7 +1157,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(self.scope.income_goal, updated_data['income_goal'])
         self.assertEqual(self.scope.expense_goal, updated_data['expense_goal'])
         # Check if the user is redirected to the 'scope' page for the wallet
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
         
     def test_delete_scope(self):
         # Confirm that the scope instance is created
@@ -1156,7 +1170,7 @@ class ScopeTestCase(TestCase):
         self.assertEqual(Scope.objects.count(), 0)
 
         # Check that the response redirects to the correct URL (redirect to 'scope' view with wallet_id)
-        self.assertRedirects(response, '/')
+        self.assertRedirects(response, '/main')
         
 class AnalysisTest(TestCase):
     def setUp(self):
