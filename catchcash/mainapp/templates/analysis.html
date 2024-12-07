@@ -3,123 +3,19 @@
 {% block content %}
 
 <style>
-    .button-css {
-        border-radius: 25px;
-        width: 100%; /* ทำให้ปุ่มเต็มความกว้างในอุปกรณ์ที่หน้าจอเล็ก */
-        height: 7vh;
-        background-color: #95afc4;
-        border: none;
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        text-align: center;
-        line-height: 7vh;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-    }
-
-    .button-css:hover {
-        background-color: #6b7e8f;
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        transform: scale(1.05);
-    }
-
-    .button-css:active {
-        background-color: #6b7e8f;
-        transform: scale(0.98);
-    }
-
-    .chart {
-        background-color: #ABC9E8;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-color: #95afc4;
-    }
-
-    /* ปรับให้แสดงผลได้ดีในมือถือ */
-    .form-control {
-        border-radius: 25px;
-        border-color: #95afc4;
-    }
-
-    .toDeafault {
-        color: #000000;
-        font-size: 16px;
-        font-weight: bold;
-        text-decoration: underline;
-    }
-
-    .toDeafault:hover {
-        color: #000000;
-    }
-    /* ปรับ layout สำหรับมือถือ */
-@media (max-width: 768px) {
-    /* ปรับขนาดของ container สำหรับกราฟ */
-    .chart {
-        width: 100%; /* ให้เต็มความกว้าง */
-        height: 35% !important; /* ให้ความสูงปรับตามขนาดกราฟ */
-        display: flex;
-        flex-direction: column; /* วางกราฟในแนวตั้ง */
-        justify-content: space-between; /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
-        padding: 10px;
-    }
-
-    /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
-    canvas {
-        width: 100% !important; /* กำหนดให้กราฟเต็มความกว้าง */
-        height: 35vh !important; /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
-        margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างกราฟ */
-    }
-    .toDeafault {
-        color: #000000;
-        text-align: center !important;
-    }
-
-    /* ปรับให้แสดงข้อความ "No data" อยู่กลางหน้าจอ */
-    #no-data-message {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 1.2em;
-        font-weight: bold;
-    }
-    .d-flex {
-        flex-direction: column; /* จัดให้ปุ่มแสดงในแนวตั้ง */
-        align-items: stretch; /* ทำให้ปุ่มเต็มความกว้าง */
-    }
-
-    .button-css {
-        width: 100%; /* ปรับให้ปุ่มเต็มความกว้าง */
-        margin-bottom: 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
-        height: 8vh; /* ปรับความสูงของปุ่มให้เหมาะสม */
-    }
-
-    .w-50 {
-        width: 48%; /* ให้แต่ละส่วนมีความกว้าง 48% ของหน้าจอ */
-        margin-right: 4%; /* เพิ่มระยะห่างระหว่างสองส่วน */
-    }
-
-    .w-50:last-child {
-        margin-right: 0; /* เอาระยะห่างออกจากช่องสุดท้าย */
-    }
-
-    .form-control, .form-select {
-        width: 100%; /* ปรับให้ช่องเลือกและปฏิทินมีความกว้างเต็มพื้นที่ */
-    }
-}
 
 </style>
 
 <body>
     <div>
-        <div class="d-flex justify-content-end align-items-center" style = "flex-direction: row; align-items: start;">
+        <div class="d-flex justify-content-end align-items-center" style="flex-direction: row; align-items: start;">
             <!-- ปฎิทิน -->
             <div class="p-1 w-25">
                 <input type="date" id="date-select" class="form-control" onchange="applyFilter()">
             </div>
             <!-- ปุ่มเลือก wallet -->
             <div class="p-1">
-                <select id="wallet-select" class="form-select button-css" onchange="applyFilter()">
+                <select id="wallet-select" class=" form-select" onchange="applyFilter()">
                     {% if wallets %}
                     {% for wallet in wallets %}
                     <option value="{{ wallet.id }}">{{ wallet.wName }}</option>
@@ -135,10 +31,11 @@
             <a href="#" onclick="resetFilters()" class="pe-auto toDeafault global_text">คืนค่าการกรองเริ่มต้น</a>
         </div>
     </div>
-    
+
     <div class="h-100">
         <div class="d-flex p-2 justify-content-center">
-            <button class="button-css m-1" onclick="applyFilter('IncomeVsExpensesChart')">อัตราส่วนรายรับรายจ่าย</button>
+            <button class="button-css m-1"
+                onclick="applyFilter('IncomeVsExpensesChart')">อัตราส่วนรายรับรายจ่าย</button>
             <button class="button-css m-1" onclick="applyFilter('IncomeChart')">รายรับแสดงตามหมวดหมู่</button>
             <button class="button-css m-1" onclick="applyFilter('ExpensesChart')">รายจ่ายแสดงตามหมวดหมู่</button>
             <button class="button-css m-1" onclick="applyFilter('sevenDaysChart')">เงินสุทธิก่อนหน้า 7 วัน</button>

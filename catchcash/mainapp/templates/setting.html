@@ -16,7 +16,8 @@
                     <img id="current-profile-pic" src="{{ account.profile_pic.url }}" alt="Current Profile Picture"
                         class="rounded-circle mb-3" style="width: 200px; height: 200px;">
                     <div>
-                        <label for="id_profile_pic" class="btn btn-secondary global_text">Change Profile
+                        <label for="id_profile_pic" class="btn" style="background-color: #99aab5; color: white;">Change
+                            Profile
                             Picture</label>
                         <input type="file" name="profile_pic" id="id_profile_pic" class="d-none" />
                     </div>
@@ -51,7 +52,8 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary btn-block ">Save Changes</button>
+                    <button type="submit" class="btn btn-block " style="background-color: #99aab5; color: white;">Save
+                        Changes</button>
                 </div>
             </form>
         </div>
@@ -61,14 +63,13 @@
 
 
 <script>
-    document.getElementById("id_profile_pic").addEventListener("change", function (event) {
-        var reader = new FileReader();
-        reader.onload = function () {
-            var previewImage = document.getElementById("current-profile-pic");
-            previewImage.src = reader.result;  // อัปเดต src ของ img เป็นรูปใหม่
-        };
-        reader.readAsDataURL(event.target.files[0]);  // อ่านไฟล์ที่เลือก
-    });
-</script>
+    document.getElementById(" id_profile_pic").addEventListener("change", function (event) {
+        var reader = new
+            FileReader(); reader.onload = function () {
+                var
+                    previewImage = document.getElementById("current-profile-pic"); previewImage.src = reader.result;
+            }; reader.readAsDataURL(event.target.files[0]); //
+        อ่านไฟล์ที่เลือก
+    }); </script>
 
 {% endblock %}

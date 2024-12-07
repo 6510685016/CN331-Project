@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Dashboard - CatchCASH
-{% endblock %}
-
 <!-- bootstrap5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <link rel="stylesheet" href="/static/style.css?v={{ STATIC_VERSION }}">
@@ -13,9 +9,9 @@ Dashboard - CatchCASH
     <!-- Header Section -->
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
-            <h1> Statements </h1>
+            <h1 class="global_text"> Statements </h1>
             <form method="GET" class="d-flex flex-column flex-md-row">
-                <select id="wallet-select" name="wallet" class="form-control mr-2 mb-2 mb-md-0" onchange="this.form.submit()">
+                <select id="wallet-select" name="wallet" class="form-control me-2 mb-2 mb-md-0" onchange="this.form.submit()">
                     {% for w in form.wallet.field.queryset %}
                         <option value="{{ w.id }}" {% if wallet and w == wallet %}selected{% endif %}>
                             {{ w.wName }}
@@ -31,8 +27,8 @@ Dashboard - CatchCASH
     <!-- Wallet Selector and Filter -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4>
+            <div class="d-flex justify-content-between align-items-center ">
+                <h4 class="global_text">
                     {{ wallet.wName }}, {{ date }} 
                     {% if date != "แสดงทั้งหมด (default)" %} <a href="/main">[ล้างการค้นหาตามวัน คลิก]</a> {% endif %}
                 </h4>
@@ -43,13 +39,13 @@ Dashboard - CatchCASH
 
     <!-- Financial Overview -->
     <div class="row">
-        <div class="col-md-6 col-12">
-            <div class="p-3 bg-light bg-gradient border border-dark text-black rounded">
+        <div class="col-md-6 col-12 ">
+            <div class="p-3 border border-dark text-black rounded section">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center global_text">
                         <h3>ประมาณการณ์ของเดือน {{ mAndY }}</h3>
                         {% if status.income_diff is not None %}
-                        <a href="#" data-toggle="modal" data-target="#editScope" class="text-warning mr-4">
+                        <a href="#" data-toggle="modal" data-target="#editScope" class="text-warning mr-4 ">
                             แก้ไข คลิก
                         </a>
                         {% endif %}
@@ -59,8 +55,8 @@ Dashboard - CatchCASH
                         <div>{{ status.income_message }}</div>
                         <div>{{ status.expense_message }}</div>
                     {% else %}
-                        <h5>ไม่พบเป้าหมายสำหรับเดือนนี้</h5>
-                        <a href="#" data-toggle="modal" data-target="#addScope" class="text-primary">
+                        <h5 class="global_text">ไม่พบเป้าหมายสำหรับเดือนนี้</h5>
+                        <a href="#" data-toggle="modal" data-target="#addScope" class="text-warning">
                             เพิ่มเลย คลิก
                         </a>
                     {% endif %}
@@ -68,21 +64,21 @@ Dashboard - CatchCASH
             </div>
         </div>
         <div class="col-md-2 col-12 mb-3">
-            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
-                <h3>เงินสุทธิ</h3>
-                <h5>{{ summary.net|floatformat:2 }} {{ wallet.currency }}</h5>
+            <div class="p-4 section border border-dark text-black rounded">
+                <h3 class="global_text">เงินสุทธิ</h3>
+                <h5 class="global_text">{{ summary.net|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
         </div>
         <div class="col-md-2 col-6">
-            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
-                <h3>รายรับ</h3>
-                <h5>{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
+            <div class="p-4 section border border-dark text-black rounded">
+                <h3 class="global_text">รายรับ</h3>
+                <h5 class="global_text">{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
         </div>
         <div class="col-md-2 col-6">
-            <div class="p-4 bg-light bg-gradient border border-dark text-black rounded">
-                <h3>รายจ่าย</h3>
-                <h5>{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
+            <div class="p-4 section border border-dark text-black rounded">
+                <h3 class="global_text">รายจ่าย</h3>
+                <h5 class="global_text">{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
         </div>
     </div>
@@ -164,21 +160,21 @@ Dashboard - CatchCASH
 
         <!-- Statements Section -->
         <div class="mt-4">
-            <div class="bg-light rounded border border-dark" style="height: 500px; overflow-y: auto;">
+            <div class="section rounded border border-dark" style="height: 500px; overflow-y: auto;">
                 <!-- ส่วนหัว -->
-                <div class="m-3 sticky-top bg-light d-flex justify-content-between align-items-center">
-                    <h3 class="bg-white p-2">
+                <div class="m-3 sticky-top section d-flex justify-content-between align-items-center">
+                    <h3 class="p-2 global_text">
                         Statements
                     </h3>
                     <div class="d-flex flex-column flex-md-row">
                         <!-- ปุ่มเพิ่ม Statement -->
-                        <button type="button" class="btn btn-primary mb-2 mb-md-0 mr-2" id="toggleFormButton">
+                        <button type="button" class="btn btn-primary mb-2 mb-md-0 me-2" id="toggleFormButton">
                             เพิ่มรายการใหม่
                         </button>
                     
                         <!-- ปุ่มใช้งาน Preset และตั้งค่า Preset -->
                         <div class="btn-group">
-                            <a class="btn btn-primary mr-2" id="create_preset" data-toggle="modal" data-target="#selectModal">
+                            <a class="btn btn-primary me-2" id="create_preset" data-toggle="modal" data-target="#selectModal">
                                 เพิ่มจาก preset
                             </a>
                             <a href="{% url 'preset' wallet.id %}" class="btn btn-primary">

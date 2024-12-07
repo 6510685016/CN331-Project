@@ -5,16 +5,49 @@ body {
 }
 
 /* base styles สำหรับ sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px;
-  height: 100vh;
-  background-color: #C9D6FF;
-  z-index: 100;
-  overflow-y: auto;
+#sidebar {
+  background-color: #95AFCC !important;
 }
+
+#mobileSidebar {
+  background-color: #95AFCC !important;
+}
+
+hr {
+  background-color: black !important;
+  height: 3px !important;
+}
+
+.offcanvas-body {
+  min-height: 70vh;
+  padding: 20px;
+  background-color: #95AFCC;
+  box-sizing: border-box;
+}
+
+
+.nav-link.hover-bar {
+  position: relative;
+  padding-left: 30px;
+  transition: all 0.3s ease-in-out;
+}
+
+
+.nav-link.hover-bar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 20px;
+  background-color: transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-link.hover-bar:hover::before {
+  background-color: #F7CAC9;
+}
+
 
 
 /* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
@@ -356,16 +389,7 @@ p {
 
 /* about page */
 
-.col-md-8 p {
-  font-size: 18px;
-  line-height: 1.6;
-}
-
-.button-container {
-  margin-top: 20px;
-}
-
-.button-container a {
+.col-md-8 a {
   display: inline-block;
   padding: 10px 20px;
   background-color: #4b6cb7;
@@ -373,10 +397,65 @@ p {
   text-decoration: none;
   border-radius: 5px;
   transition: 0.3s ease;
-  margin-right: 10px;
+}
+
+.col-md-8 a:hover {
+  background-color: #182848;
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 90%;
+  /* margin: 100px auto; */
+  padding: 20px;
+}
+
+.profile-card {
+  width: 275px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+  transition: 0.4s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-10px);
+}
+
+.profile-image img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.profile-info h2 {
+  font-size: 22px;
+  color: #000;
   margin-bottom: 10px;
 }
 
-.button-container a:hover {
-  background-color: #182848;
+.profile-info .title {
+  font-size: 19px;
+  color: #333;
+}
+
+/* progression page */
+
+.connection {
+  height: 2px;
+  background-color: black;
+  /* Thinner lines for smaller screens */
+}
+
+.global_text {
+  color: #000 !important;
 }
