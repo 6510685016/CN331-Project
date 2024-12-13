@@ -194,14 +194,14 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="selectModalLabel">เลือก Preset</h5>
+                        <h5 class="modal-title global_text" id="selectModalLabel">เลือก Preset</h5>
                     </div>
                     <div class="modal-body">
                         <ul class="list-group">
                             {% for preset in presets %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <li class="list-group-item d-flex justify-content-between align-items-center global_text">
                                 {{ preset.name }}
-                                <button class="btn btn-primary btn-sm use-preset-btn" data-preset-id="{{ preset.id }}">
+                                <button class="btn btn-success btn-sm use-preset-btn" data-preset-id="{{ preset.id }}">
                                     ใช้
                                 </button>
                             </li>
@@ -211,7 +211,7 @@
                         </ul>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">ยกเลิก</button>
                     </div>
                 </div>
             </div>
@@ -226,22 +226,26 @@
             <form method="POST" action="{% url 'create_wallet' %}">
                 {% csrf_token %}
                 <div class="modal-header">
-                    <h5 class="modal-title">เพิ่ม Wallet</h5>
+                    <h5 class="modal-title global_text">เพิ่ม Wallet</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-group global_text">
                         <label for="wallet-name">ชื่อ Wallet</label>
                         <input type="text" class="form-control" id="wallet-name" name="wName" required>
                     </div>
                     <div class="form-group">
-                        <label for="currency">หน่วยเงิน</label>
-                        <select id="currency" name="currency" class="form-control" required>
-                            <option value="THB">บาท</option>
-                            <option value="USD">ดอลลาร์</option>
-                            <option value="EUR">ยูโร</option>
-                            <option value="JPY">เยน</option>
-                        </select>
+                        <label for="currency" class="global_text">หน่วยเงิน</label>
+                        <div class="select-container">
+                            <select id="currency" name="currency" class="form-control" required>
+                                <option value="THB">บาท</option>
+                                <option value="USD">ดอลลาร์</option>
+                                <option value="EUR">ยูโร</option>
+                                <option value="JPY">เยน</option>
+                            </select>
+                            <i class="bx bx-chevron-down select-icon"></i>
+                        </div>
                     </div>
+                                       
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>

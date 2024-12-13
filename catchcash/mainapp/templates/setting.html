@@ -16,7 +16,7 @@
                     <img id="current-profile-pic" src="{{ account.profile_pic.url }}" alt="Current Profile Picture"
                         class="rounded-circle mb-3" style="width: 200px; height: 200px;">
                     <div>
-                        <label for="id_profile_pic" class="btn" style="background-color: #99aab5; color: white;">Change
+                        <label for="id_profile_pic" class="btn btn btn-block btn-success">Change
                             Profile
                             Picture</label>
                         <input type="file" name="profile_pic" id="id_profile_pic" class="d-none" />
@@ -31,8 +31,14 @@
 
                 <div class="form-group">
                     <label for="id_appTheme" class="form-label global_text">App Theme</label>
-                    {{ setting_form.appTheme }}
+                    <div class="input-group">
+                        {{ setting_form.appTheme }}
+                        <span class="input-group-text">
+                            <i class="bx bx-chevron-down"></i>
+                        </span>
+                    </div>
                 </div>
+
 
                 <div class="form-group">
                     <label for="id_password" class="form-label global_text">New Password</label>
@@ -52,7 +58,7 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-block " style="background-color: #99aab5; color: white;">Save
+                    <button type="submit" class="btn btn-block btn-success ">Save
                         Changes</button>
                 </div>
             </form>

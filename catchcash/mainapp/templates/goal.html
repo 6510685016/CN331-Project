@@ -44,7 +44,7 @@
                     {% for m in goals %}
                     <div class="row">
                         {% if not m.isOutdate and m.amountToGo > 0 %}
-                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-5 global_text">{{ m.status_text }}</div>
                         <div class="col-7">
                             <form action="{% url 'donate_to_mission' m.id %}" method="post">
                                 {% csrf_token %}
