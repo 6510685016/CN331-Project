@@ -1,12 +1,14 @@
 body {
+  background-color: #e0e8f5 !important;
   font-family: "Kanit", serif !important;
   font-weight: 400 !important;
   font-style: normal !important;
 }
 
-/* base styles สำหรับ sidebar */
 #sidebar {
   background-color: #95AFCC !important;
+  min-height: 100vh;
+  position: relative;
 }
 
 #mobileSidebar {
@@ -19,7 +21,7 @@ hr {
 }
 
 .offcanvas-body {
-  min-height: 70vh;
+  min-height: 100vh;
   padding: 20px;
   background-color: #95AFCC;
   box-sizing: border-box;
@@ -48,34 +50,26 @@ hr {
   background-color: #F7CAC9;
 }
 
-
-
-/* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
 .main-content {
   width: 100%;
   margin-left: 0;
   padding-right: 0;
 }
 
-
-/* ปรับขนาดฟอนต์สำหรับ sidebar */
 .sidebar .user-info h5 {
   font-size: 1.2rem;
   margin-top: 10px;
 }
 
-/* ปรับขนาดรูปโปรไฟล์ */
 .sidebar .profile-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
 }
 
-/* ปุ่ม logout ที่ด้านล่าง sidebar */
 .logout-btn {
   position: absolute;
   bottom: 40px;
-  /* เพิ่มระยะห่างจากขอบล่าง */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -90,7 +84,6 @@ hr {
   border-radius: 5px;
 }
 
-/* ปรับรูปแบบของ user-info */
 .user-info {
   display: flex;
   align-items: center;
@@ -98,19 +91,14 @@ hr {
   margin-bottom: 20px;
 }
 
-/* ปรับระยะห่างของชื่อผู้ใช้ */
 .user-info h5 {
   margin-right: 15px !important;
-  /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
 }
 
-/* ปรับระยะห่างของปุ่ม */
 .user-info a {
   margin-left: 15px !important;
-  /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
-/* ปรับสไตล์ของปุ่ม create_wallet */
 #create_wallet {
   margin-right: 15px !important;
   margin-top: 6px !important;
@@ -118,15 +106,12 @@ hr {
   justify-content: end !important;
 }
 
-/* ปรับขนาดของตัวอักษร */
 h2 {
   font-size: 18px;
-  /* ลดขนาดของหัวข้อ */
 }
 
 p {
   font-size: 14px;
-  /* ลดขนาดของข้อความ */
 }
 
 .node {
@@ -156,10 +141,8 @@ p {
   transform-origin: 0 0;
 }
 
-/* เพิ่มระยะห่างระหว่างกล่อง */
 .col-md-6 {
   margin-bottom: 20px;
-  /* เพิ่มระยะห่างระหว่างกล่อง */
 }
 
 
@@ -217,7 +200,6 @@ p {
   line-height: 1.5;
   border-radius: .25rem;
   transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-
   color: #fff;
   background-color: #007bff;
   border-color: #007bff
@@ -254,16 +236,12 @@ p {
 
 #id_wallet option {
   background-color: white;
-  /* สีพื้นหลัง */
   color: black;
-  /* สีข้อความ */
 }
 
 #id_wallet option:checked {
   background-color: #0069d9;
-  /* สีน้ำเงิน */
   color: white;
-  /* สีข้อความขาว */
 }
 
 .background {
@@ -314,8 +292,6 @@ p {
   overflow: auto;
   overflow-y: auto;
 }
-
-
 
 #all_goal {
   width: 150px;
@@ -533,27 +509,81 @@ p {
 .connection {
   height: 2px;
   background-color: black;
-  /* Thinner lines for smaller screens */
+}
+
+
+
+/* setting page */
+
+label[for="id_profile_pic"]:hover {
+  background-color: #4CAF50;
+  color: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #45A049;
+  color: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* others imporvement*/
+
+button, label {
+  transition: transform 0.2s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+button:active, label:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4c86af;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4568a0;
+}
+
+::-webkit-scrollbar-track {
+  background: #e0e8f5
+}
+
+.card {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
 .global_text {
-  color: #000 !important;
+  color: #333333 !important;
 }
 
-
-.select-container {
-  position: relative;
-  width: 100%;
+h3, h2 {
+  color: #333333 !important;
 }
 
-.select-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;  /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
+.card {
+  background: linear-gradient(135deg, #4CAF50, #8BC34A);
 }
 
-.form-control {
-  height: 40px;  /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
+button:focus, label:focus {
+  outline: 2px solid #45A049;
+  outline-offset: 4px;
 }
