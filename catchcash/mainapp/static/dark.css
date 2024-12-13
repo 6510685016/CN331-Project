@@ -50,6 +50,15 @@ hr {
     background-color: #F7CAC9;
 }
 
+.modal-content {
+    background-color: #23272A !important;
+}
+
+
+.list-group-item {
+    background-color: #40444b !important;
+}
+
 .main-content {
     width: 100%;
     margin-left: 0;
