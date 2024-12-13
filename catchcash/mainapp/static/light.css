@@ -448,7 +448,7 @@ p {
 .col-md-8 a {
   display: inline-block;
   padding: 10px 20px;
-  background-color: #4b6cb7;
+  background-color: #6c87c6;
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
@@ -456,7 +456,7 @@ p {
 }
 
 .col-md-8 a:hover {
-  background-color: #182848;
+  background-color: #3a5690;
 }
 
 .profile-container {
@@ -516,13 +516,13 @@ p {
 /* setting page */
 
 label[for="id_profile_pic"]:hover {
-  background-color: #4CAF50;
+  background-color: #3b8237;
   color: #ffffff;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background-color: #45A049;
+  background-color: #3b8237;
   color: #ffffff;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -558,6 +558,7 @@ button:active, label:active {
 
 .card {
   animation: fadeIn 0.5s ease-in-out;
+  background: #fafafa;
 }
 
 @keyframes fadeIn {
@@ -579,12 +580,8 @@ h3, h2 {
   color: #333333 !important;
 }
 
-.card {
-  background: linear-gradient(135deg, #4CAF50, #8BC34A);
-}
-
 button:focus, label:focus {
-  outline: 2px solid #45A049;
+  outline: 2px solid #3c1891;
   outline-offset: 4px;
 }
 
