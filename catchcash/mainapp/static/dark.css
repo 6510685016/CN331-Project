@@ -390,13 +390,13 @@ p {
 /* setting page */
 
 label[for="id_profile_pic"]:hover {
-    background-color: #7289DA;
+    background-color: #3b8237;
     color: #ffffff;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 button[type="submit"]:hover {
-    background-color: #5A6DB1;
+    background-color: #3b8237;
     color: #ffffff;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -420,12 +420,12 @@ label:active {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #7289DA;
+    background: #48578b;
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #5A6DB1;
+    background: #1d2339;
 }
 
 ::-webkit-scrollbar-track {
@@ -434,6 +434,7 @@ label:active {
 
 .card {
     animation: fadeIn 0.5s ease-in-out;
+    background: #6e6f6f !important;
 }
 
 @keyframes fadeIn {
@@ -452,13 +453,8 @@ label:active {
     color: #e7e5dd !important;
 }
 
-h3,
-h2 {
+h3, h2 {
     color: #e7e5dd !important;
-}
-
-.card {
-    background: linear-gradient(135deg, #7289DA, #99aab5);
 }
 
 button:focus,
