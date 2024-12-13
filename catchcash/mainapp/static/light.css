@@ -4,7 +4,6 @@ body {
   font-style: normal !important;
 }
 
-/* base styles สำหรับ sidebar */
 #sidebar {
   background-color: #95AFCC !important;
 }
@@ -48,34 +47,26 @@ hr {
   background-color: #F7CAC9;
 }
 
-
-
-/* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
 .main-content {
   width: 100%;
   margin-left: 0;
   padding-right: 0;
 }
 
-
-/* ปรับขนาดฟอนต์สำหรับ sidebar */
 .sidebar .user-info h5 {
   font-size: 1.2rem;
   margin-top: 10px;
 }
 
-/* ปรับขนาดรูปโปรไฟล์ */
 .sidebar .profile-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
 }
 
-/* ปุ่ม logout ที่ด้านล่าง sidebar */
 .logout-btn {
   position: absolute;
   bottom: 40px;
-  /* เพิ่มระยะห่างจากขอบล่าง */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -90,7 +81,6 @@ hr {
   border-radius: 5px;
 }
 
-/* ปรับรูปแบบของ user-info */
 .user-info {
   display: flex;
   align-items: center;
@@ -98,19 +88,14 @@ hr {
   margin-bottom: 20px;
 }
 
-/* ปรับระยะห่างของชื่อผู้ใช้ */
 .user-info h5 {
   margin-right: 15px !important;
-  /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
 }
 
-/* ปรับระยะห่างของปุ่ม */
 .user-info a {
   margin-left: 15px !important;
-  /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
-/* ปรับสไตล์ของปุ่ม create_wallet */
 #create_wallet {
   margin-right: 15px !important;
   margin-top: 6px !important;
@@ -118,15 +103,12 @@ hr {
   justify-content: end !important;
 }
 
-/* ปรับขนาดของตัวอักษร */
 h2 {
   font-size: 18px;
-  /* ลดขนาดของหัวข้อ */
 }
 
 p {
   font-size: 14px;
-  /* ลดขนาดของข้อความ */
 }
 
 .node {
@@ -156,10 +138,8 @@ p {
   transform-origin: 0 0;
 }
 
-/* เพิ่มระยะห่างระหว่างกล่อง */
 .col-md-6 {
   margin-bottom: 20px;
-  /* เพิ่มระยะห่างระหว่างกล่อง */
 }
 
 
@@ -254,16 +234,12 @@ p {
 
 #id_wallet option {
   background-color: white;
-  /* สีพื้นหลัง */
   color: black;
-  /* สีข้อความ */
 }
 
 #id_wallet option:checked {
   background-color: #0069d9;
-  /* สีน้ำเงิน */
   color: white;
-  /* สีข้อความขาว */
 }
 
 .background {
@@ -453,7 +429,6 @@ p {
 .connection {
   height: 2px;
   background-color: black;
-  /* Thinner lines for smaller screens */
 }
 
 .global_text {
