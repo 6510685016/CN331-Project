@@ -5,8 +5,6 @@ body {
     font-style: normal !important;
 }
 
-
-/* base styles สำหรับ sidebar */
 #sidebar {
     background-color: #23272A !important;
 }
@@ -50,34 +48,26 @@ hr {
     background-color: #F7CAC9;
 }
 
-
-
-/* ปรับพื้นที่ของ main-content ให้ไม่ถูกบัง */
 .main-content {
     width: 100%;
     margin-left: 0;
     padding-right: 0;
 }
 
-
-/* ปรับขนาดฟอนต์สำหรับ sidebar */
 .sidebar .user-info h5 {
     font-size: 1.2rem;
     margin-top: 10px;
 }
 
-/* ปรับขนาดรูปโปรไฟล์ */
 .sidebar .profile-img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
 }
 
-/* ปุ่ม logout ที่ด้านล่าง sidebar */
 .logout-btn {
     position: absolute;
     bottom: 40px;
-    /* เพิ่มระยะห่างจากขอบล่าง */
     left: 50%;
     transform: translateX(-50%);
 }
@@ -92,7 +82,6 @@ hr {
     border-radius: 5px;
 }
 
-/* ปรับรูปแบบของ user-info */
 .user-info {
     display: flex;
     align-items: center;
@@ -100,19 +89,14 @@ hr {
     margin-bottom: 20px;
 }
 
-/* ปรับระยะห่างของชื่อผู้ใช้ */
 .user-info h5 {
     margin-right: 15px !important;
-    /* เพิ่มระยะห่างขวาระหว่างแต่ละ h5 */
 }
 
-/* ปรับระยะห่างของปุ่ม */
 .user-info a {
     margin-left: 15px !important;
-    /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
-/* ปรับสไตล์ของปุ่ม create_wallet */
 #create_wallet {
     margin-right: 15px !important;
     margin-top: 6px !important;
@@ -120,15 +104,12 @@ hr {
     justify-content: end !important;
 }
 
-/* ปรับขนาดของตัวอักษร */
 h2 {
     font-size: 18px;
-    /* ลดขนาดของหัวข้อ */
 }
 
 p {
     font-size: 14px;
-    /* ลดขนาดของข้อความ */
 }
 
 .node {
@@ -158,10 +139,8 @@ p {
     transform-origin: 0 0;
 }
 
-/* เพิ่มระยะห่างระหว่างกล่อง */
 .col-md-6 {
     margin-bottom: 20px;
-    /* เพิ่มระยะห่างระหว่างกล่อง */
 }
 
 .content {
@@ -256,29 +235,19 @@ p {
 
 /* ปรับ layout สำหรับมือถือ */
 @media (max-width: 768px) {
-
-    /* ปรับขนาดของ container สำหรับกราฟ */
     .chart {
         width: 100%;
-        /* ให้เต็มความกว้าง */
         height: 35% !important;
-        /* ให้ความสูงปรับตามขนาดกราฟ */
         display: flex;
         flex-direction: column;
-        /* วางกราฟในแนวตั้ง */
         justify-content: space-between;
-        /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
         padding: 10px;
     }
 
-    /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
     canvas {
         width: 100% !important;
-        /* กำหนดให้กราฟเต็มความกว้าง */
         height: 35vh !important;
-        /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
         margin-bottom: 10px;
-        /* เพิ่มระยะห่างระหว่างกราฟ */
     }
 
     .toDeafault {
@@ -286,7 +255,6 @@ p {
         text-align: center !important;
     }
 
-    /* ปรับให้แสดงข้อความ "No data" อยู่กลางหน้าจอ */
     #no-data-message {
         position: absolute;
         top: 50%;
@@ -298,36 +266,27 @@ p {
 
     .d-flex {
         flex-direction: column;
-        /* จัดให้ปุ่มแสดงในแนวตั้ง */
         align-items: stretch;
-        /* ทำให้ปุ่มเต็มความกว้าง */
     }
 
     .button-css {
         width: 100%;
-        /* ปรับให้ปุ่มเต็มความกว้าง */
         margin-bottom: 10px;
-        /* เพิ่มระยะห่างระหว่างปุ่ม */
         height: 8vh;
-        /* ปรับความสูงของปุ่มให้เหมาะสม */
     }
 
     .w-50 {
         width: 48%;
-        /* ให้แต่ละส่วนมีความกว้าง 48% ของหน้าจอ */
         margin-right: 4%;
-        /* เพิ่มระยะห่างระหว่างสองส่วน */
     }
 
     .w-50:last-child {
         margin-right: 0;
-        /* เอาระยะห่างออกจากช่องสุดท้าย */
     }
 
     .form-control,
     .form-select {
         width: 100%;
-        /* ปรับให้ช่องเลือกและปฏิทินมีความกว้างเต็มพื้นที่ */
     }
 }
 
@@ -405,6 +364,7 @@ p {
 
 
 /* mission page */
+
 .section {
     background-color: #40444b !important;
 }
@@ -415,5 +375,4 @@ p {
 .connection {
     height: 2px;
     background-color: white;
-    /* Thinner lines for smaller screens */
 }
