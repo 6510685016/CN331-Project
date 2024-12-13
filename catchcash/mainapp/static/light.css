@@ -339,6 +339,7 @@ p {
   background-color: #95AFCC;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-color: #95AFCC;
+  height: 75% !important;
 }
 
 .form-control {
@@ -379,7 +380,7 @@ p {
   canvas {
     width: 100% !important;
     /* กำหนดให้กราฟเต็มความกว้าง */
-    height: 35vh !important;
+    height: 100% !important;
     /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
     margin-bottom: 10px;
     /* เพิ่มระยะห่างระหว่างกราฟ */
@@ -462,16 +463,17 @@ p {
 .profile-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: start;
   gap: 20px;
-  width: 90%;
-  /* margin: 100px auto; */
+  width: 100%;
   padding: 20px;
+  flex-wrap: wrap;
 }
+
 
 .profile-card {
   width: 275px;
+  height: 300px;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -479,6 +481,7 @@ p {
   text-align: center;
   padding: 20px;
   transition: 0.4s ease;
+
 }
 
 .profile-card:hover {
@@ -530,11 +533,13 @@ button[type="submit"]:hover {
 
 /* others imporvement*/
 
-button, label {
+button,
+label {
   transition: transform 0.2s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-button:active, label:active {
+button:active,
+label:active {
   transform: scale(0.95);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -563,12 +568,13 @@ button:active, label:active {
 
 @keyframes fadeIn {
   from {
-      opacity: 0;
-      transform: translateY(10px);
+    opacity: 0;
+    transform: translateY(10px);
   }
+
   to {
-      opacity: 1;
-      transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -576,12 +582,14 @@ button:active, label:active {
   color: #333333 !important;
 }
 
-h3, h2 {
+h3,
+h2 {
   color: #333333 !important;
 }
 
-button:focus, label:focus {
-  outline: 2px solid #3c1891;
+button:focus,
+label:focus {
+  outline: 2px solid #45A049;
   outline-offset: 4px;
 }
 
@@ -596,9 +604,11 @@ button:focus, label:focus {
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none;  /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
+  pointer-events: none;
+  /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
 }
 
 .form-control {
-  height: 40px;  /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
+  height: 40px;
+  /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
 }
