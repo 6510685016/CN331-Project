@@ -7,6 +7,8 @@ body {
 
 #sidebar {
     background-color: #23272A !important;
+    min-height: 100vh;
+    position: relative;
 }
 
 #mobileSidebar {
@@ -19,7 +21,7 @@ hr {
 }
 
 .offcanvas-body {
-    min-height: 70vh;
+    min-height: 100vh;
     padding: 20px;
     background-color: #23272A;
     box-sizing: border-box;
@@ -216,7 +218,6 @@ p {
 
 }
 
-/* ปรับให้แสดงผลได้ดีในมือถือ */
 .form-control {
     border-radius: 25px;
     border-color: #95afc4;
@@ -288,11 +289,6 @@ p {
     .form-select {
         width: 100%;
     }
-}
-
-
-.global_text {
-    color: white !important;
 }
 
 .progression-head {
@@ -375,4 +371,80 @@ p {
 .connection {
     height: 2px;
     background-color: white;
+}
+
+
+/* setting page */
+
+label[for="id_profile_pic"]:hover {
+    background-color: #7289DA;
+    color: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+  
+button[type="submit"]:hover {
+    background-color: #5A6DB1;
+    color: #ffffff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* others imporvement*/
+
+button, label {
+    transition: transform 0.2s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+button:active, label:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #7289DA;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5A6DB1;
+}
+
+::-webkit-scrollbar-track {
+    background: #2C2F33;
+}
+
+.card {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.global_text {
+    color: #e7e5dd !important;
+}
+
+h3, h2 {
+    color: #e7e5dd !important;
+}
+
+.card {
+    background: linear-gradient(135deg, #7289DA, #99aab5);
+}
+
+button:focus, label:focus {
+    outline: 2px solid #5A6DB1;
+    outline-offset: 4px;
 }
