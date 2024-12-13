@@ -53,12 +53,12 @@
                             </form>
                         </div>
                         {% elif m.isOutdate %}
-                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-5 global_text">{{ m.status_text }}</div>
                         <div class="col-7">
                             <p class="text-danger">Outdated.</p>
                         </div>
                         {% else %}
-                        <div class="col-5">{{ m.status_text }}</div>
+                        <div class="col-5 global_text">{{ m.status_text }}</div>
                         <div class="col-7">
                             <p class="text-success">Completed!</p>
                         </div>
