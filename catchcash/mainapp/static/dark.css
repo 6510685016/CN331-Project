@@ -112,6 +112,16 @@ hr {
     /* เพิ่มระยะห่างทางซ้ายสำหรับปุ่ม */
 }
 
+.modal-content {
+    background-color: #40444b !important;
+}
+
+.list-group-item {
+    background-color: #2f3136 !important;
+}
+
+
+
 /* ปรับสไตล์ของปุ่ม create_wallet */
 #create_wallet {
     margin-right: 15px !important;
@@ -205,7 +215,7 @@ p {
 
 /* analysis page */
 .button-css {
-    border-radius: 300px !important;
+    border-radius: 10px !important;
     width: 100% !important;
     height: 7vh !important;
     background-color: #40444b !important;
@@ -261,14 +271,16 @@ p {
     .chart {
         width: 100%;
         /* ให้เต็มความกว้าง */
-        height: 35% !important;
+        height: 20px !important;
         /* ให้ความสูงปรับตามขนาดกราฟ */
         display: flex;
         flex-direction: column;
+
         /* วางกราฟในแนวตั้ง */
         justify-content: space-between;
         /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
         padding: 10px;
+        position: relative;
     }
 
     /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
@@ -294,6 +306,7 @@ p {
         transform: translate(-50%, -50%);
         font-size: 1.2em;
         font-weight: bold;
+
     }
 
     .d-flex {
@@ -416,4 +429,22 @@ p {
     height: 2px;
     background-color: white;
     /* Thinner lines for smaller screens */
+}
+
+.menu-button {
+    fill: white !important;
+}
+
+.select-container {
+    position: relative;
+    width: 100%;
+}
+
+.select-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
 }

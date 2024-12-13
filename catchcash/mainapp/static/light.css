@@ -332,7 +332,7 @@ p {
 
 /* analysis page */
 .button-css {
-  border-radius: 25px;
+  border-radius: 10px;
   width: 12vw;
   height: 7vh;
   background-color: #95afc4;
@@ -360,9 +360,9 @@ p {
 }
 
 .chart {
-  background-color: #ABC9E8;
+  background-color: #95AFCC;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-color: #95afc4;
+  border-color: #95AFCC;
 }
 
 .form-control {
@@ -380,6 +380,86 @@ p {
 .toDeafault:hover {
   color: #000000;
 }
+
+@media (max-width: 768px) {
+
+  /* ปรับขนาดของ container สำหรับกราฟ */
+  .chart {
+    width: 100%;
+    /* ให้เต็มความกว้าง */
+    height: 35% !important;
+    /* ให้ความสูงปรับตามขนาดกราฟ */
+    display: flex;
+    flex-direction: column;
+
+    /* วางกราฟในแนวตั้ง */
+    justify-content: space-between;
+    /* ให้กราฟแต่ละตัวมีพื้นที่ระหว่างกัน */
+    padding: 10px;
+    position: relative;
+  }
+
+  /* ปรับขนาดของ canvas ให้แสดงได้พอดีในมือถือ */
+  canvas {
+    width: 100% !important;
+    /* กำหนดให้กราฟเต็มความกว้าง */
+    height: 35vh !important;
+    /* กำหนดความสูงกราฟ (ปรับตามความเหมาะสม) */
+    margin-bottom: 10px;
+    /* เพิ่มระยะห่างระหว่างกราฟ */
+  }
+
+  .toDeafault {
+    color: #000000;
+    text-align: center !important;
+  }
+
+  /* ปรับให้แสดงข้อความ "No data" อยู่กลางหน้าจอ */
+  #no-data-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+
+  }
+
+  .d-flex {
+    flex-direction: column;
+    /* จัดให้ปุ่มแสดงในแนวตั้ง */
+    align-items: stretch;
+    /* ทำให้ปุ่มเต็มความกว้าง */
+  }
+
+  .button-css {
+    width: 100%;
+    /* ปรับให้ปุ่มเต็มความกว้าง */
+    margin-bottom: 10px;
+    /* เพิ่มระยะห่างระหว่างปุ่ม */
+    height: 8vh;
+    /* ปรับความสูงของปุ่มให้เหมาะสม */
+  }
+
+  .w-50 {
+    width: 48%;
+    /* ให้แต่ละส่วนมีความกว้าง 48% ของหน้าจอ */
+    margin-right: 4%;
+    /* เพิ่มระยะห่างระหว่างสองส่วน */
+  }
+
+  .w-50:last-child {
+    margin-right: 0;
+    /* เอาระยะห่างออกจากช่องสุดท้าย */
+  }
+
+  .form-control,
+  .form-select {
+    width: 100%;
+    /* ปรับให้ช่องเลือกและปฏิทินมีความกว้างเต็มพื้นที่ */
+  }
+}
+
 
 .progression-head {
   color: #000000;
@@ -458,4 +538,22 @@ p {
 
 .global_text {
   color: #000 !important;
+}
+
+
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;  /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
+}
+
+.form-control {
+  height: 40px;  /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
 }

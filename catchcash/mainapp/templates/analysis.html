@@ -2,10 +2,6 @@
 
 {% block content %}
 
-<style>
-
-</style>
-
 <body>
     <div>
         <div class="d-flex justify-content-end align-items-center" style="flex-direction: row; align-items: start;">
@@ -41,14 +37,14 @@
             <button class="button-css m-1" onclick="applyFilter('sevenDaysChart')">เงินสุทธิก่อนหน้า 7 วัน</button>
         </div>
 
-        <div class="chart h-75 d-flex justify-content-center align-items-center" style="border-radius: 30px;">
-            <div id="no-data-message" class="text-center" style="display: none;">
-                <h5 class="mt-3 fw-bold global_text">No data</h5>
-            </div>
-            <canvas id="IncomeVsExpensesChart" class="h-100 w-75"></canvas>
-            <canvas id="IncomeChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
-            <canvas id="ExpensesChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
-            <canvas id="sevenDaysChart" class="h-100 w-75 fw-bold" style="display: none;"></canvas>
+        <div class="chart h-75 d-flex justify-content-center align-items-center p-4" style="border-radius: 30px;">
+            <div id="no-data-message" class="" style="display: none;">
+                <h5 class="mt-3 fw-bold text-white">No data</h5>
+            </div class="m-2">
+            <canvas id="IncomeVsExpensesChart" class="h-100 w-100 m-2"></canvas>
+            <canvas id="IncomeChart" class="h-100 w-100 fw-bold m-2" style="display: none;"></canvas>
+            <canvas id="ExpensesChart" class="h-100 w-100 fw-bold m-2" style="display: none;"></canvas>
+            <canvas id="sevenDaysChart" class="h-100 w-100 fw-bold m-2" style="display: none;"></canvas>
         </div>
     </div>
 </body>
@@ -221,31 +217,38 @@
                 datasets: [{
                     label: 'Income vs Outcome',
                     data: [income, outcome],
-                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(255, 99, 132, 0.7)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    backgroundColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 legend: {
                     labels: {
                         fontSize: 30, // ขนาดฟอนต์ใน legend
                         fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
-                        fontColor: 'black' // สีฟอนต์
-                    }
+                        fontColor: 'white', // สีฟอนต์
+                        fontFamily: 'Kanit, serif'
+                    },
+
                 },
                 scales: {
                     xAxes: [{
                         scaleLabel: {
                             fontSize: 20, // ขนาดฟอนต์ในแกน x
                             fontStyle: 'bold', // ฟอนต์หนาในแกน x
-                            fontColor: 'black' // สีฟอนต์ในแกน x
+                            fontColor: 'white', // สีฟอนต์ในแกน x
+                            fontFamily: 'Kanit, serif'
                         },
                         ticks: {
                             fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน x
                             fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน x
-                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน x
+                            fontColor: 'white', // สีฟอนต์ใน ticks ของแกน x
+                            fontFamily: 'Kanit, serif'
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.5)' // เปลี่ยนสีเส้นกริดแกน x เป็นสีขาวอ่อน
                         }
                     }],
                     yAxes: [{
@@ -253,12 +256,17 @@
                             display: true,
                             fontSize: 20, // ขนาดฟอนต์ในแกน y
                             fontStyle: 'bold', // ฟอนต์หนาในแกน y
-                            fontColor: 'black' // สีฟอนต์ในแกน y
+                            fontColor: 'white', // สีฟอนต์ในแกน y
+                            fontFamily: 'Kanit, serif'
                         },
                         ticks: {
                             fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน y
                             fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน y
-                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน y
+                            fontColor: 'white', // สีฟอนต์ใน ticks ของแกน y
+                            fontFamily: 'Kanit, serif'
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.5)' // เปลี่ยนสีเส้นกริดแกน x เป็นสีขาวอ่อน
                         }
                     }]
                 }
@@ -278,18 +286,38 @@
                 labels: labels,
                 datasets: [{
                     data: data,
-                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(201, 203, 207, 1)',
+                        'rgba(255, 99, 71, 1)',
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(201, 203, 207, 1)',
+                        'rgba(255, 99, 71, 1)',
+                    ],
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 legend: {
                     labels: {
                         fontSize: 30, // ขนาดฟอนต์ใน legend
                         fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
-                        fontColor: 'black' // สีฟอนต์
+                        fontColor: 'white', // สีฟอนต์
+                        fontFamily: 'Kanit, serif'
                     }
                 },
             }
@@ -306,23 +334,44 @@
                 labels: labels,
                 datasets: [{
                     data: data,
-                    backgroundColor: ['rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(201, 203, 207, 1)',
+                        'rgba(255, 99, 71, 1)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(201, 203, 207, 1)',
+                        'rgba(255, 99, 71, 1)',
+                    ],
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 legend: {
                     labels: {
                         fontSize: 30, // ขนาดฟอนต์ใน legend
                         fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
-                        fontColor: 'black' // สีฟอนต์
+                        fontColor: 'white', // สีฟอนต์
+                        fontFamily: 'Kanit, serif'
                     }
                 },
             }
         });
     }
+
 
     function createLineChart(balanceList, dateList) {
         const ctx = document.getElementById('sevenDaysChart').getContext('2d');
@@ -334,12 +383,13 @@
                     label: 'Balance',
                     data: balanceList,
                     fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: 'rgba(247, 84, 168, 0.8)',
                     tension: 0.1
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     x: { title: { display: true, text: 'Date' } },
                     y: { title: { display: true, text: 'Balance' } }
@@ -348,7 +398,8 @@
                     labels: {
                         fontSize: 30, // ขนาดฟอนต์ใน legend
                         fontStyle: 'bold', // ตั้งฟอนต์เป็น bold
-                        fontColor: 'black' // สีฟอนต์
+                        fontColor: 'white', // สีฟอนต์
+                        fontFamily: 'Kanit, serif'
                     }
                 },
                 scales: {
@@ -356,12 +407,17 @@
                         scaleLabel: {
                             fontSize: 20, // ขนาดฟอนต์ในแกน x
                             fontStyle: 'bold', // ฟอนต์หนาในแกน x
-                            fontColor: 'black' // สีฟอนต์ในแกน x
+                            fontColor: 'white', // สีฟอนต์ในแกน x
+                            fontFamily: 'Kanit, serif'
                         },
                         ticks: {
                             fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน x
                             fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน x
-                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน x
+                            fontColor: 'white', // สีฟอนต์ใน ticks ของแกน x
+                            fontFamily: 'Kanit, serif'
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.5)' // เปลี่ยนสีเส้นกริดแกน x เป็นสีขาวอ่อน
                         }
                     }],
                     yAxes: [{
@@ -369,12 +425,17 @@
                             display: true,
                             fontSize: 20, // ขนาดฟอนต์ในแกน y
                             fontStyle: 'bold', // ฟอนต์หนาในแกน y
-                            fontColor: 'black' // สีฟอนต์ในแกน y
+                            fontColor: 'white', // สีฟอนต์ในแกน y
+                            fontFamily: 'Kanit, serif'
                         },
                         ticks: {
                             fontSize: 14, // ขนาดฟอนต์ใน ticks ของแกน y
                             fontStyle: 'bold', // ฟอนต์หนาใน ticks ของแกน y
-                            fontColor: 'black' // สีฟอนต์ใน ticks ของแกน y
+                            fontColor: 'white', // สีฟอนต์ใน ticks ของแกน y
+                            fontFamily: 'Kanit, serif'
+                        },
+                        gridLines: {
+                            color: 'rgba(255, 255, 255, 0.5)' // เปลี่ยนสีเส้นกริดแกน x เป็นสีขาวอ่อน
                         }
                     }]
                 }

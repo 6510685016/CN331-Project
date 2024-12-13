@@ -20,24 +20,27 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inria+Sans&family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+
     <title>{% block title %}CatchCASH{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 </head>
 
 
 <body>
     <div class="d-flex vh-100 flex-column flex-md-row">
         <!-- Sidebar for large screen -->
-        <nav class="col-md-3 col-lg-2 bg-light d-md-flex flex-column d-none" id="sidebar">
+        <nav class="col-md-3 col-lg-2 bg-light d-md-flex flex-column d-none " id="sidebar">
             <div class="p-3">
                 <div class="text-center mb-3">
                     <img src="{{ user.account.profile_pic.url }}" alt="Profile Picture" class="rounded-circle mb-3"
                         style="width: 150px; height: 150px;">
                     <h4 class="global_text">{{ user.account.name }}</h4>
                 </div>
-                <hr class="line"></hr>
+                <hr class="line">
+                </hr>
                 <ul class="nav flex-column mt-4">
-                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
-                            href="{% url 'main' %}">Home</a>
+                    <li class="nav-item"><a class="nav-link h4 global_text hover-bar" href="{% url 'main' %}">Home</a>
                     </li>
                     <li class="nav-item"><a class="nav-link h4 global_text hover-bar"
                             href="{% url 'goal' %}">Mission</a>
@@ -101,8 +104,8 @@
         <!-- Main Content -->
         <div class="col p-4">
             <!-- Button to open sidebar on mobile -->
-            <button class="btn btn-primary d-md-none mb-3" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                Menu
+            <button class="btn d-md-none mb-3" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <box-icon name='menu' fill=black class="menu-button"></box-icon>
             </button>
             {% block content %}
             {% endblock %}
@@ -114,6 +117,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 
 
