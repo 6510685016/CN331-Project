@@ -435,7 +435,7 @@ label:active {
 
 .card {
     animation: fadeIn 0.5s ease-in-out;
-    background: #40444b !important;
+    background: #6e6f6f !important;
 }
 
 @keyframes fadeIn {
