@@ -587,3 +587,21 @@ button:focus, label:focus {
   outline: 2px solid #45A049;
   outline-offset: 4px;
 }
+
+
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;  /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
+}
+
+.form-control {
+  height: 40px;  /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
+}

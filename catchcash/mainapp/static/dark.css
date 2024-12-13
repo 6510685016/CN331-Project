@@ -383,7 +383,7 @@ label[for="id_profile_pic"]:hover {
     color: #ffffff;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
-  
+
 button[type="submit"]:hover {
     background-color: #5A6DB1;
     color: #ffffff;
@@ -393,11 +393,13 @@ button[type="submit"]:hover {
 
 /* others imporvement*/
 
-button, label {
+button,
+label {
     transition: transform 0.2s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-button:active, label:active {
+button:active,
+label:active {
     transform: scale(0.95);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -428,6 +430,7 @@ button:active, label:active {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -438,7 +441,8 @@ button:active, label:active {
     color: #e7e5dd !important;
 }
 
-h3, h2 {
+h3,
+h2 {
     color: #e7e5dd !important;
 }
 
@@ -446,7 +450,28 @@ h3, h2 {
     background: linear-gradient(135deg, #7289DA, #99aab5);
 }
 
-button:focus, label:focus {
+button:focus,
+label:focus {
     outline: 2px solid #5A6DB1;
     outline-offset: 4px;
+}
+
+
+.select-container {
+    position: relative;
+    width: 100%;
+}
+
+.select-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* ไม่ให้ไอคอนแทรกแซงการคลิกของ select */
+}
+
+.form-control {
+    height: 40px;
+    /* เพิ่มความสูงให้เพียงพอสำหรับการแสดงไอคอน */
 }
