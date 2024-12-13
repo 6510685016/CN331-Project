@@ -198,7 +198,7 @@ p {
     border-radius: 10px !important;
     width: 100% !important;
     height: 7vh !important;
-    background-color: #40444b !important;
+    background-color: #40444b;
     border: none !important;
     color: white !important;
     font-size: 18px !important;
@@ -211,13 +211,13 @@ p {
 
 
 .button-css:hover {
-    background-color: #2f3136;
+    background-color: #26282c;
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
 
 .button-css:active {
-    background-color: #2f3136;
+    background-color: #26282c;
     transform: scale(0.98);
 }
 
@@ -489,4 +489,8 @@ label:focus {
 
 .menu-button {
     fill: white;
+}
+
+.border-box {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }

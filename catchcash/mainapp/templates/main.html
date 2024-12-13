@@ -40,7 +40,7 @@
     <!-- Financial Overview -->
     <div class="row">
         <div class="col-md-6 col-12 ">
-            <div class="p-3 border border-dark text-black rounded section">
+            <div class="p-3 border border-dark border-box  border-box text-black rounded section">
                 <div>
                     <div class="d-flex justify-content-between align-items-center global_text">
                         <h3>ประมาณการณ์ของเดือน {{ mAndY }}</h3>
@@ -56,7 +56,7 @@
                         <div>{{ status.expense_message }}</div>
                     {% else %}
                         <h5 class="global_text">ไม่พบเป้าหมายสำหรับเดือนนี้</h5>
-                        <a href="#" data-toggle="modal" data-target="#addScope" class="text-warning">
+                        <a href="#" data-toggle="modal" data-target="#addScope" class="text-success">
                             เพิ่มเลย คลิก
                         </a>
                     {% endif %}
@@ -64,19 +64,19 @@
             </div>
         </div>
         <div class="col-md-2 col-12 mb-3">
-            <div class="p-4 section border border-dark text-black rounded">
+            <div class="p-4 section border border-dark border-box  text-black rounded">
                 <h3 class="global_text">เงินสุทธิ</h3>
                 <h5 class="global_text">{{ summary.net|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
         </div>
         <div class="col-md-2 col-6">
-            <div class="p-4 section border border-dark text-black rounded">
+            <div class="p-4 section border border-dark border-box  text-black rounded">
                 <h3 class="global_text">รายรับ</h3>
                 <h5 class="global_text">{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
         </div>
         <div class="col-md-2 col-6">
-            <div class="p-4 section border border-dark text-black rounded">
+            <div class="p-4 section border border-dark border-box  text-black rounded">
                 <h3 class="global_text">รายจ่าย</h3>
                 <h5 class="global_text">{{ summary.income|floatformat:2 }} {{ wallet.currency }}</h5>
             </div>
@@ -160,7 +160,7 @@
 
         <!-- Statements Section -->
         <div class="mt-4">
-            <div class="section rounded border border-dark" style="height: 500px; overflow-y: auto;">
+            <div class="section rounded border border-dark border-box " style="height: 500px; overflow-y: auto;">
                 <!-- ส่วนหัว -->
                 <div class="m-3 sticky-top section d-flex justify-content-between align-items-center">
                     <h3 class="p-2 global_text">
