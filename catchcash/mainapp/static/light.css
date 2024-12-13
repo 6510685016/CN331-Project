@@ -7,8 +7,9 @@ body {
 
 #sidebar {
   background-color: #95AFCC !important;
-  min-height: 100vh;
-  position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 #mobileSidebar {
