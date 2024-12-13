@@ -61,8 +61,8 @@
     <!-- แสดงตารางแสดงstatements -->
     {% for statements_Each_day in statements %}
         <div class="card mb-3 shadow-sm">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <span>{{ statements_Each_day.statements.0.addDate }}</span>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="global_text">{{ statements_Each_day.statements.0.addDate }}</span>
                 <div>
                     <span class="badge bg-success px-3 py-2">{{ statements_Each_day.in }}</span>
                     <span class="badge bg-danger px-3 py-2">{{ statements_Each_day.out }}</span>
@@ -73,19 +73,19 @@
                     <div id="statement-{{statement.id}}" class="row mb-3 align-items-center">
                         <div class="col-md-1 col-2">
                             {% if statement.type == "in" %}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg global_text" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
                                 </svg>
                             {% else %}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash global_text" viewBox="0 0 16 16">
                                     <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
                                 </svg>
                             {% endif %}
                         </div>
-                        <div class="col-md-3 col-10">
+                        <div class="col-md-3 col-10 global_text">
                             <span>{{ statement.amount }} {{wallet.currency}}</span>
                         </div>
-                        <div class="col-md-4 col-7">
+                        <div class="col-md-4 col-7 global_text">
                             <span>{{ statement.category }}</span>
                         </div>
                         <div class="col-md-3 col-5 text-end">
