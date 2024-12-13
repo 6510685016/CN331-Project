@@ -134,7 +134,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR, 'app_user', 'media')
 
 #Auth
 LOGIN_REDIRECT_URL = 'main'
-LOGOUT_REDIRECT_URL = 'auth'
+LOGOUT_REDIRECT_URL = 'welcome'
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 from datetime import datetime
