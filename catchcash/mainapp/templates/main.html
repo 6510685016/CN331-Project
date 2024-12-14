@@ -52,8 +52,8 @@
                     </div>
                     
                     {% if status.income_diff is not None %}
-                        <div>{{ status.income_message }}</div>
-                        <div>{{ status.expense_message }}</div>
+                        <div class="global_text">{{ status.income_message }}</div>
+                        <div class="global_text">{{ status.expense_message }}</div>
                     {% else %}
                         <h5 class="global_text">ไม่พบเป้าหมายสำหรับเดือนนี้</h5>
                         <a href="#" data-toggle="modal" data-target="#addScope" class="text-success">
