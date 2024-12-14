@@ -63,8 +63,8 @@
             { id: 2, name: "Create Wallet", x: 220, y: 125, unlocked: false, condition: () => nodes.find(n => n.id === 1).unlocked && walletCount > 1 },
             { id: 3, name: "Create Preset", x: 550, y: 75, unlocked: false, condition: () => nodes.find(n => n.id === 2).unlocked &&  presetCount > 0},
             { id: 4, name: "Create Scope", x: 810, y: 165, unlocked: false, condition: () => nodes.find(n => n.id === 3).unlocked && scopeCount > 0 },
-            { id: 5, name: "Create Goal", x: 200, y: 550, unlocked: false, condition: () => missionCount > 0 },
-            { id: 6, name: "Complete Goal", x: 460, y: 530, unlocked: false, condition: () => nodes.find(n => n.id === 5).unlocked && hasSuccessfulMission},
+            { id: 5, name: "Create Mission", x: 200, y: 550, unlocked: false, condition: () => missionCount > 0 },
+            { id: 6, name: "Finish Mission", x: 460, y: 530, unlocked: false, condition: () => nodes.find(n => n.id === 5).unlocked && hasSuccessfulMission},
             { id: 7, name: "1000+ Income", x: 700, y: 550, unlocked: false, condition: () => nodes.find(n => n.id === 6).unlocked && totalIncome > 999 },
             { id: 8, name: "Finished", x: 970, y: 300, unlocked: false, condition: () => nodes.find(n => n.id === 7).unlocked && nodes.find(n => n.id === 4).unlocked },
         ];
