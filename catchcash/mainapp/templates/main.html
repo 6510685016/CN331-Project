@@ -90,19 +90,19 @@
                 <form method="post" action="{% url 'create_scope' %}">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addScopeLabel">เพิ่มเป้าหมายรายเดือน</h5>
+                        <h5 class="modal-title global_text" id="addScopeLabel">เพิ่มเป้าหมายรายเดือน</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <!-- ฟอร์มตั้งค่าเป้าหมาย -->
-                        <div class="form-group">
-                            <label for="income-goal">เป้าหมายรายรับ</label>
+                        <div class="form-group global_text">
+                            <label for="income-goal ">เป้าหมายรายรับ</label>
                             <input type="number" step="0.01" class="form-control" id="income-goal" name="income_goal" placeholder="ระบุเป้าหมายรายรับ" required>
                         </div>
-                        <div class="form-group">
-                            <label for="expense-goal">เป้าหมายรายจ่าย</label>
+                        <div class="form-group global_text">
+                            <label for="expense-goal ">เป้าหมายรายจ่าย</label>
                             <input type="number" step="0.01" class="form-control" id="expense-goal" name="expense_goal" placeholder="ระบุเป้าหมายรายจ่าย" required>
                         </div>
                         <input type="hidden" name="wallet" value="{{ wallet.id }}">
@@ -126,18 +126,18 @@
                 <form method="post" action="{% url 'edit_scope' scopes.id %}">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editScopeLabel">แก้ไขเป้าหมายรายเดือน</h5>
+                        <h5 class="modal-title global_text" id="editScopeLabel">แก้ไขเป้าหมายรายเดือน</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <!-- ฟอร์มแก้ไขเป้าหมาย -->
-                        <div class="form-group">
+                        <div class="form-group global_text">
                             <label for="edit-income-goal">เป้าหมายรายรับ</label>
                             <input type="number" step="0.01" class="form-control" id="edit-income-goal" name="income_goal" value="{{ scopes.income_goal }}" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group global_text">
                             <label for="edit-expense-goal">เป้าหมายรายจ่าย</label>
                             <input type="number" step="0.01" class="form-control" id="edit-expense-goal" name="expense_goal" value="{{ scopes.expense_goal }}" required>
                         </div>
