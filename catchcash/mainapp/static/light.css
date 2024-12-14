@@ -314,18 +314,18 @@ p {
 
 /* analysis page */
 .button-css {
-  border-radius: 10px;
-  width: 12vw;
-  height: 7vh;
-  background-color: #95afc4;
-  border: none;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 7vh;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 10px !important;
+  width: 100% !important;
+  height: 7vh !important;
+  background-color: #95afc4 !important;
+  border: none !important;
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  line-height: 7vh !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
 
 }
 

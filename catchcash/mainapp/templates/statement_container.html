@@ -28,17 +28,17 @@
                 <div class="card-body row">
                     {% csrf_token %}
                     <div class="col-md-2">
-                        <label>ประเภท</label>
+                        <label class="global_text">ประเภท</label>
                         <select name="type" class="form-control 1" required>
                             <option value="in">รายรับ (+)</option>
                             <option value="out" selected>รายจ่าย (-)</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label>ระบุจำนวนเงิน ({{wallet.currency}})</label>
+                        <label class="global_text">ระบุจำนวนเงิน ({{wallet.currency}})</label>
                         <input placeholder="ระบุจำนวนเงิน ({{wallet.currency}})" type="number" class="form-control mr-1" step="1.00" name="amount" required>
                     </div>
-                    <div class="col-md-4 col-5">
+                    <div class="col-md-4 col-5 global_text">
                         <label for="category-select">หมวดหมู่</label>
                         <select id="category-select" class="form-control mr-1" name="category" required>
                             {% for choice in choices %}
@@ -48,8 +48,8 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-7">
-                        <label for="category-select">วันที่ (วันนี้หากไม่ระบุ)</label>
+                    <div class="col-md-7 global_text">
+                        <label for="category-select global_text">วันที่ (วันนี้หากไม่ระบุ)</label>
                         <input type="date" class="form-control mr-1" name="addDate">
                     </div>
                     <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
