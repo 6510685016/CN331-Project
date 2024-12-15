@@ -81,7 +81,7 @@ To set up and run the application locally, follow the steps below:
 - **Documents:** `https://drive.google.com/file/d/1QmlDK9c-fSJh91u22R3CmKrOP8D8RFQa/view?usp=sharing`
 - **Tracker Jira** `https://kasidit.atlassian.net/jira/software/projects/CN331/boards/1`
 - **Github Repo** `https://github.com/6510685016/CN331-Project`
-- **Demo Viedo** ``
+- **Demo Viedo** `https://youtu.be/Ig9BQnzPFgQ`
 
 ## 👤 Member Team
 1. ชยุตม์พงศ์ พลเยี่ยม 6510525022
