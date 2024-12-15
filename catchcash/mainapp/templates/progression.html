@@ -23,11 +23,10 @@
             width: 80px;
             height: 80px;
             font-size: 0.6rem; /* Smaller font size */
-             display: flex; /* ใช้ flexbox */
-    justify-content: center; /* จัดข้อความกึ่งกลางแนวนอน */
-    align-items: center; /* จัดข้อความกึ่งกลางแนวตั้ง */
+            display: flex; /* ใช้ flexbox */
+            justify-content: center; /* จัดข้อความกึ่งกลางแนวนอน */
+            align-items: center; /* จัดข้อความกึ่งกลางแนวตั้ง */
         }
-
 
         /* Adjust node positions for mobile (example only, customize as needed) */
         .node:nth-child(1) { left: 10%; top: 70%; }
@@ -38,6 +37,36 @@
         .node:nth-child(6) { left: 50%; top: 70%; }
         .node:nth-child(7) { left: 70%; top: 80%; }
         .node:nth-child(8) { left: 90%; top: 50%; }
+    }
+
+    /* Responsive for iPad */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        #graph-container {
+            height: auto; /* Adjust container height */
+            width: 100%;
+            padding: 20px; /* Add padding for better appearance */
+            overflow: auto;
+            position: relative;
+        }
+
+        .node {
+            width: 100px; /* Slightly larger nodes for iPad */
+            height: 100px;
+            font-size: 0.8rem; /* Slightly larger font size */
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+
+        /* Adjust node positions for iPad (example only, customize as needed) */
+        .node:nth-child(1) { left: 20%; top: 70%; }
+        .node:nth-child(2) { left: 35%; top: 25%; }
+        .node:nth-child(3) { left: 55%; top: 15%; }
+        .node:nth-child(4) { left: 75%; top: 35%; }
+        .node:nth-child(5) { left: 25%; top: 85%; }
+        .node:nth-child(6) { left: 55%; top: 75%; }
+        .node:nth-child(7) { left: 75%; top: 85%; }
+        .node:nth-child(8) { left: 90%; top: 55%; }
     }
 </style>
  
